@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Client\AnvilClient.cpp" />
+    <ClCompile Include="src\Utils\Logger.cpp" />
+    <ClCompile Include="src\Utils\Util.cpp" />
+    <ClCompile Include="src\Client\Hooks\Engine\GameTick.cpp" />
+    <ClCompile Include="src\Client\Hooks\EngineHooks.cpp" />
+    <ClCompile Include="src\Client\Patches\Engine\EnginePatches.cpp" />
+    <ClCompile Include="src\Client\Hooks\Engine\sub_5C7E40.cpp" />
+    <ClCompile Include="src\Client\Rendering\WebRenderer.cpp" />
+    <ClCompile Include="src\Client\Rendering\RenderHandler.cpp" />
+    <ClCompile Include="src\Client\Rendering\BrowserClient.cpp" />
+    <ClCompile Include="src\Client\Hooks\WinHooks.cpp" />
+    <ClCompile Include="src\Client\Hooks\Win\CreateWindowExA.cpp" />
+    <ClCompile Include="src\Client\Hooks\Win\Rendering\D3DDevice9_BeginScene.cpp" />
+    <ClCompile Include="src\Client\Hooks\Win\Rendering\D3DDevice9_EndScene.cpp" />
+    <ClCompile Include="src\Client\Hooks\Win\Rendering\D3DDevice9_Reset.cpp" />
+    <ClCompile Include="src\Client\Hooks\Win\Rendering\Direct3DCreate9.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Client\AnvilClient.hpp" />
+    <ClInclude Include="src\Misc\IInit.hpp" />
+    <ClInclude Include="src\Utils\Logger.hpp" />
+    <ClInclude Include="src\Utils\Util.hpp" />
+    <ClInclude Include="src\Client\Hooks\EngineHooks.hpp" />
+    <ClInclude Include="src\Misc\Macros.hpp" />
+    <ClInclude Include="src\Client\Patches\Engine\EnginePatches.hpp" />
+    <ClInclude Include="src\SDK\Messages\Message.h" />
+    <ClInclude Include="src\Client\Rendering\WebRenderer.hpp" />
+    <ClInclude Include="src\Client\Rendering\RenderHandler.hpp" />
+    <ClInclude Include="src\Client\Rendering\BrowserClient.hpp" />
+    <ClInclude Include="src\Client\Hooks\WinHooks.hpp" />
+  </ItemGroup>
+</Project>
