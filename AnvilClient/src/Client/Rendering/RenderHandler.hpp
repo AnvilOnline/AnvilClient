@@ -22,7 +22,8 @@ namespace Anvil
 				LPDIRECT3DTEXTURE9 m_Texture;
 
 			public:
-				RenderHandler();
+				//RenderHandler();
+				RenderHandler(LPDIRECT3DTEXTURE9 p_Texture);
 
 				bool GetViewRect(CefRefPtr<CefBrowser> p_Browser, CefRect& p_Rect) override;
 				void OnPaint(CefRefPtr<CefBrowser> p_Browser, PaintElementType p_Type, const RectList& p_DirtyRects, const void* p_Buffer, int p_Width, int p_Height) override;

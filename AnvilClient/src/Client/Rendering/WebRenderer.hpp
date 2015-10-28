@@ -13,9 +13,11 @@ namespace Anvil
 			{
 				LPD3DXSPRITE m_Sprite;
 				LPDIRECT3DTEXTURE9 m_Texture;
+				LPD3DXFONT m_Font;
 
 				unsigned long m_Width, m_Height;
 
+				static WebRenderer* m_Instance;
 				WebRenderer();
 
 			protected:
@@ -24,7 +26,12 @@ namespace Anvil
 				}
 
 			public:
+				static WebRenderer* GetInstance();
+
 				bool Init() override;
+
+				bool InitRenderer(LPDIRECT3DDEVICE9 p_Device);
+				bool Render(LPDIRECT3DDEVICE9 p_Device);
 			};
 		}
 	}
