@@ -9,15 +9,19 @@
     <ClCompile Include="src\Client\Hooks\EngineHooks.cpp" />
     <ClCompile Include="src\Client\Patches\Engine\EnginePatches.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\sub_5C7E40.cpp" />
-    <ClCompile Include="src\Client\Rendering\WebRenderer.cpp" />
-    <ClCompile Include="src\Client\Rendering\RenderHandler.cpp" />
-    <ClCompile Include="src\Client\Rendering\BrowserClient.cpp" />
     <ClCompile Include="src\Client\Hooks\WinHooks.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\CreateWindowExA.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\Rendering\D3DDevice9_BeginScene.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\Rendering\D3DDevice9_EndScene.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\Rendering\D3DDevice9_Reset.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\Rendering\Direct3DCreate9.cpp" />
+    <ClCompile Include="src\Client\Rendering\WebUI.cpp" />
+    <ClCompile Include="src\Client\Rendering\WebUISchemeHandlerFactory.cpp" />
+    <ClCompile Include="src\Client\Rendering\WebUISchemeHandler.cpp" />
+    <ClCompile Include="src\Client\Rendering\WebUIFrame.cpp" />
+    <ClCompile Include="src\Client\Rendering\WebUIApp.cpp" />
+    <ClCompile Include="src\Client\Rendering\WebUIClient.cpp" />
+    <ClCompile Include="src\Client\Rendering\Handlers\MainHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />
@@ -28,9 +32,13 @@
     <ClInclude Include="src\Misc\Macros.hpp" />
     <ClInclude Include="src\Client\Patches\Engine\EnginePatches.hpp" />
     <ClInclude Include="src\SDK\Messages\Message.h" />
-    <ClInclude Include="src\Client\Rendering\WebRenderer.hpp" />
-    <ClInclude Include="src\Client\Rendering\RenderHandler.hpp" />
-    <ClInclude Include="src\Client\Rendering\BrowserClient.hpp" />
     <ClInclude Include="src\Client\Hooks\WinHooks.hpp" />
+    <ClInclude Include="src\Client\Rendering\WebUI.hpp" />
+    <ClInclude Include="src\Client\Rendering\WebUIFrame.hpp" />
+    <ClInclude Include="src\Client\Rendering\WebUIClient.hpp" />
+    <ClInclude Include="src\Client\Rendering\WebUISchemeHandlerFactory.hpp" />
+    <ClInclude Include="src\Client\Rendering\WebUISchemeHandler.hpp" />
+    <ClInclude Include="src\Client\Rendering\WebUIApp.hpp" />
+    <ClInclude Include="src\Client\Rendering\Handlers\MainHandler.hpp" />
   </ItemGroup>
 </Project>
