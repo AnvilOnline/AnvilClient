@@ -14,7 +14,7 @@ Logger* Logger::GetInstance()
 
 bool Logger::Init()
 {
-	std::string s_Version("Mantis Client Version: ");
+	std::string s_Version("AnvilOnline Client Version: ");
 	s_Version += "alpha";
 	
 	try

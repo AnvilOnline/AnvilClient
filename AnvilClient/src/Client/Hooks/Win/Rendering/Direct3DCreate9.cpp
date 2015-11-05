@@ -1,7 +1,5 @@
 #include <Client/Hooks/WinHooks.hpp>
-#include <Client/Rendering/WebRenderer.hpp>
 
-using namespace Anvil::Client::Rendering;
 using namespace Anvil::Client::Hooks;
 
 LRESULT CALLBACK MsgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { return DefWindowProc(hwnd, uMsg, wParam, lParam); }
@@ -35,9 +33,6 @@ HookedFunction(WinHooks, void*, Direct3DCreate9, __stdcall, unsigned int p_SdkVe
 	DeclareHookAtOffset(D3DDevice9_Reset, s_Reset);
 
 	DestroyWindow(hWnd);
-
-	WebRenderer::GetInstance()->Init();
-	WebRenderer::GetInstance()->InitRenderer(pd3dDevice);
 
 	return s_IDirect3D9;
 }

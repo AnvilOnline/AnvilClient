@@ -2,6 +2,9 @@
 #include <Misc/IInit.hpp>
 #include <d3d9.h>
 #include <d3dx9.h>
+#include <include/internal/cef_ptr.h>
+#include <include/cef_browser.h>
+#include "WebRendererClient.hpp"
 
 namespace Anvil
 {
@@ -11,11 +14,17 @@ namespace Anvil
 		{
 			class WebRenderer : public IInit
 			{
-				LPD3DXSPRITE m_Sprite;
-				LPDIRECT3DTEXTURE9 m_Texture;
-				LPD3DXFONT m_Font;
+				CefRefPtr<CefBrowser> m_Browser;
+				CefRefPtr<CefClient> m_Client;
+				CefRefPtr<CefRenderHandler> m_RenderHandler;
 
-				unsigned long m_Width, m_Height;
+				bool m_Initialized;
+				bool m_RenderingInitialized;
+
+				LPDIRECT3DTEXTURE9 m_Texture;
+				LPDIRECT3DDEVICE9 m_Device;
+				LPD3DXSPRITE m_Sprite;
+				LPD3DXFONT m_Font;
 
 				static WebRenderer* m_Instance;
 				WebRenderer();
@@ -31,7 +40,14 @@ namespace Anvil
 				bool Init() override;
 
 				bool InitRenderer(LPDIRECT3DDEVICE9 p_Device);
+
 				bool Render(LPDIRECT3DDEVICE9 p_Device);
+
+				bool Update();
+
+				bool Initialized();
+
+				bool Resize(unsigned long p_Width, unsigned long p_Height);
 			};
 		}
 	}

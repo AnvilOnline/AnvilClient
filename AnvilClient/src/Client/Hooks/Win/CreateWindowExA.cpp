@@ -5,7 +5,7 @@ using namespace Anvil::Client::Hooks;
 
 HookedFunction(WinHooks, HWND, CreateWindowExA, __stdcall, DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hwndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam)
 {
-	std::string s_version("Anvil Client Version: ");
+	std::string s_version("AnvilOnline Client Version: ");
 	s_version += "alpha";
 
 	auto s_ret = o_CreateWindowExA(dwExStyle, lpClassName, s_version.c_str(), dwStyle, X, Y, nWidth, nHeight, hwndParent, hMenu, hInstance, lpParam);
