@@ -2,6 +2,7 @@
 #include <Client/Hooks/WinHooks.hpp>
 #include <Client/Hooks/EngineHooks.hpp>
 #include <Client/Patches/Engine/EnginePatches.hpp>
+#include "Rendering/WebRenderer.hpp"
 
 using Anvil::Client::AnvilClient;
 

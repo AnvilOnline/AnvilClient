@@ -11,8 +11,11 @@ namespace Anvil
 		{
 			class WinHooks : public IInit
 			{
-				void* m_MouseHook;
-				void* m_WindowHook;
+				static HHOOK m_MouseHook;
+				static HHOOK m_WindowHook;
+
+				static LRESULT __stdcall HookMouseProc(int p_Code, WPARAM p_WParam, LPARAM p_LParam);
+				static LRESULT __stdcall HookWindowProc(int p_Code, WPARAM p_WParam, LPARAM p_LParam);
 
 				DeclareFunction(HWND, CreateWindowExA, __stdcall, DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hwndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
 				DeclareFunction(HRESULT, D3DDevice9_EndScene, __stdcall, LPDIRECT3DDEVICE9 p_Device);

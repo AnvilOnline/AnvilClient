@@ -5,7 +5,8 @@ using namespace Anvil::Client::Rendering;
 
 WebRendererHandler::WebRendererHandler(LPDIRECT3DDEVICE9 p_Device) :
 	m_Device(p_Device),
-	m_TextureData(nullptr)
+	m_TextureData(nullptr),
+	m_Browser(nullptr)
 {
 }
 
@@ -21,6 +22,9 @@ bool WebRendererHandler::GetViewRect(CefRefPtr<CefBrowser> p_Browser, CefRect& p
 
 void WebRendererHandler::OnPaint(CefRefPtr<CefBrowser> p_Browser, PaintElementType p_Type, const RectList& p_DirtyRects, const void* p_Buffer, int p_Width, int p_Height)
 {
+	if (!m_Browser)
+		m_Browser = p_Browser;
+
 	if (!m_TextureData)
 		return;
 
@@ -117,4 +121,9 @@ bool WebRendererHandler::Resize(unsigned long p_Width, unsigned long p_Height)
 unsigned char* WebRendererHandler::GetTexture()
 {
 	return m_TextureData;
+}
+
+CefRefPtr<CefBrowser> WebRendererHandler::GetBrowser()
+{
+	return m_Browser;
 }

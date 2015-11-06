@@ -8,8 +8,6 @@ HookedFunction(EngineHooks, int, GameTick, __stdcall)
 	auto s_Ret = o_GameTick();
 
 	__asm NOP;
-
-	Rendering::WebRenderer::GetInstance()->Update();
-
+	//Rendering::WebRenderer::GetInstance()->Update();
 	return s_Ret;
 }

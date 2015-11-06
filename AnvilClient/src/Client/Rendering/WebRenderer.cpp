@@ -9,7 +9,6 @@ using Anvil::Client::Rendering::WebRenderer;
 
 WebRenderer* WebRenderer::m_Instance = nullptr;
 WebRenderer::WebRenderer() : 
-	m_Browser(nullptr),
 	m_Client(nullptr),
 	m_RenderHandler(nullptr),
 	m_Initialized(false),
@@ -81,20 +80,18 @@ bool WebRenderer::Init()
 	m_Client = new WebRendererClient(m_RenderHandler);
 
 	auto s_RequestContext = CefRequestContext::GetGlobalContext();
-	if (!CefBrowserHost::CreateBrowser(s_WindowInfo, m_Client.get(), "http://google.com", s_BrowserSettings, s_RequestContext))
+	if (!CefBrowserHost::CreateBrowser(s_WindowInfo, m_Client.get(), "http://youtube.com", s_BrowserSettings, s_RequestContext))
 	{
 		m_Initialized = false;
 		WriteLog("Failed to initialize WebRenderer.");
 		return false;
 	}
 
-	CefRect s_Rect;
-
-	s_Result = m_RenderHandler->GetViewRect(m_Browser, s_Rect);
-	if (!s_Result)
+	unsigned long s_Width = 0, s_Height = 0;
+	if (!static_cast<WebRendererHandler*>(m_RenderHandler.get())->GetViewportInformation(s_Width, s_Height))
 		return false;
 
-	if (!Resize(s_Rect.width, s_Rect.height))
+	if (!Resize(s_Width, s_Height))
 		return false;
 
 	m_Initialized = true;
@@ -215,5 +212,48 @@ bool WebRenderer::Resize(unsigned long p_Width, unsigned long p_Height)
 		return false;
 	}
 
+	return true;
+}
+
+bool WebRenderer::UpdateMouse(unsigned long p_X, unsigned long p_Y)
+{
+	if (!m_RenderHandler)
+		return false;
+
+	auto s_Browser = reinterpret_cast<WebRendererHandler*>(m_RenderHandler.get())->GetBrowser().get();
+	if (!s_Browser)
+		return false;
+
+	CefMouseEvent s_Event;
+	s_Event.x = p_X;
+	s_Event.y = p_Y;
+	
+	s_Browser->GetHost()->SendMouseMoveEvent(s_Event, false);
+
+	return true;
+}
+
+bool WebRenderer::Click(unsigned long p_X, unsigned long p_Y)
+{
+	if (!m_RenderHandler)
+		return false;
+
+	auto s_RenderHandler = reinterpret_cast<WebRendererHandler*>(m_RenderHandler.get());
+	if (!s_RenderHandler)
+		return false;
+
+	auto s_Browser = s_RenderHandler->GetBrowser().get();
+	if (!s_Browser)
+		return false;
+
+	CefMouseEvent s_Event;
+	s_Event.x = p_X;
+	s_Event.y = p_Y;
+	s_Event.modifiers = 0;
+
+	auto s_LastClickCount = 1;
+
+	s_Browser->GetHost()->SendMouseClickEvent(s_Event, MBT_LEFT, false, s_LastClickCount);
+	s_Browser->GetHost()->SendMouseClickEvent(s_Event, MBT_LEFT, true, s_LastClickCount);
 	return true;
 }

@@ -14,7 +14,7 @@ namespace Anvil
 		{
 			class WebRenderer : public IInit
 			{
-				CefRefPtr<CefBrowser> m_Browser;
+				//CefRefPtr<CefBrowser> m_Browser;
 				CefRefPtr<CefClient> m_Client;
 				CefRefPtr<CefRenderHandler> m_RenderHandler;
 
@@ -48,6 +48,9 @@ namespace Anvil
 				bool Initialized();
 
 				bool Resize(unsigned long p_Width, unsigned long p_Height);
+
+				bool UpdateMouse(unsigned long p_X, unsigned long p_Y);
+				bool Click(unsigned long p_X, unsigned long p_Y);
 			};
 		}
 	}

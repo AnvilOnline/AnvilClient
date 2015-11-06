@@ -1,4 +1,5 @@
 #pragma once
+#include <include/cef_client.h>
 #include <include/cef_render_handler.h>
 #include <d3d9.h>
 #include <mutex>
@@ -15,6 +16,8 @@ namespace Anvil
 				unsigned char* m_TextureData;
 				std::mutex m_TextureLock;
 
+				CefRefPtr<CefBrowser> m_Browser;
+
 			public:
 				WebRendererHandler(LPDIRECT3DDEVICE9 p_Device);
 
@@ -25,6 +28,7 @@ namespace Anvil
 				bool Resize(unsigned long p_Width, unsigned long p_Height);
 
 				unsigned char* GetTexture();
+				CefRefPtr<CefBrowser> GetBrowser();
 
 			protected:
 				IMPLEMENT_REFCOUNTING(WebRendererHandler);
