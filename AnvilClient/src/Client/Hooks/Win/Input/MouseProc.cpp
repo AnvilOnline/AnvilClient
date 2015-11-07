@@ -16,7 +16,7 @@ LRESULT WinHooks::HookMouseProc(int p_Code, WPARAM p_WParam, LPARAM p_LParam)
 		auto s_Struct = reinterpret_cast<LPMOUSEHOOKSTRUCT>(p_LParam);
 
 		if (!Rendering::WebRenderer::GetInstance()->UpdateMouse(s_Struct->pt.x, s_Struct->pt.y))
-			WriteLog("MouseMove failed.");
+			return CallNextHookEx(m_MouseHook, p_Code, p_WParam, p_LParam);
 	}
 
 	if (p_WParam == WM_LBUTTONDOWN)
@@ -26,10 +26,8 @@ LRESULT WinHooks::HookMouseProc(int p_Code, WPARAM p_WParam, LPARAM p_LParam)
 		auto s_X = s_Struct->pt.x;
 		auto s_Y = s_Struct->pt.y;
 
-		WriteLog("MouseClick: %d %d", s_X, s_Y);
-
 		if (!Rendering::WebRenderer::GetInstance()->Click(s_X, s_Y))
-			WriteLog("MouseClick failed.");
+			return CallNextHookEx(m_MouseHook, p_Code, p_WParam, p_LParam);
 	}
 
 	return CallNextHookEx(m_MouseHook, p_Code, p_WParam, p_LParam);

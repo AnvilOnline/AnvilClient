@@ -34,5 +34,7 @@ HookedFunction(WinHooks, void*, Direct3DCreate9, __stdcall, unsigned int p_SdkVe
 
 	DestroyWindow(hWnd);
 
+	WriteLog("DirectX Hooks installed.");
+
 	return s_IDirect3D9;
 }

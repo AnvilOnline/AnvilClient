@@ -197,3 +197,4 @@ FakesAssemblies/
 AnvilClient/depends/boost/*
 AnvilClient/depends/lib/Release/*
 AnvilClient/depends/lib/Debug/*
+depends.7z

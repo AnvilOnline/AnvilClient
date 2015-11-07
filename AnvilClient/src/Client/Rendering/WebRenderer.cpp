@@ -18,6 +18,7 @@ WebRenderer::WebRenderer() :
 	m_Sprite(nullptr),
 	m_Font(nullptr)
 {
+	WriteLog("WebRenderer Ctor.");
 }
 
 WebRenderer* WebRenderer::GetInstance()
@@ -30,7 +31,10 @@ WebRenderer* WebRenderer::GetInstance()
 bool WebRenderer::Init()
 {
 	if (!m_RenderingInitialized)
+	{
+		WriteLog("Init called without rendering being initialized first.");
 		return false;
+	}
 
 	CefMainArgs s_Args(GetModuleHandle(nullptr));
 
@@ -73,7 +77,10 @@ bool WebRenderer::Init()
 
 	s_Result = m_Device->GetCreationParameters(&s_Parameters);
 	if (FAILED(s_Result))
+	{
+		WriteLog("Could not get the creation parameters.");
 		return false;
+	}
 
 	s_WindowInfo.SetAsWindowless(s_Parameters.hFocusWindow, true);
 
@@ -92,7 +99,10 @@ bool WebRenderer::Init()
 		return false;
 
 	if (!Resize(s_Width, s_Height))
+	{
+		WriteLog("Resize failed.");
 		return false;
+	}
 
 	m_Initialized = true;
 
@@ -105,7 +115,10 @@ bool WebRenderer::InitRenderer(LPDIRECT3DDEVICE9 p_Device)
 	WriteLog("WebRenderer InitRenderer.");
 
 	if (!p_Device)
+	{
+		WriteLog("Device is invalid.");
 		return false;
+	}
 
 	m_Device = p_Device;
 
@@ -128,12 +141,18 @@ bool WebRenderer::InitRenderer(LPDIRECT3DDEVICE9 p_Device)
 	D3DVIEWPORT9 s_Viewport;
 	s_Result = p_Device->GetViewport(&s_Viewport);
 	if (FAILED(s_Result))
+	{
+		WriteLog("Could not get viewport (%x).", s_Result);
 		return false;
+	}
 
 	// Create a texture
 	s_Result = p_Device->CreateTexture(s_Viewport.Width, s_Viewport.Height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_Texture, nullptr);
 	if (FAILED(s_Result))
+	{
+		WriteLog("Could not create texture (%x).", s_Result);
 		return false;
+	}
 
 	m_RenderingInitialized = true;
 	return true;
@@ -142,10 +161,16 @@ bool WebRenderer::InitRenderer(LPDIRECT3DDEVICE9 p_Device)
 bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 {
 	if (!p_Device)
+	{
+		WriteLog("Device is invalid.");
 		return false;
+	}
 
 	if (!m_Sprite || !m_Font || !m_Texture || !m_RenderHandler)
+	{
+		WriteLog("Sprite, Font, Texture, Renderhandler invalid.");
 		return false;
+	}
 
 	auto s_RenderHandler = static_cast<WebRendererHandler*>(m_RenderHandler.get());
 
