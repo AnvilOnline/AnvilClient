@@ -34,6 +34,8 @@ namespace Anvil
 				{
 				}
 
+				std::string GetUIDirectory();
+
 			public:
 				static WebRenderer* GetInstance();
 

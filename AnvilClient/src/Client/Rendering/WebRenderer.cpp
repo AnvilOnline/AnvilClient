@@ -1,6 +1,7 @@
 #include "WebRenderer.hpp"
 #include "WebRendererHandler.hpp"
 #include <cef_app.h>
+#include <cef_origin_whitelist.h>
 
 #include <d3dx9.h>
 #include <Utils/Logger.hpp>
@@ -19,6 +20,20 @@ WebRenderer::WebRenderer() :
 	m_Font(nullptr)
 {
 	WriteLog("WebRenderer Ctor.");
+}
+
+std::string WebRenderer::GetUIDirectory()
+{
+	char s_PathBuffer[MAX_PATH];
+	auto s_BufferSize = sizeof(s_PathBuffer);
+	memset(s_PathBuffer, 0, s_BufferSize);
+
+	GetModuleFileName(nullptr, s_PathBuffer, s_BufferSize);
+
+	auto s_LocalExecutable = std::string(s_PathBuffer);
+	auto s_RunningDirectory = s_LocalExecutable.substr(0, s_LocalExecutable.find_last_of("\\/"));
+
+	return s_RunningDirectory + "/ui";
 }
 
 WebRenderer* WebRenderer::GetInstance()
@@ -65,12 +80,15 @@ bool WebRenderer::Init()
 		return false;
 	}
 
+	CefAddCrossOriginWhitelistEntry("file://", "http", "", true);
+
 	m_RenderHandler = new WebRendererHandler(m_Device);
 
 	CefWindowInfo s_WindowInfo;
 	CefBrowserSettings s_BrowserSettings;
 
 	s_BrowserSettings.windowless_frame_rate = 60;
+	s_BrowserSettings.javascript = STATE_ENABLED;
 
 	D3DDEVICE_CREATION_PARAMETERS s_Parameters;
 	ZeroMemory(&s_Parameters, sizeof(s_Parameters));
@@ -82,12 +100,18 @@ bool WebRenderer::Init()
 		return false;
 	}
 
+	auto s_UIDirectory = GetUIDirectory();
+	// Jquery fails here, TODO: Implement custom handler
+	auto s_ContainerPath = "file://" + s_UIDirectory + "/container.html";
+
+	WriteLog("Container Path: %s.", s_ContainerPath.c_str());
+
 	s_WindowInfo.SetAsWindowless(s_Parameters.hFocusWindow, true);
 
 	m_Client = new WebRendererClient(m_RenderHandler);
 
 	auto s_RequestContext = CefRequestContext::GetGlobalContext();
-	if (!CefBrowserHost::CreateBrowser(s_WindowInfo, m_Client.get(), "http://youtube.com", s_BrowserSettings, s_RequestContext))
+	if (!CefBrowserHost::CreateBrowser(s_WindowInfo, m_Client.get(), s_ContainerPath.c_str(), s_BrowserSettings, s_RequestContext))
 	{
 		m_Initialized = false;
 		WriteLog("Failed to initialize WebRenderer.");
