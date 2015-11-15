@@ -55,7 +55,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)depends/cef;$(ProjectDir)depends/cef/include;$(ProjectDir)depends/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)depends/cef;$(ProjectDir)depends/cef/include;$(ProjectDir)depends/include;$(ProjectDir)depends/boost/include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -92,6 +92,8 @@
     <ClCompile Include="src\Client\AnvilClient.cpp" />
     <ClCompile Include="src\Client\Hooks\EngineHooks.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\GameTick.cpp" />
+    <ClCompile Include="src\Client\Hooks\Engine\PrintDebug.cpp" />
+    <ClCompile Include="src\Client\Hooks\Engine\sub_4A99C0.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\sub_5C7E40.cpp" />
     <ClCompile Include="src\Client\Hooks\WinHooks.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\CreateWindowExA.cpp" />
@@ -103,8 +105,11 @@
     <ClCompile Include="src\Client\Hooks\Win\Rendering\Direct3DCreate9.cpp" />
     <ClCompile Include="src\Client\Patches\Engine\EnginePatches.cpp" />
     <ClCompile Include="src\Client\Rendering\WebRenderer.cpp" />
+    <ClCompile Include="src\Client\Rendering\WebRendererApp.cpp" />
     <ClCompile Include="src\Client\Rendering\WebRendererClient.cpp" />
     <ClCompile Include="src\Client\Rendering\WebRendererHandler.cpp" />
+    <ClCompile Include="src\Client\Rendering\WebRendererSchemeHandler.cpp" />
+    <ClCompile Include="src\Client\Rendering\WebRendererSchemeHandlerFactory.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Utils\Logger.cpp" />
     <ClCompile Include="src\Utils\Util.cpp" />
@@ -114,9 +119,14 @@
     <ClInclude Include="src\Client\Hooks\EngineHooks.hpp" />
     <ClInclude Include="src\Client\Hooks\WinHooks.hpp" />
     <ClInclude Include="src\Client\Patches\Engine\EnginePatches.hpp" />
+    <ClInclude Include="src\Client\Rendering\Bridge\Client\ClientFunctions.hpp" />
+    <ClInclude Include="src\Client\Rendering\Bridge\Client\GetVersion.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRenderer.hpp" />
+    <ClInclude Include="src\Client\Rendering\WebRendererApp.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererClient.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererHandler.hpp" />
+    <ClInclude Include="src\Client\Rendering\WebRendererSchemeHandler.hpp" />
+    <ClInclude Include="src\Client\Rendering\WebRendererSchemeHandlerFactory.hpp" />
     <ClInclude Include="src\Misc\IInit.hpp" />
     <ClInclude Include="src\Misc\Macros.hpp" />
     <ClInclude Include="src\SDK\Messages\Message.h" />

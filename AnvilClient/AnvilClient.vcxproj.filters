@@ -20,6 +20,11 @@
     <ClCompile Include="src\Client\Rendering\WebRendererHandler.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\Input\MouseProc.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\Input\WindowProc.cpp" />
+    <ClCompile Include="src\Client\Rendering\WebRendererSchemeHandlerFactory.cpp" />
+    <ClCompile Include="src\Client\Rendering\WebRendererSchemeHandler.cpp" />
+    <ClCompile Include="src\Client\Rendering\WebRendererApp.cpp" />
+    <ClCompile Include="src\Client\Hooks\Engine\sub_4A99C0.cpp" />
+    <ClCompile Include="src\Client\Hooks\Engine\PrintDebug.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />
@@ -34,5 +39,10 @@
     <ClInclude Include="src\Client\Hooks\WinHooks.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererClient.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererHandler.hpp" />
+    <ClInclude Include="src\Client\Rendering\WebRendererSchemeHandler.hpp" />
+    <ClInclude Include="src\Client\Rendering\WebRendererSchemeHandlerFactory.hpp" />
+    <ClInclude Include="src\Client\Rendering\WebRendererApp.hpp" />
+    <ClInclude Include="src\Client\Rendering\Bridge\Client\GetVersion.hpp" />
+    <ClInclude Include="src\Client\Rendering\Bridge\Client\ClientFunctions.hpp" />
   </ItemGroup>
 </Project>

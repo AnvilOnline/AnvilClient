@@ -1,3 +1,7 @@
+/*
+Code was used from NoFaTe (http://nofate.me)
+*/
+
 #include "WebRendererClient.hpp"
 
 using namespace Anvil::Client::Rendering;

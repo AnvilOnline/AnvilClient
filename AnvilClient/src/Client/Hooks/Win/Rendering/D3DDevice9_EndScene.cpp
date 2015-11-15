@@ -20,6 +20,15 @@ HookedFunction(WinHooks, HRESULT, D3DDevice9_EndScene, WINAPI, LPDIRECT3DDEVICE9
 	}
 	else
 	{
+		if (GetAsyncKeyState(VK_F2) & 0x8000)
+			Rendering::WebRenderer::GetInstance()->ExecuteJavascript("console.log(\"Hello World\");");
+
+		if (GetAsyncKeyState(VK_F2) & 0x8000)
+		{
+			Rendering::WebRenderer::GetInstance()->ExecuteJavascript("LoadMenu(\"menu.html\");");
+			Sleep(250);
+		}
+
 		Rendering::WebRenderer::GetInstance()->Render(p_Device);
 	}
 

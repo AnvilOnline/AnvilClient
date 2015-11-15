@@ -1,3 +1,6 @@
+/*
+Code was used from NoFaTe (http://nofate.me)
+*/
 #include "WebRendererHandler.hpp"
 #include <Utils/Logger.hpp>
 
@@ -31,47 +34,7 @@ void WebRendererHandler::OnPaint(CefRefPtr<CefBrowser> p_Browser, PaintElementTy
 	m_TextureLock.lock();
 
 	for (auto& l_Rect : p_DirtyRects)
-	{
 		memcpy(m_TextureData, p_Buffer, p_Width * p_Height * 4);
-
-		//const unsigned int* l_Source = nullptr;
-		//unsigned int* l_Dest = nullptr;
-		//__m128i brMask = _mm_set1_epi32(0x00ff00ff);
-
-		//for (auto y = 0; y < l_Rect.height; y++)
-		//{
-		//	l_Source = reinterpret_cast<const unsigned int*>(static_cast<const unsigned char*>(p_Buffer) + (y + l_Rect.y) * (p_Width * 4) + l_Rect.x * 4);
-		//	l_Dest = reinterpret_cast<unsigned int*>(m_TextureData) + (y + l_Rect.y) * (p_Width * 4) + l_Rect.x * 4;
-		//	auto x = 0;
-
-		//	// Make output writes aligned
-		//	for (x = 0; ((reinterpret_cast<intptr_t>(&l_Dest[x]) & 15) != 0) && x < l_Rect.width; x++)
-		//	{
-		//		auto rgba = l_Source[x];
-		//		l_Dest[x] = (_rotl(rgba, 16) & 0x00ff00ff) | (rgba & 0xff00ff00);
-		//	}
-
-		//	for (; x + 3 < l_Rect.width; x += 4)
-		//	{
-		//		__m128i sourceData = _mm_loadu_si128(reinterpret_cast<const __m128i*>(&l_Source[x]));
-		//		// Mask out g and a, which don't change
-		//		__m128i gaComponents = _mm_andnot_si128(brMask, sourceData);
-		//		// Mask out b and r
-		//		__m128i brComponents = _mm_and_si128(sourceData, brMask);
-		//		// Swap b and r
-		//		__m128i brSwapped = _mm_shufflehi_epi16(_mm_shufflelo_epi16(brComponents, _MM_SHUFFLE(2, 3, 0, 1)), _MM_SHUFFLE(2, 3, 0, 1));
-		//		__m128i result = _mm_or_si128(gaComponents, brSwapped);
-		//		_mm_store_si128(reinterpret_cast<__m128i*>(&l_Dest[x]), result);
-		//	}
-
-		//	// Perform leftover writes
-		//	for (; x < l_Rect.width; x++)
-		//	{
-		//		auto rgba = l_Source[x];
-		//		l_Dest[x] = (_rotl(rgba, 16) & 0x00ff00ff) | (rgba & 0xff00ff00);
-		//	}
-		//}
-	}
 
 	m_TextureLock.unlock();
 }
@@ -104,17 +67,11 @@ bool WebRendererHandler::Resize(unsigned long p_Width, unsigned long p_Height)
 	WriteLog("Tried to allocate 0x%x bytes.", s_TextureDataSize);
 	m_TextureData = static_cast<unsigned char*>(malloc(s_TextureDataSize));
 
-	WriteLog("1");
 	if (!m_TextureData)
 		return false;
 
-	WriteLog("2");
 	memset(m_TextureData, 0, s_TextureDataSize);
-
-	WriteLog("3");
 	m_TextureLock.unlock();
-
-	WriteLog("4");
 	return true;
 }
 

@@ -1,10 +1,12 @@
 #include "WebRenderer.hpp"
 #include "WebRendererHandler.hpp"
+#include "WebRendererSchemeHandlerFactory.hpp"
 #include <cef_app.h>
 #include <cef_origin_whitelist.h>
 
 #include <d3dx9.h>
 #include <Utils/Logger.hpp>
+#include "WebRendererApp.hpp"
 
 using Anvil::Client::Rendering::WebRenderer;
 
@@ -12,6 +14,8 @@ WebRenderer* WebRenderer::m_Instance = nullptr;
 WebRenderer::WebRenderer() : 
 	m_Client(nullptr),
 	m_RenderHandler(nullptr),
+	m_App(nullptr),
+	m_SchemeHandlerFactory(nullptr),
 	m_Initialized(false),
 	m_RenderingInitialized(false),
 	m_Texture(nullptr),
@@ -51,9 +55,19 @@ bool WebRenderer::Init()
 		return false;
 	}
 
+	if (m_App.get())
+		delete m_App.get();
+
+	if (m_SchemeHandlerFactory)
+		delete m_SchemeHandlerFactory;
+
+	m_SchemeHandlerFactory = new WebRendererSchemeHandlerFactory();
+
+	m_App = new WebRendererApp();
+
 	CefMainArgs s_Args(GetModuleHandle(nullptr));
 
-	auto s_Result = CefExecuteProcess(s_Args, nullptr, nullptr);
+	auto s_Result = CefExecuteProcess(s_Args, m_App, nullptr);
 	if (s_Result >= 0)
 	{
 		WriteLog("CefExecuteProcess failed.");
@@ -70,17 +84,22 @@ bool WebRenderer::Init()
 	s_Settings.windowless_rendering_enabled = true;
 	s_Settings.ignore_certificate_errors = true;
 	s_Settings.log_severity = LOGSEVERITY_VERBOSE;
-	s_Settings.single_process = false;
+	s_Settings.single_process = true;
+#if _DEBUG
 	s_Settings.remote_debugging_port = 8884;
+#endif
 
-	if (!CefInitialize(s_Args, s_Settings, nullptr, nullptr))
+	if (!CefInitialize(s_Args, s_Settings, m_App, nullptr))
 	{
 		WriteLog("CefInitialize failed.");
 		ExitProcess(0);
 		return false;
 	}
 
-	CefAddCrossOriginWhitelistEntry("file://", "http", "", true);
+	CefRegisterSchemeHandlerFactory("anvil", "", m_SchemeHandlerFactory);
+	CefAddCrossOriginWhitelistEntry("anvil://menu", "http", "", true);
+
+	auto s_UIDirectory = GetUIDirectory();
 
 	m_RenderHandler = new WebRendererHandler(m_Device);
 
@@ -88,7 +107,16 @@ bool WebRenderer::Init()
 	CefBrowserSettings s_BrowserSettings;
 
 	s_BrowserSettings.windowless_frame_rate = 60;
-	s_BrowserSettings.javascript = STATE_ENABLED;
+	s_BrowserSettings.webgl = STATE_ENABLED;
+	s_BrowserSettings.java = STATE_DISABLED;
+	s_BrowserSettings.local_storage = STATE_DISABLED;
+	s_BrowserSettings.databases = STATE_ENABLED;
+	s_BrowserSettings.application_cache = STATE_DISABLED;
+	s_BrowserSettings.file_access_from_file_urls = STATE_DISABLED;
+	s_BrowserSettings.javascript_close_windows = STATE_DISABLED;
+	s_BrowserSettings.javascript_open_windows = STATE_DISABLED;
+	s_BrowserSettings.javascript_access_clipboard = STATE_DISABLED;
+	s_BrowserSettings.universal_access_from_file_urls = STATE_DISABLED;
 
 	D3DDEVICE_CREATION_PARAMETERS s_Parameters;
 	ZeroMemory(&s_Parameters, sizeof(s_Parameters));
@@ -100,9 +128,9 @@ bool WebRenderer::Init()
 		return false;
 	}
 
-	auto s_UIDirectory = GetUIDirectory();
+	
 	// Jquery fails here, TODO: Implement custom handler
-	auto s_ContainerPath = "file://" + s_UIDirectory + "/container.html";
+	std::string s_ContainerPath = "anvil://menu/index.html"; /*+ s_UIDirectory + "/container.html";*/
 
 	WriteLog("Container Path: %s.", s_ContainerPath.c_str());
 
@@ -118,6 +146,11 @@ bool WebRenderer::Init()
 		return false;
 	}
 
+	// Fucking wizardry hacks
+	auto s_RenderHandler = static_cast<WebRendererHandler*>(m_RenderHandler.get());
+	if (!s_RenderHandler)
+		return false;
+
 	unsigned long s_Width = 0, s_Height = 0;
 	if (!static_cast<WebRendererHandler*>(m_RenderHandler.get())->GetViewportInformation(s_Width, s_Height))
 		return false;
@@ -129,8 +162,6 @@ bool WebRenderer::Init()
 	}
 
 	m_Initialized = true;
-
-	WriteLog("WebRenderer init.");
 	return true;
 }
 
@@ -304,5 +335,20 @@ bool WebRenderer::Click(unsigned long p_X, unsigned long p_Y)
 
 	s_Browser->GetHost()->SendMouseClickEvent(s_Event, MBT_LEFT, false, s_LastClickCount);
 	s_Browser->GetHost()->SendMouseClickEvent(s_Event, MBT_LEFT, true, s_LastClickCount);
+	return true;
+}
+
+bool WebRenderer::ExecuteJavascript(std::string p_Code)
+{
+	auto s_RenderHandler = reinterpret_cast<WebRendererHandler*>(m_RenderHandler.get());
+	if (!s_RenderHandler)
+		return false;
+
+	auto s_Browser = s_RenderHandler->GetBrowser().get();
+	if (!s_Browser)
+		return false;
+
+	s_Browser->GetMainFrame()->ExecuteJavaScript(p_Code, "internal", 0);
+
 	return true;
 }

@@ -19,6 +19,7 @@ namespace Anvil
 				WebRendererClient(CefRenderHandler* p_RenderHandler);
 
 				virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override;
+				
 
 			protected:
 				IMPLEMENT_REFCOUNTING(WebRendererClient);

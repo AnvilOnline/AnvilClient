@@ -3,8 +3,9 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 #include <include/internal/cef_ptr.h>
-#include <include/cef_browser.h>
+#include <include/cef_app.h>
 #include "WebRendererClient.hpp"
+
 
 namespace Anvil
 {
@@ -12,11 +13,15 @@ namespace Anvil
 	{
 		namespace Rendering
 		{
+			class WebRendererSchemeHandlerFactory;
+
 			class WebRenderer : public IInit
 			{
 				//CefRefPtr<CefBrowser> m_Browser;
 				CefRefPtr<CefClient> m_Client;
 				CefRefPtr<CefRenderHandler> m_RenderHandler;
+				CefRefPtr<CefApp> m_App;
+				WebRendererSchemeHandlerFactory* m_SchemeHandlerFactory;
 
 				bool m_Initialized;
 				bool m_RenderingInitialized;
@@ -34,7 +39,7 @@ namespace Anvil
 				{
 				}
 
-				std::string GetUIDirectory();
+				
 
 			public:
 				static WebRenderer* GetInstance();
@@ -53,6 +58,10 @@ namespace Anvil
 
 				bool UpdateMouse(unsigned long p_X, unsigned long p_Y);
 				bool Click(unsigned long p_X, unsigned long p_Y);
+
+				bool ExecuteJavascript(std::string p_Code);
+
+				std::string GetUIDirectory();
 			};
 		}
 	}
