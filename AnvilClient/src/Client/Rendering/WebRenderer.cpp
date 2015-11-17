@@ -7,6 +7,7 @@
 #include <d3dx9.h>
 #include <Utils/Logger.hpp>
 #include "WebRendererApp.hpp"
+#include <boost/format/free_funcs.hpp>
 
 using Anvil::Client::Rendering::WebRenderer;
 
@@ -18,6 +19,8 @@ WebRenderer::WebRenderer() :
 	m_SchemeHandlerFactory(nullptr),
 	m_Initialized(false),
 	m_RenderingInitialized(false),
+	m_Shutdown(false),
+	m_Enabled(true),
 	m_Texture(nullptr),
 	m_Device(nullptr),
 	m_Sprite(nullptr),
@@ -215,6 +218,9 @@ bool WebRenderer::InitRenderer(LPDIRECT3DDEVICE9 p_Device)
 
 bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 {
+	if (!IsEnabled())
+		return false;
+
 	if (!p_Device)
 	{
 		WriteLog("Device is invalid.");
@@ -252,7 +258,7 @@ bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 		m_Texture->UnlockRect(0);
 	}
 
-	p_Device->Clear(1, nullptr, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 128, 128, 128), 0, 0);
+	//p_Device->Clear(1, nullptr, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 128, 128, 128), 0, 0);
 
 	m_Sprite->Begin(D3DXSPRITE_ALPHABLEND);
 
@@ -351,4 +357,46 @@ bool WebRenderer::ExecuteJavascript(std::string p_Code)
 	s_Browser->GetMainFrame()->ExecuteJavaScript(p_Code, "internal", 0);
 
 	return true;
+}
+
+bool WebRenderer::Shutdown()
+{
+	if (m_Shutdown)
+		return false;
+
+	m_Shutdown = true;
+
+	if (m_RenderHandler)
+		delete m_RenderHandler;
+
+	if (m_App)
+		delete m_App.get();
+
+	if (m_SchemeHandlerFactory)
+		delete m_SchemeHandlerFactory;
+
+	m_RenderHandler = nullptr;
+	m_App = nullptr;
+	m_SchemeHandlerFactory = nullptr;
+
+	CefShutdown();
+
+	return true;
+}
+
+bool WebRenderer::IsEnabled()
+{
+	return m_Enabled;
+}
+
+bool WebRenderer::Enable(bool p_Enable)
+{
+	m_Enabled = p_Enable;
+
+	return true;
+}
+
+bool WebRenderer::ShowNotification(std::string p_Title, std::string p_Message)
+{
+	return ExecuteJavascript(str(boost::format("ShowNotification(\"%s\", \"%s\");") % p_Title.c_str() % p_Message.c_str()));
 }

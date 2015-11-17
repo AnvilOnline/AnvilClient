@@ -8,7 +8,6 @@
     <ClCompile Include="src\Client\Hooks\Engine\GameTick.cpp" />
     <ClCompile Include="src\Client\Hooks\EngineHooks.cpp" />
     <ClCompile Include="src\Client\Patches\Engine\EnginePatches.cpp" />
-    <ClCompile Include="src\Client\Hooks\Engine\sub_5C7E40.cpp" />
     <ClCompile Include="src\Client\Rendering\WebRenderer.cpp" />
     <ClCompile Include="src\Client\Hooks\WinHooks.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\CreateWindowExA.cpp" />
@@ -23,7 +22,6 @@
     <ClCompile Include="src\Client\Rendering\WebRendererSchemeHandlerFactory.cpp" />
     <ClCompile Include="src\Client\Rendering\WebRendererSchemeHandler.cpp" />
     <ClCompile Include="src\Client\Rendering\WebRendererApp.cpp" />
-    <ClCompile Include="src\Client\Hooks\Engine\sub_4A99C0.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\PrintDebug.cpp" />
   </ItemGroup>
   <ItemGroup>

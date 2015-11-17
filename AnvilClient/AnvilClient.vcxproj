@@ -63,7 +63,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)depends/lib;$(ProjectDir)depends/lib/debug;%(AdditionalLibraryDirectories);$(ProjectDir)depends/boost/lib</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;libcef.lib;libcef_dll_wrapperd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;libcef.lib;libcef_dll_wrapperd.lib;cppnetlib-urid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -83,9 +83,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)depends/lib;$(ProjectDir)depends/lib/release;%(AdditionalLibraryDirectories);$(ProjectDir)depends/boost/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)depends/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;libcef.lib;libcef_dll_wrapper.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;libcef.lib;libcef_dll_wrapper.lib;cppnetlib-uri.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>NotSet</ShowProgress>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -93,8 +95,6 @@
     <ClCompile Include="src\Client\Hooks\EngineHooks.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\GameTick.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\PrintDebug.cpp" />
-    <ClCompile Include="src\Client\Hooks\Engine\sub_4A99C0.cpp" />
-    <ClCompile Include="src\Client\Hooks\Engine\sub_5C7E40.cpp" />
     <ClCompile Include="src\Client\Hooks\WinHooks.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\CreateWindowExA.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\Input\MouseProc.cpp" />

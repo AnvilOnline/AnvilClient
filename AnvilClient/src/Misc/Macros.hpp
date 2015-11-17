@@ -8,6 +8,11 @@
 	static name ## _t o_ ## name; \
 	static returnType callingMethod c_ ## name(__VA_ARGS__);
 
+#define DeclareThiscallFunction(returnType, name, thisType, ...) \
+	typedef returnType (__thiscall* name ## _t)(thisType This, __VA_ARGS__); \
+	static name ## _t o_ ## name; \
+	static returnType __fastcall c_ ## name(thisType, void*, __VA_ARGS__);
+
 #define HookedFunction(nameSpace, returnType, name, callingMethod, ...) \
 	returnType callingMethod nameSpace::c_ ## name(__VA_ARGS__)
 

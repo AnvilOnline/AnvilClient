@@ -18,7 +18,7 @@ HookedFunction(EngineHooks, int, PrintDebug, __cdecl, char* p_Source, char* p_Fo
 
 		vsprintf_s(s_FinalString, s_FinalLength, p_Format, s_List);
 
-		if (strcmpi(p_Source, "game_tick") != 0)
+		if (_strcmpi(p_Source, "game_tick") != 0)
 			WriteLog("[%s] : %s.", p_Source, s_FinalString);
 
 		s_Ret = o_PrintDebug(p_Source, p_Format, s_List);
@@ -29,7 +29,7 @@ HookedFunction(EngineHooks, int, PrintDebug, __cdecl, char* p_Source, char* p_Fo
 	}
 	else
 	{
-		if (strcmpi(p_Source, "game_tick") != 0)
+		if (_strcmpi(p_Source, "game_tick") != 0)
 			WriteLog("[%s]", p_Source);
 
 		s_Ret = o_PrintDebug(p_Source, nullptr);

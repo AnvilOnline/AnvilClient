@@ -1,5 +1,6 @@
 #pragma once
 #include <Misc/IInit.hpp>
+#include <string>
 
 namespace Anvil
 {
@@ -13,6 +14,9 @@ namespace Anvil
 			IInit* m_EngineHooks;
 			IInit* m_EnginePatches;
 
+			void* m_MapInfoBlock;
+			short* m_MapResetBit;
+
 			AnvilClient();
 
 		protected:
@@ -24,6 +28,8 @@ namespace Anvil
 			bool PreInit() override;
 			bool PostInit() override;
 			
+			void* GetMapInfoBlock();
+			bool ForceLoadMap(std::string p_MapName, int p_GameEngineMode, int p_GameType);
 		};
 	}
 }

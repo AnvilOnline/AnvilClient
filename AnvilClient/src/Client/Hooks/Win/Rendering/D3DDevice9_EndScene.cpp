@@ -8,7 +8,9 @@ HookedFunction(WinHooks, HRESULT, D3DDevice9_EndScene, WINAPI, LPDIRECT3DDEVICE9
 {
 	auto s_Ret = o_D3DDevice9_EndScene(p_Device);
 
-	if (!Rendering::WebRenderer::GetInstance()->Initialized())
+	auto s_WebRenderer = Rendering::WebRenderer::GetInstance();
+
+	if (!s_WebRenderer->Initialized())
 	{
 		auto s_Success = Rendering::WebRenderer::GetInstance()->InitRenderer(p_Device);
 		if (!s_Success)
@@ -20,16 +22,11 @@ HookedFunction(WinHooks, HRESULT, D3DDevice9_EndScene, WINAPI, LPDIRECT3DDEVICE9
 	}
 	else
 	{
-		if (GetAsyncKeyState(VK_F2) & 0x8000)
-			Rendering::WebRenderer::GetInstance()->ExecuteJavascript("console.log(\"Hello World\");");
+		if (GetAsyncKeyState(VK_F5) & 0x8000)
+			s_WebRenderer->Enable(!s_WebRenderer->IsEnabled());
 
-		if (GetAsyncKeyState(VK_F2) & 0x8000)
-		{
-			Rendering::WebRenderer::GetInstance()->ExecuteJavascript("LoadMenu(\"menu.html\");");
-			Sleep(250);
-		}
-
-		Rendering::WebRenderer::GetInstance()->Render(p_Device);
+		if (s_WebRenderer->IsEnabled())
+			s_WebRenderer->Render(p_Device);
 	}
 
 	return s_Ret;

@@ -194,7 +194,4 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
-AnvilClient/depends/boost/*
-AnvilClient/depends/lib/Release/*
-AnvilClient/depends/lib/Debug/*
-depends.7z
+AnvilClient/depends/include/boost/*

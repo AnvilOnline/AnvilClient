@@ -25,6 +25,8 @@ namespace Anvil
 
 				bool m_Initialized;
 				bool m_RenderingInitialized;
+				bool m_Shutdown;
+				bool m_Enabled;
 
 				LPDIRECT3DTEXTURE9 m_Texture;
 				LPDIRECT3DDEVICE9 m_Device;
@@ -60,6 +62,13 @@ namespace Anvil
 				bool Click(unsigned long p_X, unsigned long p_Y);
 
 				bool ExecuteJavascript(std::string p_Code);
+
+				bool Shutdown();
+
+				bool IsEnabled();
+				bool Enable(bool p_Enable);
+
+				bool ShowNotification(std::string p_Title, std::string p_Message);
 
 				std::string GetUIDirectory();
 			};
