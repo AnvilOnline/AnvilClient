@@ -2,6 +2,8 @@
 #include <include/cef_v8.h>
 #include <Utils/Logger.hpp>
 #include <Client/AnvilClient.hpp>
+#include <Utils/Util.hpp>
+#include <SDK/Unsorted/simulation_sandbox_engine_globals_definition.h>
 
 namespace Anvil
 {
@@ -50,6 +52,22 @@ namespace Anvil
 						p_RetVal = CefV8Value::CreateBool(true);
 						Sleep(25);
 
+						return true;
+					}
+
+					if (p_Name == "GetPtr")
+					{
+						unsigned long s_BaseAddress = 0, s_BaseSize = 0;
+						if (!Utils::Util::GetExecutableInfo(s_BaseAddress, s_BaseSize))
+							return false;
+
+						auto s_SandboxEngineGlobalsAddress = *reinterpret_cast<unsigned long*>(s_BaseAddress + 0x4FF8B9C);
+						if (!s_SandboxEngineGlobalsAddress || s_SandboxEngineGlobalsAddress == -1)
+							return false;
+
+						auto s_SandboxEngineGlobals = reinterpret_cast<simulation_sandbox_engine_globals_definition*>(s_SandboxEngineGlobalsAddress);
+
+						WriteLog("SandboxEngineGloabls: %s.", s_SandboxEngineGlobals->getName());
 						return true;
 					}
 					return false;
