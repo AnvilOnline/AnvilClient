@@ -1,6 +1,7 @@
 #include <Client/AnvilClient.hpp>
 #include <Utils/Logger.hpp>
 #include <Windows.h>
+#include "Utils/Util.hpp"
 
 unsigned long __stdcall Initialize(LPVOID)
 {
@@ -17,6 +18,10 @@ unsigned long __stdcall Initialize(LPVOID)
 
 	// Initialize the Anvil Client.
 	Anvil::Client::AnvilClient::GetInstance()->Init();
+
+	// This is some superhacks right here.
+	// This kick-starts all threads that have been created if they haven't already (aka this thread should be the only one running.)
+	Anvil::Utils::Util::ResumeAllThreads();
 
 	return S_OK;
 }

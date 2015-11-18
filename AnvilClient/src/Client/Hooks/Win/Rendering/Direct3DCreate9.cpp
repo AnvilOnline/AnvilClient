@@ -1,8 +1,6 @@
 #include <Client/Hooks/WinHooks.hpp>
-#include <Client/Rendering/WebUI.hpp>
 
 using namespace Anvil::Client::Hooks;
-using namespace Anvil::Client::Rendering;
 
 LRESULT CALLBACK MsgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { return DefWindowProc(hwnd, uMsg, wParam, lParam); }
 
@@ -36,10 +34,7 @@ HookedFunction(WinHooks, void*, Direct3DCreate9, __stdcall, unsigned int p_SdkVe
 
 	DestroyWindow(hWnd);
 
-	WebUI::GetInstance()->Init(true);
-
-	/*WebRenderer::GetInstance()->Init();
-	WebRenderer::GetInstance()->InitRenderer(pd3dDevice);*/
+	WriteLog("DirectX Hooks installed.");
 
 	return s_IDirect3D9;
 }

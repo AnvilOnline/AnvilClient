@@ -17,6 +17,8 @@ namespace Anvil
 			static bool GetExecutableInfo(unsigned long& p_EntryPoint, unsigned long& p_ModuleSize);
 
 			static char** CommandLineToArgvA(char* p_CommandLine, int* p_ArgumentCount);
+
+			static bool ResumeAllThreads();
 		};
 	}
 }

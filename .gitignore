@@ -22,7 +22,6 @@ bld/
 [Bb]in/
 [Oo]bj/
 
-
 # Visual Studo 2015 cache/options directory
 .vs/
 
@@ -195,8 +194,4 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
-
-
-AnvilClient/depends/boost/*
-AnvilClient/depends/lib/*
 AnvilClient/depends/include/boost/*
