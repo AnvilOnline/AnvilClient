@@ -4,6 +4,8 @@
 #include <Client/Patches/Engine/EnginePatches.hpp>
 #include "Rendering/WebRenderer.hpp"
 
+#include <Misc/BuildInfo.hpp>
+
 using Anvil::Client::AnvilClient;
 
 AnvilClient* AnvilClient::m_Instance = nullptr;
@@ -38,17 +40,22 @@ bool AnvilClient::Init()
 	if (Utils::Util::GetExecutableInfo(s_BaseAddress, s_BaseSize))
 	{
 		auto s_Address = Utils::Util::FindPattern(reinterpret_cast<void*>(s_BaseAddress), s_BaseSize,
-			"\x56\x8B\xF1\x85\xF6\x74\x15\x68\x48\x00\x00\x00\x56\x68\x00\x00\x00\x04\xE8\x00\x00\x00\x00", "xxxxxxxxx??xxx???xx???x");
+			"\x56\x8B\xF1\x85\xF6\x74\x15", "xxxxxxx");
 
-		auto s_MapBlockAddress = *reinterpret_cast<unsigned long*>(s_Address + 14);
+		if (s_Address)
+		{
+			auto s_MapBlockAddress = *reinterpret_cast<unsigned long*>(s_Address + 14);
 
-		m_MapInfoBlock = reinterpret_cast<void*>(s_MapBlockAddress);
+			m_MapInfoBlock = reinterpret_cast<void*>(s_MapBlockAddress);
 
-		auto s_MapResetBitAddress = *reinterpret_cast<unsigned long*>(s_Address + 0x25);
+			auto s_MapResetBitAddress = *reinterpret_cast<unsigned long*>(s_Address + 0x25);
 
-		m_MapResetBit = reinterpret_cast<short*>(s_MapResetBitAddress);
+			m_MapResetBit = reinterpret_cast<short*>(s_MapResetBitAddress);
 
-		WriteLog("Block Address %p, Reset Bit %p.", s_MapBlockAddress, s_MapResetBitAddress);
+			WriteLog("Block Address %p, Reset Bit %p.", s_MapBlockAddress, s_MapResetBitAddress);
+		}
+		else
+			WriteLog("Could not find force-load map info block.");
 	}
 
 	PostInit();
@@ -57,6 +64,11 @@ bool AnvilClient::Init()
 
 bool AnvilClient::PreInit()
 {
+	// Generate version string
+	std::stringstream s_Stream;
+	s_Stream << "AnvilOnline Alpha Build: " << __DATE__ << "-" << ANVIL_BUILD;
+	m_Version = s_Stream.str();
+
 	m_WinHooks = new Hooks::WinHooks;
 	if (m_WinHooks)
 		m_WinHooks->Init();
@@ -120,4 +132,9 @@ bool AnvilClient::ForceLoadMap(std::string p_MapName, int p_GameEngineMode, int 
 	Sleep(250);
 
 	return true;
+}
+
+std::string AnvilClient::GetVersion()
+{
+	return m_Version;
 }

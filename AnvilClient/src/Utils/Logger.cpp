@@ -1,4 +1,5 @@
 #include "Logger.hpp"
+#include <Misc/BuildInfo.hpp>
 #include <sstream>
 #include <consoleapi.h>
 
@@ -14,8 +15,9 @@ Logger* Logger::GetInstance()
 
 bool Logger::Init()
 {
-	std::string s_Version("AnvilOnline Client Version: ");
-	s_Version += "alpha";
+	std::stringstream s_Stream;
+	s_Stream << "AnvilOnline Alpha Build: " << __DATE__ << "-" << ANVIL_BUILD;
+	auto s_Version = s_Stream.str();
 	
 	try
 	{

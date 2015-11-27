@@ -65,6 +65,12 @@
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;libcef.lib;libcef_dll_wrapperd.lib;cppnetlib-urid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>call "$(ProjectDir)PreBuild.bat"</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Incrementing Build Number</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -89,6 +95,12 @@
       <ShowProgress>NotSet</ShowProgress>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
+    <PreBuildEvent>
+      <Command>call "$(ProjectDir)PreBuild.bat"</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Incrementing Build Number</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Client\AnvilClient.cpp" />
@@ -127,6 +139,7 @@
     <ClInclude Include="src\Client\Rendering\WebRendererHandler.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererSchemeHandler.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererSchemeHandlerFactory.hpp" />
+    <ClInclude Include="src\Misc\BuildInfo.hpp" />
     <ClInclude Include="src\Misc\IInit.hpp" />
     <ClInclude Include="src\Misc\Macros.hpp" />
     <ClInclude Include="src\SDK\Messages\Message.h" />

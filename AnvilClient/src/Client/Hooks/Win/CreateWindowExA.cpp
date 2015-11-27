@@ -1,13 +1,13 @@
 #include <Client/Hooks/WinHooks.hpp>
 #include <Windows.h>
 #include <Client/Rendering/WebRenderer.hpp>
+#include <Client/AnvilClient.hpp>
 
 using namespace Anvil::Client::Hooks;
 
 HookedFunction(WinHooks, HWND, CreateWindowExA, __stdcall, DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hwndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam)
 {
-	std::string s_Version("AnvilOnline Client Version: ");
-	s_Version += "Pre-Alpha";
+	auto s_Version = AnvilClient::GetInstance()->GetVersion();
 
 	auto s_Ret = o_CreateWindowExA(dwExStyle, lpClassName, s_Version.c_str(), dwStyle, X, Y, nWidth, nHeight, hwndParent, hMenu, hInstance, lpParam);
 	auto s_ThreadId = GetWindowThreadProcessId(s_Ret, nullptr);

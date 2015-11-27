@@ -1,5 +1,6 @@
 #pragma once
 #include <include/cef_v8.h>
+#include <Client/AnvilClient.hpp>
 
 namespace Anvil
 {
@@ -20,11 +21,7 @@ namespace Anvil
 					if (p_Name != "GetVersion")
 						return false;
 
-					// TODO: Actually get AnvilOnline build
-					std::string s_Version("AnvilOnline Client Version: ");
-					s_Version += "Pre-Alpha";
-
-					p_RetVal = CefV8Value::CreateString(s_Version.c_str());
+					p_RetVal = CefV8Value::CreateString(AnvilClient::GetInstance()->GetVersion());
 					return true;
 				}
 

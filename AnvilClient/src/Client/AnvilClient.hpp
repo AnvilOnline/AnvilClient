@@ -17,6 +17,8 @@ namespace Anvil
 			void* m_MapInfoBlock;
 			short* m_MapResetBit;
 
+			std::string m_Version;
+
 			AnvilClient();
 
 		protected:
@@ -30,6 +32,8 @@ namespace Anvil
 			
 			void* GetMapInfoBlock();
 			bool ForceLoadMap(std::string p_MapName, int p_GameEngineMode, int p_GameType);
+
+			std::string GetVersion();
 		};
 	}
 }

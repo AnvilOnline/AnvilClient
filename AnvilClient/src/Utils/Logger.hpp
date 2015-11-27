@@ -7,7 +7,7 @@
 #define WriteLog(p_Format, ...) Anvil::Utils::Logger::GetInstance()->InternalWriteLog(__FUNCTION__, __LINE__, p_Format, __VA_ARGS__);
 #else
 #pragma warning(disable : 4390)
-#define WriteLog(p_Format, ...) Anvil::Utils::Logger::GetInstance()->InternalWriteLog(__FUNCTION__, __LINE__, p_Format, __VA_ARGS__);
+#define WriteLog(p_Format, ...)
 #endif
 
 namespace Anvil

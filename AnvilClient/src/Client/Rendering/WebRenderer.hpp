@@ -63,6 +63,9 @@ namespace Anvil
 
 				bool ExecuteJavascript(std::string p_Code);
 
+				bool PreReset();
+				bool PostReset();
+
 				bool Shutdown();
 
 				bool IsEnabled();

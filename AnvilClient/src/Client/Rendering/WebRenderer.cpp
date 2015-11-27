@@ -303,7 +303,7 @@ bool WebRenderer::Resize(unsigned long p_Width, unsigned long p_Height)
 
 bool WebRenderer::UpdateMouse(unsigned long p_X, unsigned long p_Y)
 {
-	if (!m_RenderHandler)
+	if (!m_RenderHandler || !m_Enabled)
 		return false;
 
 	auto s_Browser = reinterpret_cast<WebRendererHandler*>(m_RenderHandler.get())->GetBrowser().get();
@@ -321,7 +321,7 @@ bool WebRenderer::UpdateMouse(unsigned long p_X, unsigned long p_Y)
 
 bool WebRenderer::Click(unsigned long p_X, unsigned long p_Y)
 {
-	if (!m_RenderHandler)
+	if (!m_RenderHandler || !m_Enabled)
 		return false;
 
 	auto s_RenderHandler = reinterpret_cast<WebRendererHandler*>(m_RenderHandler.get());
@@ -355,6 +355,34 @@ bool WebRenderer::ExecuteJavascript(std::string p_Code)
 		return false;
 
 	s_Browser->GetMainFrame()->ExecuteJavaScript(p_Code, "internal", 0);
+
+	return true;
+}
+
+bool WebRenderer::PreReset()
+{
+	if (!m_Device)
+		return false;
+
+	if (m_Sprite)
+		m_Sprite->OnLostDevice();
+
+	if (m_Font)
+		m_Font->OnLostDevice();
+
+	return true;
+}
+
+bool WebRenderer::PostReset()
+{
+	if (!m_Device)
+		return false;
+
+	if (m_Sprite)
+		m_Sprite->OnResetDevice();
+
+	if (m_Font)
+		m_Font->OnResetDevice();
 
 	return true;
 }
