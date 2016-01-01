@@ -23,6 +23,7 @@
     <ClCompile Include="src\Client\Rendering\WebRendererSchemeHandler.cpp" />
     <ClCompile Include="src\Client\Rendering\WebRendererApp.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\PrintDebug.cpp" />
+    <ClCompile Include="src\Client\Hooks\Win\Rendering\Direct3D_CreateDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />

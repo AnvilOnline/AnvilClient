@@ -36,5 +36,11 @@ bool EnginePatches::Init()
 		s_ret = Utils::Util::PatchAddressInMemory(s_english_fix + 15, "\x00", 1);
 		WriteLog("Second english patch %s.", (s_ret ? "applied" : "not applied"));
 	}
+	else
+		WriteLog("English Fix Patch Failed.");
+
+	auto s_EnglishPatch = Utils::Util::PatchAddressInFile(0x2C73DD, "\xBB\x00", 2);
+	WriteLog("English patch v2 applied %s.", (s_EnglishPatch ? "successfully" : "unsuccessfully"));
+
 	return true;
 }

@@ -7,6 +7,7 @@ DeclareFunctionValue(WinHooks, D3DDevice9_EndScene);
 DeclareFunctionValue(WinHooks, D3DDevice9_Reset);
 DeclareFunctionValue(WinHooks, D3DDevice9_BeginScene);
 DeclareFunctionValue(WinHooks, Direct3DCreate9);
+DeclareFunctionValue(WinHooks, Direct3D_CreateDevice);
 
 HHOOK WinHooks::m_MouseHook = nullptr;
 HHOOK WinHooks::m_WindowHook = nullptr;
