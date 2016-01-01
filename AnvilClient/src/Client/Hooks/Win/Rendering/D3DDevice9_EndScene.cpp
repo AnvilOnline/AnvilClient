@@ -10,7 +10,7 @@ HookedFunction(WinHooks, HRESULT, D3DDevice9_EndScene, WINAPI, LPDIRECT3DDEVICE9
 
 	auto s_WebRenderer = Rendering::WebRenderer::GetInstance();
 
-	if (!s_WebRenderer->Initialized())
+	if (!s_WebRenderer->Initialized() && s_WebRenderer->IsEnabled())
 	{
 		auto s_Success = Rendering::WebRenderer::GetInstance()->InitRenderer(p_Device);
 		if (!s_Success)
@@ -23,9 +23,11 @@ HookedFunction(WinHooks, HRESULT, D3DDevice9_EndScene, WINAPI, LPDIRECT3DDEVICE9
 	else
 	{
 		if (GetAsyncKeyState(VK_F5) & 0x8000)
-			s_WebRenderer->Enable(!s_WebRenderer->IsEnabled());
-
-		if (s_WebRenderer->IsEnabled())
+		{
+			s_WebRenderer->Show(!s_WebRenderer->IsShown());
+			Sleep(250);
+		}
+		if (s_WebRenderer->IsShown() && s_WebRenderer->IsEnabled())
 			s_WebRenderer->Render(p_Device);
 	}
 

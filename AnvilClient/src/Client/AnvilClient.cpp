@@ -69,6 +69,22 @@ bool AnvilClient::PreInit()
 	s_Stream << "AnvilOnline Alpha Build: " << __DATE__ << "-" << ANVIL_BUILD;
 	m_Version = s_Stream.str();
 
+	auto s_ArgCount = 0;
+	auto s_Args = Utils::Util::CommandLineToArgvA(GetCommandLineA(), &s_ArgCount);
+
+	for (auto i = 0; i < s_ArgCount; ++i)
+	{
+		auto l_Argument = s_Args[i];
+		if (!_strcmpi(l_Argument, "-norenderer"))
+			Rendering::WebRenderer::GetInstance()->Enable(false);
+
+		if (!_strcmpi(l_Argument, "-sleep"))
+		{
+			WriteLog("Sleeping for 10s.");
+			Sleep(10000);
+		}
+	}
+
 	m_WinHooks = new Hooks::WinHooks;
 	if (m_WinHooks)
 		m_WinHooks->Init();
@@ -87,21 +103,7 @@ bool AnvilClient::PreInit()
 
 bool AnvilClient::PostInit()
 {
-	auto s_ArgCount = 0;
-	auto s_Args = Utils::Util::CommandLineToArgvA(GetCommandLineA(), &s_ArgCount);
-
-	for (auto i = 0; i < s_ArgCount; ++i)
-	{
-		auto l_Argument = s_Args[i];
-		if (!_strcmpi(l_Argument, "-norenderer"))
-			Rendering::WebRenderer::GetInstance()->Enable(false);
-
-		if (!_strcmpi(l_Argument, "-sleep"))
-		{
-			WriteLog("Sleeping for 10s.");
-			Sleep(10000);
-		}
-	}
+	
 	return true;
 }
 

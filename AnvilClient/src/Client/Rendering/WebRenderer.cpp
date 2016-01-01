@@ -21,6 +21,7 @@ WebRenderer::WebRenderer() :
 	m_RenderingInitialized(false),
 	m_Shutdown(false),
 	m_Enabled(true),
+	m_Shown(false),
 	m_Texture(nullptr),
 	m_Device(nullptr),
 	m_Sprite(nullptr),
@@ -52,6 +53,9 @@ WebRenderer* WebRenderer::GetInstance()
 
 bool WebRenderer::Init()
 {
+	if (!IsEnabled())
+		return false;
+
 	if (!m_RenderingInitialized)
 	{
 		WriteLog("Init called without rendering being initialized first.");
@@ -170,6 +174,9 @@ bool WebRenderer::Init()
 
 bool WebRenderer::InitRenderer(LPDIRECT3DDEVICE9 p_Device)
 {
+	if (!IsEnabled())
+		return false;
+
 	WriteLog("WebRenderer InitRenderer.");
 
 	if (!p_Device)
@@ -218,7 +225,7 @@ bool WebRenderer::InitRenderer(LPDIRECT3DDEVICE9 p_Device)
 
 bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 {
-	if (!IsEnabled())
+	if (!IsEnabled() || !IsShown())
 		return false;
 
 	if (!p_Device)
@@ -421,6 +428,17 @@ bool WebRenderer::Enable(bool p_Enable)
 {
 	m_Enabled = p_Enable;
 
+	return true;
+}
+
+bool WebRenderer::IsShown()
+{
+	return m_Shown;
+}
+
+bool WebRenderer::Show(bool p_Show)
+{
+	m_Shown = p_Show;
 	return true;
 }
 

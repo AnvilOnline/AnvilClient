@@ -27,6 +27,7 @@ namespace Anvil
 				bool m_RenderingInitialized;
 				bool m_Shutdown;
 				bool m_Enabled;
+				bool m_Shown;
 
 				LPDIRECT3DTEXTURE9 m_Texture;
 				LPDIRECT3DDEVICE9 m_Device;
@@ -70,6 +71,8 @@ namespace Anvil
 
 				bool IsEnabled();
 				bool Enable(bool p_Enable);
+				bool IsShown();
+				bool Show(bool p_Show);
 
 				bool ShowNotification(std::string p_Title, std::string p_Message);
 
