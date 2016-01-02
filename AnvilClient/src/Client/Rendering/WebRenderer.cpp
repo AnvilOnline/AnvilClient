@@ -17,11 +17,7 @@ WebRenderer::WebRenderer() :
 	m_RenderHandler(nullptr),
 	m_App(nullptr),
 	m_SchemeHandlerFactory(nullptr),
-	m_Initialized(false),
-	m_RenderingInitialized(false),
-	m_Shutdown(false),
-	m_Enabled(true),
-	m_Shown(false),
+	m_State(RendererState_Disabled),
 	m_Texture(nullptr),
 	m_Device(nullptr),
 	m_Sprite(nullptr),
@@ -53,14 +49,9 @@ WebRenderer* WebRenderer::GetInstance()
 
 bool WebRenderer::Init()
 {
-	if (!IsEnabled())
+	// Do not try to initialize unless we are already at a disabled state
+	if (GetState() != RendererState_Startup)
 		return false;
-
-	if (!m_RenderingInitialized)
-	{
-		WriteLog("Init called without rendering being initialized first.");
-		return false;
-	}
 
 	if (m_App.get())
 		delete m_App.get();
@@ -72,20 +63,26 @@ bool WebRenderer::Init()
 
 	m_App = new WebRendererApp();
 
+	if (!m_App || !m_SchemeHandlerFactory)
+	{
+		Shutdown();
+		return false;
+	}
+
 	CefMainArgs s_Args(GetModuleHandle(nullptr));
 
 	auto s_Result = CefExecuteProcess(s_Args, m_App, nullptr);
 	if (s_Result >= 0)
 	{
 		WriteLog("CefExecuteProcess failed.");
-		TerminateProcess(GetCurrentProcess(), 0);
+		TerminateProcess(GetCurrentProcess(), 0); // TODO: Take less drastic measures...
 		return false;
 	}
 
 	CefSettings s_Settings;
 	s_Settings.multi_threaded_message_loop = true;
 	CefString(&s_Settings.product_version) = "AnvilOnline";
-	CefString(&s_Settings.browser_subprocess_path) = "cefsimple.exe";
+	CefString(&s_Settings.browser_subprocess_path) = "cefsimple.exe"; // TODO: see about pre-compiling this
 	s_Settings.no_sandbox = true;
 	s_Settings.pack_loading_disabled = false;
 	s_Settings.windowless_rendering_enabled = true;
@@ -99,16 +96,25 @@ bool WebRenderer::Init()
 	if (!CefInitialize(s_Args, s_Settings, m_App, nullptr))
 	{
 		WriteLog("CefInitialize failed.");
-		ExitProcess(0);
+		ExitProcess(0); // TODO: Take less drastic measures
 		return false;
 	}
 
+	// Register our custom handlers
 	CefRegisterSchemeHandlerFactory("anvil", "", m_SchemeHandlerFactory);
 	CefAddCrossOriginWhitelistEntry("anvil://menu", "http", "", true);
 
 	auto s_UIDirectory = GetUIDirectory();
 
 	m_RenderHandler = new WebRendererHandler(m_Device);
+	if (!m_RenderHandler)
+	{
+		WriteLog("RenderHandler failed to create.");
+
+		// This should clear out and free all allocated resources up to this point.
+		Shutdown();
+		return false;
+	}
 
 	CefWindowInfo s_WindowInfo;
 	CefBrowserSettings s_BrowserSettings;
@@ -132,6 +138,7 @@ bool WebRenderer::Init()
 	if (FAILED(s_Result))
 	{
 		WriteLog("Could not get the creation parameters.");
+		Shutdown();
 		return false;
 	}
 
@@ -144,44 +151,63 @@ bool WebRenderer::Init()
 	s_WindowInfo.SetAsWindowless(s_Parameters.hFocusWindow, true);
 
 	m_Client = new WebRendererClient(m_RenderHandler);
+	if (!m_Client)
+	{
+		WriteLog("WebRendererClient failed to initialize.");
+		Shutdown();
+		return false;
+	}
 
 	auto s_RequestContext = CefRequestContext::GetGlobalContext();
 	if (!CefBrowserHost::CreateBrowser(s_WindowInfo, m_Client.get(), s_ContainerPath.c_str(), s_BrowserSettings, s_RequestContext))
 	{
-		m_Initialized = false;
 		WriteLog("Failed to initialize WebRenderer.");
+		Shutdown();
 		return false;
 	}
 
 	// Fucking wizardry hacks
 	auto s_RenderHandler = static_cast<WebRendererHandler*>(m_RenderHandler.get());
 	if (!s_RenderHandler)
+	{
+		Shutdown();
 		return false;
+	}
 
 	unsigned long s_Width = 0, s_Height = 0;
 	if (!static_cast<WebRendererHandler*>(m_RenderHandler.get())->GetViewportInformation(s_Width, s_Height))
+	{
+		Shutdown();
 		return false;
+	}
+		
 
 	if (!Resize(s_Width, s_Height))
 	{
 		WriteLog("Resize failed.");
+		Shutdown();
 		return false;
 	}
 
-	m_Initialized = true;
+	SetState(RendererState_Hidden);
+
 	return true;
 }
 
 bool WebRenderer::InitRenderer(LPDIRECT3DDEVICE9 p_Device)
 {
-	if (!IsEnabled())
+	// In order to enter the state, we have to have already hit the startup state, which init leaves hanging for the dx thread to catch up and call this
+	// ^ Thats backwards, initrenderer should be called first
+	if (GetState() != RendererState_Disabled)
 		return false;
 
 	WriteLog("WebRenderer InitRenderer.");
+	SetState(RendererState_Startup);
 
 	if (!p_Device)
 	{
 		WriteLog("Device is invalid.");
+		Shutdown();
 		return false;
 	}
 
@@ -192,6 +218,7 @@ bool WebRenderer::InitRenderer(LPDIRECT3DDEVICE9 p_Device)
 	if (FAILED(s_Result))
 	{
 		WriteLog("Could not create sprite (%x).", s_Result);
+		Shutdown();
 		return false;
 	}
 
@@ -200,6 +227,7 @@ bool WebRenderer::InitRenderer(LPDIRECT3DDEVICE9 p_Device)
 	if (FAILED(s_Result))
 	{
 		WriteLog("Could not create font (%x).", s_Result);
+		Shutdown();
 		return false;
 	}
 
@@ -208,6 +236,7 @@ bool WebRenderer::InitRenderer(LPDIRECT3DDEVICE9 p_Device)
 	if (FAILED(s_Result))
 	{
 		WriteLog("Could not get viewport (%x).", s_Result);
+		Shutdown();
 		return false;
 	}
 
@@ -216,16 +245,19 @@ bool WebRenderer::InitRenderer(LPDIRECT3DDEVICE9 p_Device)
 	if (FAILED(s_Result))
 	{
 		WriteLog("Could not create texture (%x).", s_Result);
+		Shutdown();
 		return false;
 	}
 
-	m_RenderingInitialized = true;
+	// We leave the renderer state in startup so the init function would work
+
 	return true;
 }
 
 bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 {
-	if (!IsEnabled() || !IsShown())
+	auto s_State = GetState();
+	if (s_State != RendererState_Overlay && s_State != RendererState_Shown)
 		return false;
 
 	if (!p_Device)
@@ -265,7 +297,8 @@ bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 		m_Texture->UnlockRect(0);
 	}
 
-	//p_Device->Clear(1, nullptr, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 128, 128, 128), 0, 0);
+	if (GetState() == RendererState_Shown)
+		p_Device->Clear(1, nullptr, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 128, 128, 128), 0, 0);
 
 	m_Sprite->Begin(D3DXSPRITE_ALPHABLEND);
 
@@ -280,7 +313,8 @@ bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 
 bool WebRenderer::Update()
 {
-	if (!m_Initialized)
+	auto s_State = GetState();
+	if (s_State != RendererState_Overlay || s_State != RendererState_Shown)
 		return false;
 
 	return true;
@@ -288,7 +322,33 @@ bool WebRenderer::Update()
 
 bool WebRenderer::Initialized()
 {
-	return m_Initialized;
+	auto s_State = GetState();
+	return (s_State == RendererState_Overlay
+		|| s_State == RendererState_Shown
+		|| s_State == RendererState_Hidden);
+}
+
+bool WebRenderer::IsRendering()
+{
+	return GetState() == RendererState_Overlay || GetState() == RendererState_Shown;
+}
+
+bool WebRenderer::ShowRenderer(bool p_Show, bool p_Overlay)
+{
+	auto s_State = GetState();
+	if (s_State == RendererState_Hidden && p_Show)
+	{
+		SetState(p_Overlay ? RendererState_Overlay : RendererState_Shown);
+		return true;
+	}
+
+	if ((s_State == RendererState_Overlay || s_State == RendererState_Shown) && !p_Show)
+	{
+		SetState(RendererState_Hidden);
+		return true;
+	}
+
+	return false;
 }
 
 bool WebRenderer::Resize(unsigned long p_Width, unsigned long p_Height)
@@ -310,7 +370,7 @@ bool WebRenderer::Resize(unsigned long p_Width, unsigned long p_Height)
 
 bool WebRenderer::UpdateMouse(unsigned long p_X, unsigned long p_Y)
 {
-	if (!m_RenderHandler || !m_Enabled)
+	if (!m_RenderHandler || GetState() != RendererState_Shown)
 		return false;
 
 	auto s_Browser = reinterpret_cast<WebRendererHandler*>(m_RenderHandler.get())->GetBrowser().get();
@@ -328,7 +388,7 @@ bool WebRenderer::UpdateMouse(unsigned long p_X, unsigned long p_Y)
 
 bool WebRenderer::Click(unsigned long p_X, unsigned long p_Y)
 {
-	if (!m_RenderHandler || !m_Enabled)
+	if (!m_RenderHandler || GetState() != RendererState_Shown)
 		return false;
 
 	auto s_RenderHandler = reinterpret_cast<WebRendererHandler*>(m_RenderHandler.get());
@@ -396,10 +456,12 @@ bool WebRenderer::PostReset()
 
 bool WebRenderer::Shutdown()
 {
-	if (m_Shutdown)
+	// If we are already disabled, don't try to free the elements, and if we are already shutting down don't call it again
+	if (m_State == RendererState_Disabled || m_State == RendererState_Shutdown)
 		return false;
 
-	m_Shutdown = true;
+	// Set us to be in the "shutdown" state and free resources
+	SetState(RendererState_Shutdown);
 
 	if (m_RenderHandler)
 		delete m_RenderHandler;
@@ -416,29 +478,29 @@ bool WebRenderer::Shutdown()
 
 	CefShutdown();
 
-	return true;
-}
-
-bool WebRenderer::IsEnabled()
-{
-	return m_Enabled;
-}
-
-bool WebRenderer::Enable(bool p_Enable)
-{
-	m_Enabled = p_Enable;
+	// Set us back to our disabled state
+	SetState(RendererState_Disabled);
 
 	return true;
 }
 
-bool WebRenderer::IsShown()
+Anvil::Client::Rendering::RendererState WebRenderer::GetState()
 {
-	return m_Shown;
+	return m_State;
 }
 
-bool WebRenderer::Show(bool p_Show)
+bool WebRenderer::SetState(Anvil::Client::Rendering::RendererState p_State)
 {
-	m_Shown = p_Show;
+	// If the state is already set, go away
+	if (m_State == p_State)
+		return false;
+
+	// Bounds checking
+	if (m_State >= RendererState_Count || m_State < RendererState_Disabled)
+		return false;
+
+	m_State = p_State;
+
 	return true;
 }
 

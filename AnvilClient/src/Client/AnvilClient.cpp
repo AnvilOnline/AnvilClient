@@ -76,7 +76,7 @@ bool AnvilClient::PreInit()
 	{
 		auto l_Argument = s_Args[i];
 		if (!_strcmpi(l_Argument, "-norenderer"))
-			Rendering::WebRenderer::GetInstance()->Enable(false);
+			Rendering::WebRenderer::GetInstance()->SetState(Rendering::RendererState_Disabled);
 
 		if (!_strcmpi(l_Argument, "-sleep"))
 		{
