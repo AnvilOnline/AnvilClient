@@ -15,19 +15,25 @@ namespace Anvil
 		{
 			class WebRendererSchemeHandlerFactory;
 
+			enum RendererState
+			{
+				RendererState_Disabled, // The renderer is disabled and not initialized
+				RendererState_Shutdown,
+				RendererState_Startup,
+				RendererState_Hidden, // The renderer is initialized and just not rendering (ex, gameplay)
+				RendererState_Overlay, // The renderer is showing an overlay, this mode is used for overlays ui replacements etc ingame
+				RendererState_Shown, // The renderer is showing everything, and accepting input via mouse and keyboard.
+				RendererState_Count
+			};
+
 			class WebRenderer : public IInit
 			{
-				//CefRefPtr<CefBrowser> m_Browser;
 				CefRefPtr<CefClient> m_Client;
 				CefRefPtr<CefRenderHandler> m_RenderHandler;
 				CefRefPtr<CefApp> m_App;
 				WebRendererSchemeHandlerFactory* m_SchemeHandlerFactory;
 
-				bool m_Initialized;
-				bool m_RenderingInitialized;
-				bool m_Shutdown;
-				bool m_Enabled;
-				bool m_Shown;
+				RendererState m_State;
 
 				LPDIRECT3DTEXTURE9 m_Texture;
 				LPDIRECT3DDEVICE9 m_Device;
@@ -56,6 +62,9 @@ namespace Anvil
 				bool Update();
 
 				bool Initialized();
+				bool IsRendering();
+
+				bool ShowRenderer(bool p_Show, bool p_Overlay);
 
 				bool Resize(unsigned long p_Width, unsigned long p_Height);
 
@@ -69,10 +78,8 @@ namespace Anvil
 
 				bool Shutdown();
 
-				bool IsEnabled();
-				bool Enable(bool p_Enable);
-				bool IsShown();
-				bool Show(bool p_Show);
+				bool SetState(RendererState p_State);
+				RendererState GetState();
 
 				bool ShowNotification(std::string p_Title, std::string p_Message);
 
