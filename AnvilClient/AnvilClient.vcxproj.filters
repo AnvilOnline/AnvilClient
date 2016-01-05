@@ -24,6 +24,10 @@
     <ClCompile Include="src\Client\Rendering\WebRendererApp.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\PrintDebug.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\Rendering\Direct3D_CreateDevice.cpp" />
+    <ClCompile Include="src\SDK\Network\network.cpp" />
+    <ClCompile Include="src\SDK\Network\network_session.cpp" />
+    <ClCompile Include="src\SDK\Network\network_observer.cpp" />
+    <ClCompile Include="src\SDK\Network\Packets\packets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />
@@ -47,5 +51,9 @@
     <ClInclude Include="src\SDK\Unsorted\simulation_game_engine_globals_definition.h" />
     <ClInclude Include="src\SDK\Unsorted\simulation_entity_definition.h" />
     <ClInclude Include="src\Misc\BuildInfo.hpp" />
+    <ClInclude Include="src\SDK\Network\network.hpp" />
+    <ClInclude Include="src\SDK\Network\network_session.hpp" />
+    <ClInclude Include="src\SDK\Network\network_observer.hpp" />
+    <ClInclude Include="src\SDK\Network\Packets\packets.hpp" />
   </ItemGroup>
 </Project>

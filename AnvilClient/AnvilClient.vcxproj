@@ -124,6 +124,10 @@
     <ClCompile Include="src\Client\Rendering\WebRendererSchemeHandler.cpp" />
     <ClCompile Include="src\Client\Rendering\WebRendererSchemeHandlerFactory.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\SDK\Network\network.cpp" />
+    <ClCompile Include="src\SDK\Network\network_observer.cpp" />
+    <ClCompile Include="src\SDK\Network\network_session.cpp" />
+    <ClCompile Include="src\SDK\Network\Packets\packets.cpp" />
     <ClCompile Include="src\Utils\Logger.cpp" />
     <ClCompile Include="src\Utils\Util.cpp" />
   </ItemGroup>
@@ -144,6 +148,10 @@
     <ClInclude Include="src\Misc\IInit.hpp" />
     <ClInclude Include="src\Misc\Macros.hpp" />
     <ClInclude Include="src\SDK\Messages\Message.h" />
+    <ClInclude Include="src\SDK\Network\network.hpp" />
+    <ClInclude Include="src\SDK\Network\network_observer.hpp" />
+    <ClInclude Include="src\SDK\Network\network_session.hpp" />
+    <ClInclude Include="src\SDK\Network\Packets\packets.hpp" />
     <ClInclude Include="src\SDK\Unsorted\simulation_entity_definition.h" />
     <ClInclude Include="src\SDK\Unsorted\simulation_game_engine_globals_definition.h" />
     <ClInclude Include="src\SDK\Unsorted\simulation_sandbox_engine_globals_definition.h" />
