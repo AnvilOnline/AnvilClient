@@ -28,9 +28,8 @@ WebRenderer::WebRenderer() :
 
 std::string WebRenderer::GetUIDirectory()
 {
-	char s_PathBuffer[MAX_PATH];
+	char s_PathBuffer[MAX_PATH] = { 0 };
 	auto s_BufferSize = sizeof(s_PathBuffer);
-	memset(s_PathBuffer, 0, s_BufferSize);
 
 	GetModuleFileName(nullptr, s_PathBuffer, s_BufferSize);
 
