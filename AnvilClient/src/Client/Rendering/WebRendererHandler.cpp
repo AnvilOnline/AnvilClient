@@ -65,8 +65,14 @@ bool WebRendererHandler::Resize(uint32_t p_Width, uint32_t p_Height)
 	m_TextureLock.lock();
 
 	WriteLog("Tried to allocate 0x%x bytes.", s_TextureDataSize);
-	m_TextureData = static_cast<uint8_t*>(malloc(s_TextureDataSize));
+	// If we get a resize, don't leak all of that memory it's bad
+	if (m_TextureData)
+	{
+		delete m_TextureData;
+		m_TextureData = nullptr;
+	}
 
+	m_TextureData = new uint8_t[s_TextureDataSize];
 	if (!m_TextureData)
 		return false;
 
