@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include "Utils/Util.hpp"
 
-unsigned long __stdcall Initialize(LPVOID)
+uint32_t __stdcall Initialize(LPVOID)
 {
 	// Init our logger
 	Anvil::Utils::Logger::GetInstance()->Init();
@@ -26,10 +26,10 @@ unsigned long __stdcall Initialize(LPVOID)
 	return S_OK;
 }
 
-bool __stdcall DllMain(void* p_Module, unsigned long p_Reason, void* p_Reserved)
+bool __stdcall DllMain(void* p_Module, uint32_t p_Reason, void* p_Reserved)
 {
 	if (p_Reason == DLL_PROCESS_ATTACH)
-		CreateThread(nullptr, 0, Initialize, nullptr, 0, nullptr);
+		CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(Initialize), nullptr, 0, nullptr);
 
 	return true;
 }

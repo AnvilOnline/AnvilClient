@@ -66,10 +66,10 @@ namespace Anvil
 
 				bool ShowRenderer(bool p_Show, bool p_Overlay);
 
-				bool Resize(unsigned long p_Width, unsigned long p_Height);
+				bool Resize(uint32_t p_Width, uint32_t p_Height);
 
-				bool UpdateMouse(unsigned long p_X, unsigned long p_Y);
-				bool Click(unsigned long p_X, unsigned long p_Y);
+				bool UpdateMouse(uint32_t p_X, uint32_t p_Y);
+				bool Click(uint32_t p_X, uint32_t p_Y);
 
 				bool ExecuteJavascript(std::string p_Code);
 

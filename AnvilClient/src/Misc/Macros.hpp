@@ -17,11 +17,11 @@
 	returnType callingMethod nameSpace::c_ ## name(__VA_ARGS__)
 
 #define DeclareHookAtOffset(name, offset) \
-	unsigned int s_ ## name = offset; \
+	uint32_t s_ ## name = offset; \
 	o_ ## name = (name ## _t)DetourFunction((PBYTE)s_ ## name, (PBYTE)c_ ## name);
 
 #define DeclareHookPattern(name, offset, length, pattern, mask) \
-	unsigned int s_ ## name = Anvil::Utils::Util::FindPattern(reinterpret_cast<void*>(offset), length, pattern, mask); \
+	uint32_t s_ ## name = Anvil::Utils::Util::FindPattern(reinterpret_cast<void*>(offset), length, pattern, mask); \
 	if (!s_ ## name) { \
 		WriteLog("Hooking Failed for %s.", #name); }\
 				else { \

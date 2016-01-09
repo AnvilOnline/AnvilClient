@@ -77,7 +77,7 @@ bool Logger::InternalWriteLog(char* p_Function, int p_Line, char* p_Format, ...)
 	// Output to the console first
 	auto s_OutputLength = 0;
 	if (m_ConsoleHandle && m_ConsoleHandle != INVALID_HANDLE_VALUE)
-		WriteConsole(m_ConsoleHandle, s_OutputString.c_str(), s_OutputString.length(), reinterpret_cast<unsigned long*>(&s_OutputLength), nullptr);
+		WriteConsole(m_ConsoleHandle, s_OutputString.c_str(), s_OutputString.length(), reinterpret_cast<LPDWORD>(&s_OutputLength), nullptr);
 
 	// Try to log to file
 	if (!m_Stream.is_open())

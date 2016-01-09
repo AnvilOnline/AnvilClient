@@ -174,7 +174,7 @@ bool WebRenderer::Init()
 		return false;
 	}
 
-	unsigned long s_Width = 0, s_Height = 0;
+	uint32_t s_Width = 0, s_Height = 0;
 	if (!static_cast<WebRendererHandler*>(m_RenderHandler.get())->GetViewportInformation(s_Width, s_Height))
 	{
 		Shutdown();
@@ -278,7 +278,7 @@ bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 	auto s_Result = m_Texture->LockRect(0, &s_Rect, nullptr, D3DLOCK_DISCARD);
 	if (SUCCEEDED(s_Result))
 	{
-		unsigned long s_Width = 0, s_Height = 0;
+		uint32_t s_Width = 0, s_Height = 0;
 		if (!s_RenderHandler->GetViewportInformation(s_Width, s_Height))
 		{
 			m_Texture->UnlockRect(0);
@@ -351,7 +351,7 @@ bool WebRenderer::ShowRenderer(bool p_Show, bool p_Overlay)
 	return false;
 }
 
-bool WebRenderer::Resize(unsigned long p_Width, unsigned long p_Height)
+bool WebRenderer::Resize(uint32_t p_Width, uint32_t p_Height)
 {
 	if (!m_RenderHandler)
 		return false;
@@ -368,7 +368,7 @@ bool WebRenderer::Resize(unsigned long p_Width, unsigned long p_Height)
 	return true;
 }
 
-bool WebRenderer::UpdateMouse(unsigned long p_X, unsigned long p_Y)
+bool WebRenderer::UpdateMouse(uint32_t p_X, uint32_t p_Y)
 {
 	if (!m_RenderHandler || GetState() != RendererState_Shown)
 		return false;
@@ -386,7 +386,7 @@ bool WebRenderer::UpdateMouse(unsigned long p_X, unsigned long p_Y)
 	return true;
 }
 
-bool WebRenderer::Click(unsigned long p_X, unsigned long p_Y)
+bool WebRenderer::Click(uint32_t p_X, uint32_t p_Y)
 {
 	if (!m_RenderHandler || GetState() != RendererState_Shown)
 		return false;

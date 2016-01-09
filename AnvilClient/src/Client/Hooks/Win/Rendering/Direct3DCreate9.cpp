@@ -4,7 +4,7 @@ using namespace Anvil::Client::Hooks;
 
 LRESULT CALLBACK MsgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { return DefWindowProc(hwnd, uMsg, wParam, lParam); }
 
-HookedFunction(WinHooks, void*, Direct3DCreate9, __stdcall, unsigned int p_SdkVersion)
+HookedFunction(WinHooks, void*, Direct3DCreate9, __stdcall, uint32_t p_SdkVersion)
 {
 	auto s_IDirect3D9 = static_cast<LPDIRECT3D9>(o_Direct3DCreate9(p_SdkVersion));
 	

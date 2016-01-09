@@ -13,7 +13,7 @@ namespace Anvil
 			class WebRendererHandler : public CefRenderHandler
 			{
 				LPDIRECT3DDEVICE9 m_Device;
-				unsigned char* m_TextureData;
+				uint8_t* m_TextureData;
 				std::mutex m_TextureLock;
 
 				CefRefPtr<CefBrowser> m_Browser;
@@ -24,10 +24,10 @@ namespace Anvil
 				bool GetViewRect(CefRefPtr<CefBrowser> p_Browser, CefRect &p_Rect) override;
 				void OnPaint(CefRefPtr<CefBrowser> p_Browser, PaintElementType p_Type, const RectList &p_DirtyRects, const void *p_Buffer, int p_Width, int p_Height) override;
 
-				bool GetViewportInformation(unsigned long& p_Width, unsigned long& p_Height);
-				bool Resize(unsigned long p_Width, unsigned long p_Height);
+				bool GetViewportInformation(uint32_t& p_Width, uint32_t& p_Height);
+				bool Resize(uint32_t p_Width, uint32_t p_Height);
 
-				unsigned char* GetTexture();
+				uint8_t* GetTexture();
 				CefRefPtr<CefBrowser> GetBrowser();
 
 			protected:
