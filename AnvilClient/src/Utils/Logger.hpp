@@ -31,8 +31,8 @@ namespace Anvil
 			static Logger* GetInstance();
 			bool Init() override;
 
-			bool InitConsole(std::string p_title);
-			bool InternalWriteLog(char* p_function, int p_line, char* p_format, ...);
+			bool InitConsole(std::string p_Title);
+			bool InternalWriteLog(char* p_Function, int32_t p_line, char* p_Format, ...);
 		};
 	}
 }

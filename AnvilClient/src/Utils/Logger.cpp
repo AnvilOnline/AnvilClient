@@ -55,7 +55,7 @@ bool Logger::InitConsole(std::string p_Title)
 #endif
 }
 
-bool Logger::InternalWriteLog(char* p_Function, int p_Line, char* p_Format, ...)
+bool Logger::InternalWriteLog(char* p_Function, int32_t p_Line, char* p_Format, ...)
 {
 	va_list s_Args;
 	va_start(s_Args, p_Format);
