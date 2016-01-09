@@ -17,7 +17,7 @@ using Anvil::Utils::Util;
 #define ALIGNMENT 0
 #endif
 
-bool Util::PatchAddressInFile(unsigned int p_OffsetInFile, std::string p_HexString, int p_Length)
+bool Util::PatchAddressInFile(uint32_t p_OffsetInFile, std::string p_HexString, int32_t p_Length)
 {
 	// Ensure that the address is valid
 	if (!p_OffsetInFile)
@@ -26,13 +26,13 @@ bool Util::PatchAddressInFile(unsigned int p_OffsetInFile, std::string p_HexStri
 		return false;
 	}
 
-	auto s_BaseAddress = reinterpret_cast<unsigned long>(GetModuleHandle(nullptr));
+	auto s_BaseAddress = reinterpret_cast<uint32_t>(GetModuleHandle(nullptr));
 	auto s_Address = s_BaseAddress + p_OffsetInFile;
 
 	return PatchAddressInMemory(s_Address, p_HexString, p_Length);
 }
 
-bool Util::PatchAddressInMemory(unsigned p_Address, std::string p_HexString, int p_Length)
+bool Util::PatchAddressInMemory(uint32_t p_Address, std::string p_HexString, int32_t p_Length)
 {
 	// Get the length of our patch
 	auto s_Length = (p_Length == -1 ? p_HexString.length() : p_Length);
@@ -75,55 +75,54 @@ bool Util::PatchAddressInMemory(unsigned p_Address, std::string p_HexString, int
 	return true;
 }
 
-unsigned long Util::FindPattern(void* p_Address, unsigned int p_Length, const char* p_ByteMask, const char* p_Mask)
+uint32_t Util::FindPattern(void* p_Address, uint32_t p_Length, const char* p_ByteMask, const char* p_Mask)
 {
-	unsigned char* s_Address = nullptr;
+	uint8_t* s_Address = nullptr;
 	auto s_Buffer = p_Address;
 
-	auto s_MaskLength = strnlen_s(reinterpret_cast<const char*>(p_Mask), 64);
-	for (unsigned int i = 0; i < (p_Length - s_MaskLength); ++i)
+	auto s_MaskLength = strnlen_s(p_Mask, 64);
+	for (uint32_t i = 0; i < (p_Length - s_MaskLength); ++i)
 	{
-		auto l_Result = Match((static_cast<unsigned char*>(s_Buffer) + i), (void*)p_ByteMask, p_Mask, s_MaskLength);
+		auto l_Result = Match((static_cast<uint8_t*>(s_Buffer) + i), (void*)p_ByteMask, p_Mask, s_MaskLength);
 		if (l_Result < 0)
 		{
-			s_Address = static_cast<unsigned char*>(p_Address) + i;
+			s_Address = static_cast<uint8_t*>(p_Address) + i;
 			break;
 		}
 
 		i += l_Result;
 	}
 
-	return reinterpret_cast<unsigned long>(s_Address);
+	return reinterpret_cast<uint32_t>(s_Address);
 }
 
-int Util::Match(void* p_SrcArray, void* p_DstArray, const char* p_Mask, unsigned int p_Length)
+int32_t Util::Match(void* p_SrcArray, void* p_DstArray, const char* p_Mask, uint32_t p_Length)
 {
 	auto s_NextStart = 0;
-	auto s_Start = static_cast<unsigned char*>(p_DstArray)[0];
-	for (unsigned int i = 0; i < p_Length; ++i)
+	auto s_Start = static_cast<uint8_t*>(p_DstArray)[0];
+	for (uint32_t i = 0; i < p_Length; ++i)
 	{
 		if (p_Mask[i] == '?')
 			continue;
 
-		if (static_cast<unsigned char*>(p_SrcArray)[i] == s_Start)
+		if (static_cast<uint8_t*>(p_SrcArray)[i] == s_Start)
 			s_NextStart = i;
 
-		if (static_cast<unsigned char*>(p_SrcArray)[i] != static_cast<unsigned char*>(p_DstArray)[i])
+		if (static_cast<uint8_t*>(p_SrcArray)[i] != static_cast<uint8_t*>(p_DstArray)[i])
 			return s_NextStart;
 	}
 	return -1;
 }
 
-bool Util::GetExecutableInfo(unsigned long& p_EntryPoint, unsigned long& p_ModuleSize)
+bool Util::GetExecutableInfo(uint32_t& p_EntryPoint, uint32_t& p_ModuleSize)
 {
-	MODULEINFO s_ModuleInfo;
-	memset(&s_ModuleInfo, 0, sizeof(s_ModuleInfo));
+	MODULEINFO s_ModuleInfo = { 0 };
 
 	auto s_Ret = GetModuleInformation(GetCurrentProcess(), GetModuleHandle(nullptr), &s_ModuleInfo, sizeof(s_ModuleInfo));
 	if (!s_Ret)
 		return false;
 
-	p_EntryPoint = reinterpret_cast<unsigned long>(s_ModuleInfo.lpBaseOfDll);
+	p_EntryPoint = reinterpret_cast<uint32_t>(s_ModuleInfo.lpBaseOfDll);
 	p_ModuleSize = s_ModuleInfo.SizeOfImage;
 
 	return true;

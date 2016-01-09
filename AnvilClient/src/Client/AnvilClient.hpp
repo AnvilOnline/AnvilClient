@@ -15,7 +15,7 @@ namespace Anvil
 			IInit* m_EnginePatches;
 
 			void* m_MapInfoBlock;
-			short* m_MapResetBit;
+			uint16_t* m_MapResetBit;
 
 			std::string m_Version;
 
@@ -31,7 +31,7 @@ namespace Anvil
 			bool PostInit() override;
 			
 			void* GetMapInfoBlock();
-			bool ForceLoadMap(std::string p_MapName, int p_GameEngineMode, int p_GameType);
+			bool ForceLoadMap(std::string p_MapName, int32_t p_GameEngineMode, int32_t p_GameType);
 
 			std::string GetVersion();
 		};

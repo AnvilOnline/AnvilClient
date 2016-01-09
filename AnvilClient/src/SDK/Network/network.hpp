@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 
 namespace Network
 {
@@ -9,7 +10,7 @@ namespace Network
 		// Functions
 
 		// TODO: Parameters
-		typedef int(__fastcall* get_player_index_t)(void* v0, void* v1);
+		typedef int32_t(__fastcall* get_player_index_t)(void* v0, void* v1);
 		static get_player_index_t get_player_index;
 
 		// TODO: Verify the prototype is correct
@@ -25,7 +26,7 @@ namespace Network
 		typedef void*(__cdecl* session_interface_update_local_state_t)();
 		static session_interface_update_local_state_t session_interface_update_local_state;
 
-		typedef unsigned int(__fastcall session_interface_update_session_t)(void* v0);
+		typedef uint32_t(__fastcall* session_interface_update_session_t)(void* v0);
 		static session_interface_update_session_t session_interface_update_session;
 	};
 }

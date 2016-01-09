@@ -6,8 +6,8 @@ using Anvil::Client::Patches::EnginePatches;
 
 bool EnginePatches::Init()
 {
-	unsigned long s_baseAddress = 0;
-	unsigned long s_baseSize = 0;
+	uint32_t s_baseAddress = 0;
+	uint32_t s_baseSize = 0;
 
 	if (!Utils::Util::GetExecutableInfo(s_baseAddress, s_baseSize))
 	{

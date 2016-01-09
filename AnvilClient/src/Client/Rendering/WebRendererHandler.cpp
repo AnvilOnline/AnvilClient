@@ -15,7 +15,7 @@ WebRendererHandler::WebRendererHandler(LPDIRECT3DDEVICE9 p_Device) :
 
 bool WebRendererHandler::GetViewRect(CefRefPtr<CefBrowser> p_Browser, CefRect& p_Rect)
 {
-	unsigned long s_Width = 0, s_Height = 0;
+	uint32_t s_Width = 0, s_Height = 0;
 	if (!GetViewportInformation(s_Width, s_Height))
 		return false;
 
@@ -39,7 +39,7 @@ void WebRendererHandler::OnPaint(CefRefPtr<CefBrowser> p_Browser, PaintElementTy
 	m_TextureLock.unlock();
 }
 
-bool WebRendererHandler::GetViewportInformation(unsigned long& p_Width, unsigned long& p_Height)
+bool WebRendererHandler::GetViewportInformation(uint32_t& p_Width, uint32_t& p_Height)
 {
 	if (!m_Device)
 		return false;
@@ -55,7 +55,7 @@ bool WebRendererHandler::GetViewportInformation(unsigned long& p_Width, unsigned
 	return true;
 }
 
-bool WebRendererHandler::Resize(unsigned long p_Width, unsigned long p_Height)
+bool WebRendererHandler::Resize(uint32_t p_Width, uint32_t p_Height)
 {
 	WriteLog("Resize called: %dx%d.", p_Width, p_Height);
 	auto s_TextureDataSize = p_Width * p_Height * 4;
@@ -65,7 +65,7 @@ bool WebRendererHandler::Resize(unsigned long p_Width, unsigned long p_Height)
 	m_TextureLock.lock();
 
 	WriteLog("Tried to allocate 0x%x bytes.", s_TextureDataSize);
-	m_TextureData = static_cast<unsigned char*>(malloc(s_TextureDataSize));
+	m_TextureData = static_cast<uint8_t*>(malloc(s_TextureDataSize));
 
 	if (!m_TextureData)
 		return false;
@@ -75,7 +75,7 @@ bool WebRendererHandler::Resize(unsigned long p_Width, unsigned long p_Height)
 	return true;
 }
 
-unsigned char* WebRendererHandler::GetTexture()
+uint8_t* WebRendererHandler::GetTexture()
 {
 	return m_TextureData;
 }

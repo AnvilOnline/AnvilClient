@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 
 namespace Network
 {
@@ -6,7 +7,7 @@ namespace Network
 	{
 	public:
 
-		typedef unsigned int(__thiscall* update_user_properties_t)(network_session* This);
+		typedef uint32_t(__thiscall* update_user_properties_t)(network_session* This);
 		static update_user_properties_t update_user_properties;
 
 		typedef bool(__thiscall* peer_request_player_desired_properties_update_t)(network_session* This, void* v1, void* v2, void* p_Properties, void* v4);

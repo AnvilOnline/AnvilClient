@@ -1,4 +1,5 @@
 #include "EngineHooks.hpp"
+#include <stdint.h>
 
 using Anvil::Client::Hooks::EngineHooks;
 
@@ -10,8 +11,8 @@ DeclareFunctionValue(EngineHooks, PrintDebug);
 
 bool EngineHooks::Init()
 {
-	unsigned long s_BaseAddress = 0;
-	unsigned long s_BaseSize = 0;
+	uint32_t s_BaseAddress = 0;
+	uint32_t s_BaseSize = 0;
 
 	if (!Utils::Util::GetExecutableInfo(s_BaseAddress, s_BaseSize))
 	{

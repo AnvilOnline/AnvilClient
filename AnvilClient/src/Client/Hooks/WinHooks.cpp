@@ -54,5 +54,5 @@ void WinHooks::Hook_DirectX()
 
 	WriteLog("D3DCreate9 Address: %p", s_D3DCreate9);
 
-	DeclareHookAtOffset(Direct3DCreate9, reinterpret_cast<unsigned long>(s_D3DCreate9));
+	DeclareHookAtOffset(Direct3DCreate9, reinterpret_cast<uint32_t>(s_D3DCreate9));
 }

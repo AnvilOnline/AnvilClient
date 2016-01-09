@@ -57,11 +57,11 @@ namespace Anvil
 
 					if (p_Name == "GetPtr")
 					{
-						unsigned long s_BaseAddress = 0, s_BaseSize = 0;
+						uint32_t s_BaseAddress = 0, s_BaseSize = 0;
 						if (!Utils::Util::GetExecutableInfo(s_BaseAddress, s_BaseSize))
 							return false;
 
-						auto s_SandboxEngineGlobalsAddress = *reinterpret_cast<unsigned long*>(s_BaseAddress + 0x4FF8B9C);
+						auto s_SandboxEngineGlobalsAddress = *reinterpret_cast<uint32_t*>(s_BaseAddress + 0x4FF8B9C);
 						if (!s_SandboxEngineGlobalsAddress || s_SandboxEngineGlobalsAddress == -1)
 							return false;
 

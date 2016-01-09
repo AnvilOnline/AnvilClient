@@ -34,8 +34,8 @@ bool AnvilClient::Init()
 {
 	PreInit();
 
-	unsigned long s_BaseAddress = 0;
-	unsigned long s_BaseSize = 0;
+	uint32_t s_BaseAddress = 0;
+	uint32_t s_BaseSize = 0;
 
 	if (Utils::Util::GetExecutableInfo(s_BaseAddress, s_BaseSize))
 	{
@@ -44,13 +44,13 @@ bool AnvilClient::Init()
 
 		if (s_Address)
 		{
-			auto s_MapBlockAddress = *reinterpret_cast<unsigned long*>(s_Address + 14);
+			auto s_MapBlockAddress = *reinterpret_cast<uint32_t*>(s_Address + 14);
 
 			m_MapInfoBlock = reinterpret_cast<void*>(s_MapBlockAddress);
 
-			auto s_MapResetBitAddress = *reinterpret_cast<unsigned long*>(s_Address + 0x25);
+			auto s_MapResetBitAddress = *reinterpret_cast<uint32_t*>(s_Address + 0x25);
 
-			m_MapResetBit = reinterpret_cast<short*>(s_MapResetBitAddress);
+			m_MapResetBit = reinterpret_cast<uint16_t*>(s_MapResetBitAddress);
 
 			WriteLog("Block Address %p, Reset Bit %p.", s_MapBlockAddress, s_MapResetBitAddress);
 		}
@@ -112,7 +112,7 @@ void* AnvilClient::GetMapInfoBlock()
 	return m_MapInfoBlock;
 }
 
-bool AnvilClient::ForceLoadMap(std::string p_MapName, int p_GameEngineMode, int p_GameType)
+bool AnvilClient::ForceLoadMap(std::string p_MapName, int32_t p_GameEngineMode, int32_t p_GameType)
 {
 	if (!m_MapInfoBlock || !m_MapResetBit)
 		return false;
@@ -120,8 +120,8 @@ bool AnvilClient::ForceLoadMap(std::string p_MapName, int p_GameEngineMode, int 
 	WriteLog("Force Loading %s %d %d.", p_MapName.c_str(), p_GameEngineMode, p_GameType);
 
 	auto s_MapNameAddress = reinterpret_cast<char*>(m_MapInfoBlock) + 0x24;
-	auto s_GameTypeAddress = reinterpret_cast<int*>(s_MapNameAddress + 0x308);
-	auto s_GameEngineModeAddress = reinterpret_cast<int*>(m_MapInfoBlock);
+	auto s_GameTypeAddress = reinterpret_cast<int32_t*>(s_MapNameAddress + 0x308);
+	auto s_GameEngineModeAddress = reinterpret_cast<int32_t*>(m_MapInfoBlock);
 
 	memset(s_MapNameAddress, 0, 32);
 	strncpy_s(s_MapNameAddress, 32, p_MapName.c_str(), p_MapName.size());
