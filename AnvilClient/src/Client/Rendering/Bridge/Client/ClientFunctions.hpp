@@ -61,6 +61,7 @@ namespace Anvil
 						if (!Utils::Util::GetExecutableInfo(s_BaseAddress, s_BaseSize))
 							return false;
 
+						// TODO: Figure out where this is, because I have no idea where that offset came from... -kiwidog
 						auto s_SandboxEngineGlobalsAddress = *reinterpret_cast<uint32_t*>(s_BaseAddress + 0x4FF8B9C);
 						if (!s_SandboxEngineGlobalsAddress || s_SandboxEngineGlobalsAddress == -1)
 							return false;

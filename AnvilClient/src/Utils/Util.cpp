@@ -136,6 +136,9 @@ bool Util::GetExecutableInfo(uint32_t& p_ModuleBase, uint32_t& p_ModuleSize)
 	p_ModuleBase = reinterpret_cast<uint32_t>(s_ModuleInfo.lpBaseOfDll);
 	p_ModuleSize = s_ModuleInfo.SizeOfImage;
 
+	m_BaseAddress = p_ModuleBase;
+	m_CodeSize = p_ModuleSize;
+
 	return true;
 }
 
