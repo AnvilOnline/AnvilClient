@@ -77,6 +77,7 @@ namespace Anvil
 
 				void Quit()
 				{
+					// TODO: Implement AnvilClient::Shutdown to ensure all resources get freed properly.
 					TerminateProcess(GetCurrentProcess(), 0);
 				}
 

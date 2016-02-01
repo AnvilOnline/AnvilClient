@@ -17,6 +17,10 @@ using Anvil::Utils::Util;
 #define ALIGNMENT 0
 #endif
 
+// Initialize our base address and code size
+uint32_t Util::m_BaseAddress = 0;
+uint32_t Util::m_CodeSize = 0;
+
 bool Util::PatchAddressInFile(uint32_t p_OffsetInFile, std::string p_HexString, int32_t p_Length)
 {
 	// Ensure that the address is valid
@@ -114,18 +118,49 @@ int32_t Util::Match(void* p_SrcArray, void* p_DstArray, const char* p_Mask, uint
 	return -1;
 }
 
-bool Util::GetExecutableInfo(uint32_t& p_EntryPoint, uint32_t& p_ModuleSize)
+bool Util::GetExecutableInfo(uint32_t& p_ModuleBase, uint32_t& p_ModuleSize)
 {
+	if (m_BaseAddress && m_CodeSize)
+	{
+		p_ModuleBase = m_BaseAddress;
+		p_ModuleSize = m_CodeSize;
+		return true;
+	}
+
 	MODULEINFO s_ModuleInfo = { 0 };
 
 	auto s_Ret = GetModuleInformation(GetCurrentProcess(), GetModuleHandle(nullptr), &s_ModuleInfo, sizeof(s_ModuleInfo));
 	if (!s_Ret)
 		return false;
 
-	p_EntryPoint = reinterpret_cast<uint32_t>(s_ModuleInfo.lpBaseOfDll);
+	p_ModuleBase = reinterpret_cast<uint32_t>(s_ModuleInfo.lpBaseOfDll);
 	p_ModuleSize = s_ModuleInfo.SizeOfImage;
 
 	return true;
+}
+
+uint32_t Util::GetBaseAddress()
+{
+	if (!m_BaseAddress)
+	{
+		auto s_Result = GetExecutableInfo(m_BaseAddress, m_CodeSize);
+		if (!s_Result)
+			return 0;
+	}
+
+	return m_BaseAddress;
+}
+
+uint32_t Util::GetCodeSize()
+{
+	if (!m_CodeSize)
+	{
+		auto s_Result = GetExecutableInfo(m_BaseAddress, m_CodeSize);
+		if (!s_Result)
+			return 0;
+	}
+
+	return m_CodeSize;
 }
 
 char** Util::CommandLineToArgvA(char * p_CommandLine, int * p_ArgumentCount)

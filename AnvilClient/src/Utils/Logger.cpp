@@ -61,7 +61,7 @@ bool Logger::InternalWriteLog(char* p_Function, int32_t p_Line, char* p_Format, 
 	va_start(s_Args, p_Format);
 
 	auto s_FinalLength = _vscprintf(p_Format, s_Args) + 1;
-	auto s_FinalString = static_cast<char*>(malloc(s_FinalLength));
+	auto s_FinalString = static_cast<char*>(calloc(s_FinalLength, sizeof(char)));
 	if (!s_FinalString)
 		return false;
 
@@ -73,6 +73,9 @@ bool Logger::InternalWriteLog(char* p_Function, int32_t p_Line, char* p_Format, 
 	s_Stream << "[" << p_Function << " : " << p_Line << "] " << s_FinalString << "\r\n";
 
 	auto s_OutputString = s_Stream.str();
+
+	// Free our buffer
+	free(s_FinalString);
 
 	// Output to the console first
 	auto s_OutputLength = 0;

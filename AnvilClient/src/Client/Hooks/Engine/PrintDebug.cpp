@@ -12,7 +12,7 @@ HookedFunction(EngineHooks, int, PrintDebug, __cdecl, char* p_Source, char* p_Fo
 		va_start(s_List, p_Format);
 
 		auto s_FinalLength = _vscprintf(p_Format, s_List) + 1;
-		auto s_FinalString = static_cast<char*>(new char[s_FinalLength]);
+		auto s_FinalString = static_cast<char*>(calloc(s_FinalLength, sizeof(char)));
 		if (!s_FinalString)
 			return false;
 
@@ -23,7 +23,7 @@ HookedFunction(EngineHooks, int, PrintDebug, __cdecl, char* p_Source, char* p_Fo
 
 		s_Ret = o_PrintDebug(p_Source, p_Format, s_List);
 
-		delete s_FinalString;
+		free(s_FinalString);
 
 		va_end(s_List);
 	}

@@ -3,6 +3,7 @@
 
 using namespace Anvil::Client::Hooks;
 
+// TODO: See if this is still needed at all...
 LRESULT WinHooks::HookWindowProc(int p_Code, WPARAM p_WParam, LPARAM p_LParam)
 {
 	if (p_Code < HC_ACTION)
