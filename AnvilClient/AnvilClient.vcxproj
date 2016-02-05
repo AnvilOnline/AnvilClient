@@ -127,6 +127,7 @@
     <ClCompile Include="src\SDK\Network\network.cpp" />
     <ClCompile Include="src\SDK\Network\network_observer.cpp" />
     <ClCompile Include="src\SDK\Network\network_session.cpp" />
+    <ClCompile Include="src\SDK\Network\network_session_parameter_remote_join_data.cpp" />
     <ClCompile Include="src\SDK\Network\Packets\packets.cpp" />
     <ClCompile Include="src\Utils\Logger.cpp" />
     <ClCompile Include="src\Utils\Util.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="src\SDK\Network\network.hpp" />
     <ClInclude Include="src\SDK\Network\network_observer.hpp" />
     <ClInclude Include="src\SDK\Network\network_session.hpp" />
+    <ClInclude Include="src\SDK\Network\network_session_parameter_remote_join_data.hpp" />
     <ClInclude Include="src\SDK\Network\Packets\packets.hpp" />
     <ClInclude Include="src\SDK\Unsorted\simulation_entity_definition.h" />
     <ClInclude Include="src\SDK\Unsorted\simulation_game_engine_globals_definition.h" />
