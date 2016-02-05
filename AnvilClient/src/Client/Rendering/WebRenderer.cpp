@@ -212,9 +212,6 @@ bool WebRenderer::InitRenderer(LPDIRECT3DDEVICE9 p_Device)
 	if (GetState() != RendererState_Disabled)
 		return false;
 
-	WriteLog("WebRenderer InitRenderer.");
-	SetState(RendererState_Startup);
-
 	if (!p_Device)
 	{
 		WriteLog("Device is invalid.");
@@ -260,7 +257,10 @@ bool WebRenderer::InitRenderer(LPDIRECT3DDEVICE9 p_Device)
 		return false;
 	}
 
+	WriteLog("WebRenderer InitRenderer.");
+
 	// We leave the renderer state in startup so the init function would work
+	SetState(RendererState_Startup);
 
 	return true;
 }

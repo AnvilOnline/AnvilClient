@@ -72,23 +72,6 @@ bool AnvilClient::PreInit()
 	s_Stream << "AnvilOnline Alpha Build: " << __DATE__ << " - " << ANVIL_BUILD;
 	m_Version = s_Stream.str();
 
-	auto s_ArgCount = 0;
-	auto s_Args = Utils::Util::CommandLineToArgvA(GetCommandLineA(), &s_ArgCount);
-
-	// TODO: Command line argument->function manager if this gets too large
-	for (auto i = 0; i < s_ArgCount; ++i)
-	{
-		auto l_Argument = s_Args[i];
-		if (!_strcmpi(l_Argument, "-norenderer"))
-			m_RenderingEnabled = false;
-
-		if (!_strcmpi(l_Argument, "-sleep"))
-		{
-			WriteLog("Sleeping for 10s.");
-			Sleep(10000);
-		}
-	}
-
 	// Set up our windows hooks, this will allow us to hook the window creation and set up for the dx hooks
 	m_WinHooks = new Hooks::WinHooks;
 	if (m_WinHooks)
@@ -109,7 +92,27 @@ bool AnvilClient::PreInit()
 
 bool AnvilClient::PostInit()
 {
-	// Nothing to do here
+	auto s_ArgCount = 0;
+	auto s_Args = Utils::Util::CommandLineToArgvA(GetCommandLineA(), &s_ArgCount);
+
+	// TODO: Command line argument->function manager if this gets too large
+	for (auto i = 0; i < s_ArgCount; ++i)
+	{
+		auto l_Argument = s_Args[i];
+		if (!_strcmpi(l_Argument, "-norenderer"))
+			m_RenderingEnabled = false;
+
+		if (!_strcmpi(l_Argument, "-sleep"))
+		{
+			WriteLog("Sleeping for 10s.");
+			Sleep(10000);
+		}
+	}
+
+	// This is some superhacks right here.
+	// This kick-starts all threads that have been created if they haven't already (aka this thread should be the only one running.)
+	Utils::Util::ResumeAllThreads();
+
 	return true;
 }
 
