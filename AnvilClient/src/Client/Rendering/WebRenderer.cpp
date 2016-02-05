@@ -31,7 +31,11 @@ std::string WebRenderer::GetUIDirectory()
 	char s_PathBuffer[MAX_PATH] = { 0 };
 	auto s_BufferSize = sizeof(s_PathBuffer);
 
-	GetModuleFileName(nullptr, s_PathBuffer, s_BufferSize);
+	auto s_Result = GetModuleFileName(nullptr, s_PathBuffer, s_BufferSize);
+	if (!s_Result)
+	{
+		WriteLog("Could not get current executable file path (%x).", GetLastError());
+	}
 
 	auto s_LocalExecutable = std::string(s_PathBuffer);
 	auto s_RunningDirectory = s_LocalExecutable.substr(0, s_LocalExecutable.find_last_of("\\/"));
@@ -52,6 +56,9 @@ bool WebRenderer::Init()
 	if (GetState() != RendererState_Startup)
 		return false;
 
+	if (!m_Device)
+		return false;
+
 	if (m_App.get())
 		delete m_App.get();
 
@@ -64,6 +71,7 @@ bool WebRenderer::Init()
 
 	if (!m_App || !m_SchemeHandlerFactory)
 	{
+		WriteLog("App (%p) or Schema handler (%p) is invalid.", m_App, m_SchemeHandlerFactory);
 		Shutdown();
 		return false;
 	}
@@ -73,7 +81,7 @@ bool WebRenderer::Init()
 	auto s_Result = CefExecuteProcess(s_Args, m_App, nullptr);
 	if (s_Result >= 0)
 	{
-		WriteLog("CefExecuteProcess failed.");
+		WriteLog("CefExecuteProcess failed (%x).", s_Result);
 		TerminateProcess(GetCurrentProcess(), 0); // TODO: Take less drastic measures...
 		return false;
 	}
@@ -103,7 +111,11 @@ bool WebRenderer::Init()
 	CefRegisterSchemeHandlerFactory("anvil", "", m_SchemeHandlerFactory);
 	CefAddCrossOriginWhitelistEntry("anvil://menu", "http", "", true);
 
+	WriteLog("Handlers registered.");
+
 	auto s_UIDirectory = GetUIDirectory();
+
+	WriteLog("UI Directory: %s", s_UIDirectory.c_str());
 
 	m_RenderHandler = new WebRendererHandler(m_Device);
 	if (!m_RenderHandler)
