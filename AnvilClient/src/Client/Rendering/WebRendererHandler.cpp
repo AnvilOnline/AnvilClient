@@ -90,3 +90,13 @@ CefRefPtr<CefBrowser> WebRendererHandler::GetBrowser()
 {
 	return m_Browser;
 }
+
+void WebRendererHandler::LockTexture()
+{
+	m_TextureLock.lock();
+}
+
+void WebRendererHandler::UnlockTexture()
+{
+	m_TextureLock.unlock();
+}

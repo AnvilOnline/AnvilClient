@@ -21,7 +21,8 @@ WebRenderer::WebRenderer() :
 	m_Texture(nullptr),
 	m_Device(nullptr),
 	m_Sprite(nullptr),
-	m_Font(nullptr)
+	m_Font(nullptr),
+	m_Position(D3DXVECTOR3(0, 0, 0))
 {
 	WriteLog("WebRenderer Ctor.");
 }
@@ -284,6 +285,10 @@ bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 	}
 
 	auto s_RenderHandler = static_cast<WebRendererHandler*>(m_RenderHandler.get());
+	if (!s_RenderHandler)
+		return false;
+
+	s_RenderHandler->LockTexture();
 
 	D3DLOCKED_RECT s_Rect;
 	auto s_Result = m_Texture->LockRect(0, &s_Rect, nullptr, D3DLOCK_DISCARD);
@@ -293,6 +298,7 @@ bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 		if (!s_RenderHandler->GetViewportInformation(s_Width, s_Height))
 		{
 			m_Texture->UnlockRect(0);
+			s_RenderHandler->UnlockTexture();
 			return false;
 		}
 
@@ -300,6 +306,7 @@ bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 		if (!s_TextureData)
 		{
 			m_Texture->UnlockRect(0);
+			s_RenderHandler->UnlockTexture();
 			return false;
 		}
 
@@ -308,12 +315,14 @@ bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 		m_Texture->UnlockRect(0);
 	}
 
+	s_RenderHandler->UnlockTexture();
+
 	if (GetState() == RendererState_Shown)
 		p_Device->Clear(1, nullptr, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 128, 128, 128), 0, 0);
 
 	m_Sprite->Begin(D3DXSPRITE_ALPHABLEND);
 
-	m_Sprite->Draw(m_Texture, nullptr, nullptr, &D3DXVECTOR3(0, 0, 0), 0xFFFFFFFF);
+	m_Sprite->Draw(m_Texture, nullptr, nullptr, &m_Position, 0xFFFFFFFF);
 
 	m_Sprite->Flush();
 
@@ -474,10 +483,10 @@ bool WebRenderer::Shutdown()
 	// Set us to be in the "shutdown" state and free resources
 	SetState(RendererState_Shutdown);
 
-	if (m_RenderHandler)
-		delete m_RenderHandler;
+	if (m_RenderHandler.get())
+		delete m_RenderHandler.get();
 
-	if (m_App)
+	if (m_App.get())
 		delete m_App.get();
 
 	if (m_SchemeHandlerFactory)

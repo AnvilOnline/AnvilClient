@@ -39,6 +39,7 @@ namespace Anvil
 				LPDIRECT3DDEVICE9 m_Device;
 				LPD3DXSPRITE m_Sprite;
 				LPD3DXFONT m_Font;
+				D3DXVECTOR3 m_Position;
 
 				static WebRenderer* m_Instance;
 				WebRenderer();

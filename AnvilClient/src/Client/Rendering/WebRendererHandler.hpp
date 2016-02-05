@@ -29,6 +29,8 @@ namespace Anvil
 
 				uint8_t* GetTexture();
 				CefRefPtr<CefBrowser> GetBrowser();
+				void LockTexture();
+				void UnlockTexture();
 
 			protected:
 				IMPLEMENT_REFCOUNTING(WebRendererHandler);
