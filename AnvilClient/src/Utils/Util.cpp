@@ -279,7 +279,7 @@ bool Util::ResumeAllThreads()
 			if (l_ThreadHandle == INVALID_HANDLE_VALUE)
 				continue;
 
-			WriteLog("Resuming thread : %x.", s_Entry.th32ThreadID);
+			//WriteLog("Resuming thread : %x.", s_Entry.th32ThreadID);
 
 			ResumeThread(l_ThreadHandle);
 
@@ -289,5 +289,6 @@ bool Util::ResumeAllThreads()
 
 	CloseHandle(s_ThreadSnap);
 
+	WriteLog("All threads resumed successfully.");
 	return true;
 }

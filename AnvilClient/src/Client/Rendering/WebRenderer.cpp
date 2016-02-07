@@ -11,7 +11,6 @@
 
 using Anvil::Client::Rendering::WebRenderer;
 
-WebRenderer* WebRenderer::m_Instance = nullptr;
 WebRenderer::WebRenderer() : 
 	m_Client(nullptr),
 	m_RenderHandler(nullptr),
@@ -25,6 +24,12 @@ WebRenderer::WebRenderer() :
 	m_Position(D3DXVECTOR3(0, 0, 0))
 {
 	WriteLog("WebRenderer Ctor.");
+}
+
+std::shared_ptr<WebRenderer> WebRenderer::GetInstance()
+{
+	static auto s_Instance = std::make_shared<WebRenderer>();
+	return s_Instance;
 }
 
 std::string WebRenderer::GetUIDirectory()
@@ -44,13 +49,6 @@ std::string WebRenderer::GetUIDirectory()
 	return s_RunningDirectory + "/ui";
 }
 
-WebRenderer* WebRenderer::GetInstance()
-{
-	if (!m_Instance)
-		m_Instance = new WebRenderer;
-	return m_Instance;
-}
-
 bool WebRenderer::Init()
 {
 	// Do not try to initialize unless we are already at a disabled state
@@ -63,10 +61,10 @@ bool WebRenderer::Init()
 	if (m_App.get())
 		delete m_App.get();
 
-	if (m_SchemeHandlerFactory)
-		delete m_SchemeHandlerFactory;
+	if (m_SchemeHandlerFactory.get())
+		delete m_SchemeHandlerFactory.get();
 
-	m_SchemeHandlerFactory = new WebRendererSchemeHandlerFactory();
+	m_SchemeHandlerFactory = std::make_shared<WebRendererSchemeHandlerFactory>();
 
 	m_App = new WebRendererApp();
 
@@ -109,7 +107,7 @@ bool WebRenderer::Init()
 	}
 
 	// Register our custom handlers
-	CefRegisterSchemeHandlerFactory("anvil", "", m_SchemeHandlerFactory);
+	CefRegisterSchemeHandlerFactory("anvil", "", m_SchemeHandlerFactory.get());
 	CefAddCrossOriginWhitelistEntry("anvil://menu", "http", "", true);
 
 	WriteLog("Handlers registered.");
@@ -489,8 +487,8 @@ bool WebRenderer::Shutdown()
 	if (m_App.get())
 		delete m_App.get();
 
-	if (m_SchemeHandlerFactory)
-		delete m_SchemeHandlerFactory;
+	if (m_SchemeHandlerFactory.get())
+		delete m_SchemeHandlerFactory.get();
 
 	m_RenderHandler = nullptr;
 	m_App = nullptr;

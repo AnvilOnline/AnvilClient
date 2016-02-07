@@ -5,7 +5,7 @@
 #include <include/internal/cef_ptr.h>
 #include <include/cef_app.h>
 #include "WebRendererClient.hpp"
-
+#include <memory>
 
 namespace Anvil
 {
@@ -31,8 +31,9 @@ namespace Anvil
 				CefRefPtr<CefClient> m_Client;
 				CefRefPtr<CefRenderHandler> m_RenderHandler;
 				CefRefPtr<CefApp> m_App;
-				WebRendererSchemeHandlerFactory* m_SchemeHandlerFactory;
-
+				std::shared_ptr<WebRendererSchemeHandlerFactory> m_SchemeHandlerFactory;
+				//WebRendererSchemeHandlerFactory* m_SchemeHandlerFactory;
+				
 				RendererState m_State;
 
 				LPDIRECT3DTEXTURE9 m_Texture;
@@ -41,18 +42,9 @@ namespace Anvil
 				LPD3DXFONT m_Font;
 				D3DXVECTOR3 m_Position;
 
-				static WebRenderer* m_Instance;
-				WebRenderer();
-
-			protected:
-				~WebRenderer()
-				{
-				}
-
-				
-
 			public:
-				static WebRenderer* GetInstance();
+				WebRenderer();
+				static std::shared_ptr<WebRenderer> GetInstance();
 
 				bool Init() override;
 

@@ -40,20 +40,18 @@ namespace Anvil
 				std::string m_TempFileName;
 				std::string m_ContentType;
 				std::string m_RequestedRange;
-				int m_RequestedLength;
+				int32_t m_RequestedLength;
 				bool m_Partial;
-				int m_Offset;
+				int32_t m_Offset;
 				bool m_ShouldCache;
 
 				bool m_Main;
 
 				CefRefPtr<CefFrame> m_Frame;
 
-			protected:
 				static std::unordered_map<int64_t, std::unordered_map<std::string, std::string>> m_CachedData;
 				static std::mutex m_CachedDataMutex;
 
-			protected:
 				IMPLEMENT_REFCOUNTING(WebRendererSchemeHandler);
 			};
 		}
