@@ -41,8 +41,8 @@ bool EnginePatches::Init()
 
 	// Halo Online 12.x
 	// TODO: Signature based
-	auto s_EnglishV12Patch = Utils::Util::PatchAddressInFile(0x2C73DD, "\xBB\x00", 2);
-	WriteLog("English patch v2 applied %s.", (s_EnglishV12Patch ? "successfully" : "unsuccessfully"));
+	/*auto s_EnglishV12Patch = Utils::Util::PatchAddressInFile(0x2C73DD, "\xBB\x00", 2);
+	WriteLog("English patch v2 applied %s.", (s_EnglishV12Patch ? "successfully" : "unsuccessfully"));*/
 
 	return true;
 }
