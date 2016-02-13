@@ -199,7 +199,7 @@ bool WebRenderer::Init()
 		return false;
 	}
 
-	SetState(RendererState_Hidden);
+	SetState(RendererState_Shown);
 
 	return true;
 }

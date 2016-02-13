@@ -326,7 +326,7 @@ bool WebRendererSchemeHandler::ReadLocalFile(std::string p_Host, std::string p_P
 		std::ifstream s_File(s_FilePath, std::ios::binary);
 		if (!s_File.is_open())
 		{
-			WriteLog("Could not open file for reading (%s).");
+			WriteLog("Could not open file for reading (%s).", p_Path.c_str());
 			return false;
 		}
 
