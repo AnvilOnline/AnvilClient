@@ -55,6 +55,8 @@ bool WebRenderer::Init()
 	if (GetState() != RendererState_Startup)
 		return false;
 
+	m_Lock.lock();
+
 	if (!m_Device)
 		return false;
 
@@ -67,6 +69,8 @@ bool WebRenderer::Init()
 	m_SchemeHandlerFactory = std::make_shared<WebRendererSchemeHandlerFactory>();
 
 	m_App = new WebRendererApp();
+
+	m_Lock.unlock();
 
 	if (!m_App || !m_SchemeHandlerFactory)
 	{
@@ -481,20 +485,21 @@ bool WebRenderer::Shutdown()
 	// Set us to be in the "shutdown" state and free resources
 	SetState(RendererState_Shutdown);
 
-	if (m_RenderHandler.get())
-		delete m_RenderHandler.get();
+	m_Lock.lock();
 
-	if (m_App.get())
-		delete m_App.get();
+	if (m_RenderHandler)
+		delete m_RenderHandler;
 
-	if (m_SchemeHandlerFactory.get())
-		delete m_SchemeHandlerFactory.get();
+	if (m_App)
+		delete m_App;
 
-	m_RenderHandler = nullptr;
-	m_App = nullptr;
-	m_SchemeHandlerFactory = nullptr;
+	if (m_SchemeHandlerFactory)
+		m_SchemeHandlerFactory.reset();
 
+	SetErrorMode(SEM_NOGPFAULTERRORBOX);
 	CefShutdown();
+
+	m_Lock.unlock();
 
 	// Set us back to our disabled state
 	SetState(RendererState_Disabled);

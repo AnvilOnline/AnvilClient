@@ -18,6 +18,8 @@ namespace Anvil
 
 				DeclareFunction(int, PrintDebug, __cdecl, char* p_Source, char* p_Format, ...);
 
+				DeclareFunction(bool, sub_7E6630, __cdecl, void* a1, void* a2);
+
 			public:
 				bool Init() override;
 			};

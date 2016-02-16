@@ -14,6 +14,7 @@ AnvilClient::AnvilClient() :
 	m_EngineHooks(nullptr),
 	m_EnginePatches(nullptr),
 	m_SDKFunctions(nullptr),
+	m_WindowHandle(nullptr),
 	m_MapInfoBlock(nullptr),
 	m_RenderingEnabled(true)
 {
@@ -163,10 +164,22 @@ std::string AnvilClient::GetVersion()
 
 bool AnvilClient::Shutdown()
 {
+	m_RenderingEnabled = false;
+
 	if (!Rendering::WebRenderer::GetInstance()->Shutdown())
 		WriteLog("WebRenderer failed to shut down properly.");
 
 	TerminateProcess(GetCurrentProcess(), 0);
 
 	return true;
+}
+
+void* AnvilClient::GetWindowHandle()
+{
+	return m_WindowHandle;
+}
+
+void AnvilClient::SetWindowHandle(void* p_Window)
+{
+	m_WindowHandle = p_Window;
 }

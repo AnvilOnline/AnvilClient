@@ -32,6 +32,7 @@
     <ClCompile Include="src\Client\Rendering\Bridge\WebRendererBridge.cpp" />
     <ClCompile Include="src\Client\Rendering\Bridge\WebRendererJSHandler.cpp" />
     <ClCompile Include="src\Client\Functions\SDKFunctions.cpp" />
+    <ClCompile Include="src\Client\Hooks\Engine\Bink.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />

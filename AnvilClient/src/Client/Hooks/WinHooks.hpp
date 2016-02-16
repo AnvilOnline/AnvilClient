@@ -24,10 +24,14 @@ namespace Anvil
 				DeclareFunction(void*, Direct3DCreate9, __stdcall, uint32_t p_SdkVersion);
 				DeclareFunction(HRESULT, Direct3D_CreateDevice, __stdcall, void* Th, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice9** ppReturnedDeviceInterface);
 
+				HWND m_WindowHandle;
+
 				void Hook_DirectX();
 			public:
 				WinHooks();
 				bool Init() override;
+
+				
 			};
 		}
 	}

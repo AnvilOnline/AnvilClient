@@ -14,6 +14,7 @@ namespace Anvil
 			std::unique_ptr<IInit> m_EnginePatches;
 			std::unique_ptr<IInit> m_SDKFunctions;
 
+			void* m_WindowHandle;
 			void* m_MapInfoBlock;
 			uint16_t* m_MapResetBit;
 
@@ -35,6 +36,9 @@ namespace Anvil
 			std::string GetVersion();
 
 			bool Shutdown();
+
+			void* GetWindowHandle();
+			void SetWindowHandle(void* p_Window);
 		};
 	}
 }

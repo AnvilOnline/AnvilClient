@@ -6,6 +6,7 @@
 #include <include/cef_app.h>
 #include "WebRendererClient.hpp"
 #include <memory>
+#include <mutex>
 
 namespace Anvil
 {
@@ -32,6 +33,7 @@ namespace Anvil
 				CefRefPtr<CefRenderHandler> m_RenderHandler;
 				CefRefPtr<CefApp> m_App;
 				std::shared_ptr<WebRendererSchemeHandlerFactory> m_SchemeHandlerFactory;
+				std::mutex m_Lock;
 				//WebRendererSchemeHandlerFactory* m_SchemeHandlerFactory;
 				
 				RendererState m_State;

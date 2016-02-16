@@ -106,6 +106,7 @@
     <ClCompile Include="src\Client\AnvilClient.cpp" />
     <ClCompile Include="src\Client\Functions\SDKFunctions.cpp" />
     <ClCompile Include="src\Client\Hooks\EngineHooks.cpp" />
+    <ClCompile Include="src\Client\Hooks\Engine\Bink.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\GameTick.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\PrintDebug.cpp" />
     <ClCompile Include="src\Client\Hooks\WinHooks.cpp" />
