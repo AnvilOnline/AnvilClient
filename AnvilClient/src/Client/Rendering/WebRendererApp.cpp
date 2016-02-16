@@ -5,6 +5,7 @@ Code was used from NoFaTe (http://nofate.me)
 #include "Bridge/Client/GetVersion.hpp"
 #include <Utils/Logger.hpp>
 #include "Bridge/Client/ClientFunctions.hpp"
+#include "Bridge/Network/NodeInformation.hpp"
 
 using namespace Anvil::Client::Rendering;
 
@@ -33,6 +34,9 @@ void WebRendererApp::OnContextInitialized()
 void WebRendererApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context)
 {
 	auto s_BridgeObject = CefV8Value::CreateObject(nullptr);
+	auto s_NetworkObject = CefV8Value::CreateObject(nullptr);
+
+	// TODO: Split this apart to make it more modular and less hardcoded.
 
 	// Retrieve the context's window object.
 	auto s_GlobalObject = context->GetGlobal();
@@ -40,13 +44,18 @@ void WebRendererApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 	// Create an instance of my CefV8Handler object.
 	CefRefPtr<CefV8Handler> s_GetVersionHandler = new GetVersionHandler();
 	CefRefPtr<CefV8Handler> s_ClientFunctionsHandler = new ClientFunctionsHandler();
-
+	CefRefPtr<CefV8Handler> s_NodeInformationHandler = new NodeInformationHandler();
+	
 	// Create the "myfunc" function.
 	auto s_GetVersionFunc = CefV8Value::CreateFunction("GetVersion", s_GetVersionHandler);
 	auto s_ClientQuit = CefV8Value::CreateFunction("Quit", s_ClientFunctionsHandler);
 	auto s_ClientConnect = CefV8Value::CreateFunction("Connect", s_ClientFunctionsHandler);
 	auto s_LoadMap = CefV8Value::CreateFunction("LoadMap", s_ClientFunctionsHandler);
 
+	// Node Information
+	auto s_NodeGetName = CefV8Value::CreateFunction("NodeGetName", s_NodeInformationHandler);
+	auto s_NodeGetAddress = CefV8Value::CreateFunction("NodeGetAddress", s_NodeInformationHandler);
+	
 #if _DEBUG
 	auto s_GetPtr = CefV8Value::CreateFunction("GetPtr", s_ClientFunctionsHandler);
 	s_BridgeObject->SetValue("GetPtr", s_GetPtr, V8_PROPERTY_ATTRIBUTE_NONE);
@@ -60,5 +69,10 @@ void WebRendererApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 
 	s_GlobalObject->SetValue("anvil", s_BridgeObject, V8_PROPERTY_ATTRIBUTE_NONE);
 
+	// Set Networking
+
+	s_NetworkObject->SetValue("NodeGetName", s_NetworkObject, V8_PROPERTY_ATTRIBUTE_NONE);
+	s_NetworkObject->SetValue("NodeGetAddress", s_NetworkObject, V8_PROPERTY_ATTRIBUTE_NONE);
+	s_GlobalObject->SetValue("cirrus", s_NetworkObject, V8_PROPERTY_ATTRIBUTE_NONE);
 	WriteLog("OnContextCreated.");
 }

@@ -330,6 +330,8 @@ bool WebRendererSchemeHandler::ReadLocalFile(std::string p_Host, std::string p_P
 			return false;
 		}
 
+		WriteLog("Starting read of %s from file.", p_Path.c_str());
+
 		std::stringstream s_Stream;
 		s_Stream << s_File.rdbuf();
 

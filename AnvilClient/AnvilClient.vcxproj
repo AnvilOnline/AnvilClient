@@ -139,6 +139,9 @@
     <ClInclude Include="src\Client\Patches\Engine\EnginePatches.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\Client\ClientFunctions.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\Client\GetVersion.hpp" />
+    <ClInclude Include="src\Client\Rendering\Bridge\Network\NodeInformation.hpp" />
+    <ClInclude Include="src\Client\Rendering\Bridge\WebRendererBridge.hpp" />
+    <ClInclude Include="src\Client\Rendering\Bridge\WebRendererHandler.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRenderer.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererApp.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererClient.hpp" />

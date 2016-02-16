@@ -57,5 +57,8 @@
     <ClInclude Include="src\SDK\Network\network_observer.hpp" />
     <ClInclude Include="src\SDK\Network\Packets\packets.hpp" />
     <ClInclude Include="src\SDK\Network\network_session_parameter_remote_join_data.hpp" />
+    <ClInclude Include="src\Client\Rendering\Bridge\Network\NodeInformation.hpp" />
+    <ClInclude Include="src\Client\Rendering\Bridge\WebRendererBridge.hpp" />
+    <ClInclude Include="src\Client\Rendering\Bridge\WebRendererHandler.hpp" />
   </ItemGroup>
 </Project>
