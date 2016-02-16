@@ -32,6 +32,8 @@ namespace Anvil
 			bool IsRenderingEnabled();
 
 			std::string GetVersion();
+
+			bool Shutdown();
 		};
 	}
 }

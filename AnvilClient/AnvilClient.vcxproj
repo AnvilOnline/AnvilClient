@@ -140,7 +140,6 @@
     <ClInclude Include="src\Client\Hooks\WinHooks.hpp" />
     <ClInclude Include="src\Client\Patches\Engine\EnginePatches.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\Client\ClientFunctions.hpp" />
-    <ClInclude Include="src\Client\Rendering\Bridge\Network\NodeInformation.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\WebRendererBridge.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\WebRendererJSHandler.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRenderer.hpp" />

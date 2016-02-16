@@ -153,3 +153,13 @@ std::string AnvilClient::GetVersion()
 {
 	return m_Version;
 }
+
+bool AnvilClient::Shutdown()
+{
+	if (!Rendering::WebRenderer::GetInstance()->Shutdown())
+		WriteLog("WebRenderer failed to shut down properly.");
+
+	TerminateProcess(GetCurrentProcess(), 0);
+
+	return true;
+}

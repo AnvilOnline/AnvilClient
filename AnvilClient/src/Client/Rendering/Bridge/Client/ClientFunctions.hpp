@@ -58,7 +58,8 @@ namespace Anvil
 
 						p_RetVal = CefV8Value::CreateBool(true);
 
-						TerminateProcess(GetCurrentProcess(), 0);
+						AnvilClient::GetInstance()->Shutdown();
+
 						return true;
 					}
 				};
