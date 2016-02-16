@@ -15,6 +15,10 @@ Code was used from NoFaTe (http://nofate.me)
 
 #include <boost/thread.hpp>
 
+#include <boost/interprocess/file_mapping.hpp>
+#include <boost/interprocess/mapped_region.hpp>
+#include <boost/filesystem.hpp>
+
 #pragma comment(lib, "cppnetlib-uri")
 #include "WebRenderer.hpp"
 using namespace Anvil::Client::Rendering;
@@ -323,27 +327,32 @@ bool WebRendererSchemeHandler::ReadLocalFile(std::string p_Host, std::string p_P
 
 	try
 	{
-		std::array<char, 0x1000> s_Array;
+		// using boost's memory mapped file.
+		auto s_FileSize = boost::filesystem::file_size(s_FilePath.c_str());
+		boost::interprocess::file_mapping s_File(s_FilePath.c_str(), boost::interprocess::read_only);
+		
+		boost::interprocess::mapped_region s_Region(s_File, boost::interprocess::read_only);
 
-		std::ifstream s_File(s_FilePath, std::ios::binary);
-		if (!s_File.is_open())
+		auto s_Address = s_Region.get_address();
+		auto s_Size = s_Region.get_size();
+
+		// Pointer checking
+		if (!s_Address)
+			return false;
+
+		// Resize the final buffer
+		p_OutString.resize(s_Size);
+
+		// Zero out the buffer
+		fill(p_OutString.begin(), p_OutString.end(), 0);
+
+		// Copy the contents
+		auto s_Ret = memcpy_s((void*)p_OutString.data(), p_OutString.length(), s_Address, s_Size);
+		if (s_Ret)
 		{
-			WriteLog("Could not open file for reading (%s).", p_Path.c_str());
+			WriteLog("Failed reading file %s (%x).", p_Path.c_str(), s_Ret);
 			return false;
 		}
-
-		WriteLog("Starting read of %s from file.", p_Path.c_str());
-
-		s_File.rdbuf()->pubsetbuf(s_Array.data(), s_Array.size());
-
-		std::stringstream s_Stream;
-		s_Stream << s_File.rdbuf();
-
-		p_OutString = s_Stream.str();
-
-		s_File.close();
-
-		//p_OutString = std::string(std::istreambuf_iterator<char>(s_File), std::istreambuf_iterator<char>());
 
 		WriteLog("Successfully read %s from file.", p_Path.c_str());
 		return true;
