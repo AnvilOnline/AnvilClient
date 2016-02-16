@@ -5,6 +5,7 @@
 #include "Rendering/WebRenderer.hpp"
 
 #include <Misc/BuildInfo.hpp>
+#include "Functions/SDKFunctions.h"
 
 using Anvil::Client::AnvilClient;
 
@@ -12,6 +13,7 @@ AnvilClient::AnvilClient() :
 	m_WinHooks(nullptr),
 	m_EngineHooks(nullptr),
 	m_EnginePatches(nullptr),
+	m_SDKFunctions(nullptr),
 	m_MapInfoBlock(nullptr),
 	m_RenderingEnabled(true)
 {
@@ -59,6 +61,11 @@ bool AnvilClient::Init()
 
 bool AnvilClient::PreInit()
 {
+	// TODO: Move the SDK assignments somewhere else
+	m_SDKFunctions = std::make_unique<Functions::SDKFunctions>();
+	if (m_SDKFunctions)
+		m_SDKFunctions->Init();
+
 	// Generate version string
 	std::stringstream s_Stream;
 	s_Stream << "AnvilOnline Alpha Build: " << __DATE__ << " - " << ANVIL_BUILD;

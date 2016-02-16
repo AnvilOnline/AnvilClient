@@ -104,6 +104,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Client\AnvilClient.cpp" />
+    <ClCompile Include="src\Client\Functions\SDKFunctions.cpp" />
     <ClCompile Include="src\Client\Hooks\EngineHooks.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\GameTick.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\PrintDebug.cpp" />
@@ -136,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />
+    <ClInclude Include="src\Client\Functions\SDKFunctions.h" />
     <ClInclude Include="src\Client\Hooks\EngineHooks.hpp" />
     <ClInclude Include="src\Client\Hooks\WinHooks.hpp" />
     <ClInclude Include="src\Client\Patches\Engine\EnginePatches.hpp" />

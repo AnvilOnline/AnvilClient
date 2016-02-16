@@ -31,6 +31,7 @@
     <ClCompile Include="src\SDK\Network\network_session_parameter_remote_join_data.cpp" />
     <ClCompile Include="src\Client\Rendering\Bridge\WebRendererBridge.cpp" />
     <ClCompile Include="src\Client\Rendering\Bridge\WebRendererJSHandler.cpp" />
+    <ClCompile Include="src\Client\Functions\SDKFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />
@@ -60,5 +61,6 @@
     <ClInclude Include="src\SDK\Network\network_session_parameter_remote_join_data.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\WebRendererBridge.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\WebRendererJSHandler.hpp" />
+    <ClInclude Include="src\Client\Functions\SDKFunctions.h" />
   </ItemGroup>
 </Project>

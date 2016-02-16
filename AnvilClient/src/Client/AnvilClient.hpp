@@ -12,6 +12,7 @@ namespace Anvil
 			std::unique_ptr<IInit> m_WinHooks;
 			std::unique_ptr<IInit> m_EngineHooks;
 			std::unique_ptr<IInit> m_EnginePatches;
+			std::unique_ptr<IInit> m_SDKFunctions;
 
 			void* m_MapInfoBlock;
 			uint16_t* m_MapResetBit;
