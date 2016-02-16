@@ -117,6 +117,8 @@
     <ClCompile Include="src\Client\Hooks\Win\Rendering\Direct3DCreate9.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\Rendering\Direct3D_CreateDevice.cpp" />
     <ClCompile Include="src\Client\Patches\Engine\EnginePatches.cpp" />
+    <ClCompile Include="src\Client\Rendering\Bridge\WebRendererBridge.cpp" />
+    <ClCompile Include="src\Client\Rendering\Bridge\WebRendererJSHandler.cpp" />
     <ClCompile Include="src\Client\Rendering\WebRenderer.cpp" />
     <ClCompile Include="src\Client\Rendering\WebRendererApp.cpp" />
     <ClCompile Include="src\Client\Rendering\WebRendererClient.cpp" />
@@ -138,10 +140,9 @@
     <ClInclude Include="src\Client\Hooks\WinHooks.hpp" />
     <ClInclude Include="src\Client\Patches\Engine\EnginePatches.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\Client\ClientFunctions.hpp" />
-    <ClInclude Include="src\Client\Rendering\Bridge\Client\GetVersion.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\Network\NodeInformation.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\WebRendererBridge.hpp" />
-    <ClInclude Include="src\Client\Rendering\Bridge\WebRendererHandler.hpp" />
+    <ClInclude Include="src\Client\Rendering\Bridge\WebRendererJSHandler.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRenderer.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererApp.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererClient.hpp" />

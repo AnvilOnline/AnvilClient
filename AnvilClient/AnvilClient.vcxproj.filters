@@ -29,6 +29,8 @@
     <ClCompile Include="src\SDK\Network\network_observer.cpp" />
     <ClCompile Include="src\SDK\Network\Packets\packets.cpp" />
     <ClCompile Include="src\SDK\Network\network_session_parameter_remote_join_data.cpp" />
+    <ClCompile Include="src\Client\Rendering\Bridge\WebRendererBridge.cpp" />
+    <ClCompile Include="src\Client\Rendering\Bridge\WebRendererJSHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />
@@ -46,7 +48,6 @@
     <ClInclude Include="src\Client\Rendering\WebRendererSchemeHandler.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererSchemeHandlerFactory.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererApp.hpp" />
-    <ClInclude Include="src\Client\Rendering\Bridge\Client\GetVersion.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\Client\ClientFunctions.hpp" />
     <ClInclude Include="src\SDK\Unsorted\simulation_sandbox_engine_globals_definition.h" />
     <ClInclude Include="src\SDK\Unsorted\simulation_game_engine_globals_definition.h" />
@@ -59,6 +60,6 @@
     <ClInclude Include="src\SDK\Network\network_session_parameter_remote_join_data.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\Network\NodeInformation.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\WebRendererBridge.hpp" />
-    <ClInclude Include="src\Client\Rendering\Bridge\WebRendererHandler.hpp" />
+    <ClInclude Include="src\Client\Rendering\Bridge\WebRendererJSHandler.hpp" />
   </ItemGroup>
 </Project>

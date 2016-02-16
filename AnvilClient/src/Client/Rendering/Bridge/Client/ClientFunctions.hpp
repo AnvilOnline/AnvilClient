@@ -11,30 +11,27 @@ namespace Anvil
 	{
 		namespace Rendering
 		{
-			class ClientFunctionsHandler : public CefV8Handler
+			namespace Bridge
 			{
-			public:
-				ClientFunctionsHandler()
+				class ClientFunctions
 				{
+				public:
 
-				}
-
-				virtual bool Execute(const CefString& p_Name, CefRefPtr<CefV8Value> p_Object, const CefV8ValueList& p_Arguments, CefRefPtr<CefV8Value>& p_RetVal, CefString& p_Exception) override
-				{
-					if (p_Name == "Quit")
+					static bool OnGetVersion(const CefV8ValueList& p_Arguments, CefRefPtr<CefV8Value>& p_RetVal)
 					{
-						WriteLog("Quit called.");
-						Quit();
+						p_RetVal = CefV8Value::CreateString(AnvilClient::GetInstance()->GetVersion());
+
 						return true;
 					}
 
-					if (p_Name == "Connect")
+					static bool OnConnect(const CefV8ValueList& p_Arguments, CefRefPtr<CefV8Value>& p_RetVal)
 					{
 						WriteLog("Client connect called.");
+
 						return true;
 					}
 
-					if (p_Name == "LoadMap")
+					static bool OnLoadMap(const CefV8ValueList& p_Arguments, CefRefPtr<CefV8Value>& p_RetVal)
 					{
 						if (p_Arguments.size() < 3)
 						{
@@ -55,35 +52,17 @@ namespace Anvil
 						return true;
 					}
 
-					if (p_Name == "GetPtr")
+					static bool OnQuit(const CefV8ValueList& p_Arguments, CefRefPtr<CefV8Value>& p_RetVal)
 					{
-						uint32_t s_BaseAddress = 0, s_BaseSize = 0;
-						if (!Utils::Util::GetExecutableInfo(s_BaseAddress, s_BaseSize))
-							return false;
+						// TODO: Implement AnvilClient::Shutdown to ensure all resources get freed properly.
 
-						// TODO: Figure out where this is, because I have no idea where that offset came from... -kiwidog
-						auto s_SandboxEngineGlobalsAddress = *reinterpret_cast<uint32_t*>(s_BaseAddress + 0x4FF8B9C);
-						if (!s_SandboxEngineGlobalsAddress || s_SandboxEngineGlobalsAddress == -1)
-							return false;
+						p_RetVal = CefV8Value::CreateBool(true);
 
-						auto s_SandboxEngineGlobals = reinterpret_cast<simulation_sandbox_engine_globals_definition*>(s_SandboxEngineGlobalsAddress);
-
-						WriteLog("SandboxEngineGloabls: %s.", s_SandboxEngineGlobals->getName());
+						TerminateProcess(GetCurrentProcess(), 0);
 						return true;
 					}
-					return false;
-				}
-
-			protected:
-
-				void Quit()
-				{
-					// TODO: Implement AnvilClient::Shutdown to ensure all resources get freed properly.
-					TerminateProcess(GetCurrentProcess(), 0);
-				}
-
-				IMPLEMENT_REFCOUNTING(ClientFunctionsHandler);
-			};
+				};
+			}
 		}
 	}
 }

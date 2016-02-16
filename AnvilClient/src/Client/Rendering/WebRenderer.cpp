@@ -154,7 +154,7 @@ bool WebRenderer::Init()
 
 	
 	// Jquery fails here, TODO: Implement custom handler
-	std::string s_ContainerPath = "anvil://menu/index.html"; /*+ s_UIDirectory + "/container.html";*/
+	std::string s_ContainerPath = "anvil://menu/"; /*+ s_UIDirectory + "/container.html";*/
 
 	WriteLog("Container Path: %s.", s_ContainerPath.c_str());
 
