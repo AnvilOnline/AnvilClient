@@ -8,9 +8,9 @@ using namespace Anvil::Client::Rendering;
 
 WebRendererHandler::WebRendererHandler(LPDIRECT3DDEVICE9 p_Device) :
 	m_Device(p_Device),
-	m_TextureData(nullptr),
 	m_Browser(nullptr)
 {
+	m_TextureData.resize(0);
 }
 
 bool WebRendererHandler::GetViewRect(CefRefPtr<CefBrowser> p_Browser, CefRect& p_Rect)
@@ -28,13 +28,13 @@ void WebRendererHandler::OnPaint(CefRefPtr<CefBrowser> p_Browser, PaintElementTy
 	if (!m_Browser)
 		m_Browser = p_Browser;
 
-	if (!m_TextureData)
+	if (m_TextureData.size() == 0)
 		return;
 
 	m_TextureLock.lock();
 
 	for (auto& l_Rect : p_DirtyRects)
-		memcpy(m_TextureData, p_Buffer, p_Width * p_Height * 4);
+		memcpy(m_TextureData.data(), p_Buffer, p_Width * p_Height * 4);
 
 	m_TextureLock.unlock();
 }
@@ -65,25 +65,25 @@ bool WebRendererHandler::Resize(uint32_t p_Width, uint32_t p_Height)
 	m_TextureLock.lock();
 
 	WriteLog("Tried to allocate 0x%x bytes.", s_TextureDataSize);
-	// If we get a resize, don't leak all of that memory it's bad
-	if (m_TextureData)
-	{
-		delete m_TextureData;
-		m_TextureData = nullptr;
-	}
 
-	m_TextureData = new uint8_t[s_TextureDataSize];
-	if (!m_TextureData)
-		return false;
+	// Resize to our new data
+	m_TextureData.resize(s_TextureDataSize);
 
-	memset(m_TextureData, 0, s_TextureDataSize);
+	// Clear out the buffer
+	fill(m_TextureData.begin(), m_TextureData.end(), 0);
+
 	m_TextureLock.unlock();
 	return true;
 }
 
 uint8_t* WebRendererHandler::GetTexture()
 {
-	return m_TextureData;
+	return m_TextureData.data();
+}
+
+uint32_t WebRendererHandler::GetTextureLength()
+{
+	return m_TextureData.size();
 }
 
 CefRefPtr<CefBrowser> WebRendererHandler::GetBrowser()

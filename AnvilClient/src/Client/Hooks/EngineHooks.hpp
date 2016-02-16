@@ -12,12 +12,6 @@ namespace Anvil
 
 			class EngineHooks : public IInit
 			{
-			protected:
-				~EngineHooks()
-				{
-				}
-
-			private:
 				DeclareFunction(int, GameTick, __stdcall);
 				DeclareFunction(bool, VerifyMapSignature, __fastcall, void* This);
 				DeclareFunction(void, StartCountdownTimer, __stdcall);

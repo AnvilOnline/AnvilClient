@@ -7,11 +7,18 @@ namespace Anvil
 	{
 		namespace Rendering
 		{
+			namespace Bridge
+			{
+				class WebRendererBridge;
+			}
+
 			class WebRendererApp : 
 				public CefApp,
 				public CefBrowserProcessHandler,
 				public CefRenderProcessHandler
 			{
+				std::shared_ptr<Bridge::WebRendererBridge> m_Bridge;
+
 			public:
 				virtual void OnRegisterCustomSchemes(CefRefPtr<CefSchemeRegistrar> p_Registrar) override;
 

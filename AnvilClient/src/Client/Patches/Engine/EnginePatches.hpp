@@ -9,11 +9,6 @@ namespace Anvil
 		{
 			class EnginePatches : public IInit
 			{
-			protected:
-				~EnginePatches()
-				{
-				}
-
 			public:
 				bool Init() override;
 			};

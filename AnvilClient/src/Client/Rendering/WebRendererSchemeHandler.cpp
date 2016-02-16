@@ -323,19 +323,27 @@ bool WebRendererSchemeHandler::ReadLocalFile(std::string p_Host, std::string p_P
 
 	try
 	{
+		std::array<char, 0x1000> s_Array;
+
 		std::ifstream s_File(s_FilePath, std::ios::binary);
 		if (!s_File.is_open())
 		{
-			WriteLog("Could not open file for reading (%s).");
+			WriteLog("Could not open file for reading (%s).", p_Path.c_str());
 			return false;
 		}
+
+		WriteLog("Starting read of %s from file.", p_Path.c_str());
+
+		s_File.rdbuf()->pubsetbuf(s_Array.data(), s_Array.size());
 
 		std::stringstream s_Stream;
 		s_Stream << s_File.rdbuf();
 
 		p_OutString = s_Stream.str();
-		
+
 		s_File.close();
+
+		//p_OutString = std::string(std::istreambuf_iterator<char>(s_File), std::istreambuf_iterator<char>());
 
 		WriteLog("Successfully read %s from file.", p_Path.c_str());
 		return true;

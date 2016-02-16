@@ -8,8 +8,6 @@
 
 using Anvil::Client::AnvilClient;
 
-AnvilClient* AnvilClient::m_Instance = nullptr;
-
 AnvilClient::AnvilClient() : 
 	m_WinHooks(nullptr),
 	m_EngineHooks(nullptr),
@@ -19,16 +17,10 @@ AnvilClient::AnvilClient() :
 {
 }
 
-AnvilClient::~AnvilClient()
+std::shared_ptr<AnvilClient> AnvilClient::GetInstance()
 {
-}
-
-AnvilClient* AnvilClient::GetInstance()
-{
-	if (!m_Instance)
-		m_Instance = new AnvilClient;
-
-	return m_Instance;
+	static auto s_Instance = std::make_shared<AnvilClient>();
+	return s_Instance;
 }
 
 bool AnvilClient::Init()
@@ -73,17 +65,17 @@ bool AnvilClient::PreInit()
 	m_Version = s_Stream.str();
 
 	// Set up our windows hooks, this will allow us to hook the window creation and set up for the dx hooks
-	m_WinHooks = new Hooks::WinHooks;
+	m_WinHooks = std::make_unique<Hooks::WinHooks>();
 	if (m_WinHooks)
 		m_WinHooks->Init();
 
 	// Next we will hook engine related functions
-	m_EngineHooks = new Hooks::EngineHooks;
+	m_EngineHooks = std::make_unique<Hooks::EngineHooks>();
 	if (m_EngineHooks)
 		m_EngineHooks->Init();
 
 	// Then we will apply memory patches that have to be done in inline assembly
-	m_EnginePatches = new Patches::EnginePatches;
+	m_EnginePatches = std::make_unique<Patches::EnginePatches>();
 	if (m_EnginePatches)
 		m_EnginePatches->Init();
 
@@ -160,4 +152,14 @@ bool AnvilClient::IsRenderingEnabled()
 std::string AnvilClient::GetVersion()
 {
 	return m_Version;
+}
+
+bool AnvilClient::Shutdown()
+{
+	if (!Rendering::WebRenderer::GetInstance()->Shutdown())
+		WriteLog("WebRenderer failed to shut down properly.");
+
+	TerminateProcess(GetCurrentProcess(), 0);
+
+	return true;
 }

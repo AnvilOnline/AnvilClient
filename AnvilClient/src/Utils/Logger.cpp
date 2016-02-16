@@ -2,15 +2,14 @@
 #include <Misc/BuildInfo.hpp>
 #include <sstream>
 #include <consoleapi.h>
+#include <vector>
 
 using Anvil::Utils::Logger;
 
-Logger* Logger::m_Instance = nullptr;
-Logger* Logger::GetInstance()
+std::shared_ptr<Logger> Logger::GetInstance()
 {
-	if (!m_Instance)
-		m_Instance = new Logger;
-	return m_Instance;
+	static auto s_Instance = std::make_shared<Logger>();
+	return s_Instance;
 }
 
 bool Logger::Init()
@@ -61,21 +60,20 @@ bool Logger::InternalWriteLog(char* p_Function, int32_t p_Line, char* p_Format, 
 	va_start(s_Args, p_Format);
 
 	auto s_FinalLength = _vscprintf(p_Format, s_Args) + 1;
-	auto s_FinalString = static_cast<char*>(calloc(s_FinalLength, sizeof(char)));
-	if (!s_FinalString)
-		return false;
 
-	vsprintf_s(s_FinalString, s_FinalLength, p_Format, s_Args);
+	std::vector<char> s_FinalString;
+	s_FinalString.resize(s_FinalLength);
+	fill(s_FinalString.begin(), s_FinalString.end(), 0);
+
+
+	vsprintf_s(s_FinalString.data(), s_FinalLength, p_Format, s_Args);
 
 	va_end(s_Args);
 
 	std::stringstream s_Stream;
-	s_Stream << "[" << p_Function << " : " << p_Line << "] " << s_FinalString << "\r\n";
+	s_Stream << "[" << p_Function << " : " << p_Line << "] " << s_FinalString.data() << "\r\n";
 
 	auto s_OutputString = s_Stream.str();
-
-	// Free our buffer
-	free(s_FinalString);
 
 	// Output to the console first
 	auto s_OutputLength = 0;

@@ -13,7 +13,7 @@ namespace Anvil
 			class WebRendererHandler : public CefRenderHandler
 			{
 				LPDIRECT3DDEVICE9 m_Device;
-				uint8_t* m_TextureData;
+				std::vector<uint8_t> m_TextureData;
 				std::mutex m_TextureLock;
 
 				CefRefPtr<CefBrowser> m_Browser;
@@ -28,6 +28,7 @@ namespace Anvil
 				bool Resize(uint32_t p_Width, uint32_t p_Height);
 
 				uint8_t* GetTexture();
+				uint32_t GetTextureLength();
 				CefRefPtr<CefBrowser> GetBrowser();
 				void LockTexture();
 				void UnlockTexture();

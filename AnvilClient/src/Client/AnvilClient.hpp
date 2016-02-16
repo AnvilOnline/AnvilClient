@@ -1,6 +1,7 @@
 #pragma once
 #include <Misc/IInit.hpp>
 #include <string>
+#include <memory>
 
 namespace Anvil
 {
@@ -8,11 +9,9 @@ namespace Anvil
 	{
 		class AnvilClient : IInit
 		{
-			static AnvilClient* m_Instance;
-
-			IInit* m_WinHooks;
-			IInit* m_EngineHooks;
-			IInit* m_EnginePatches;
+			std::unique_ptr<IInit> m_WinHooks;
+			std::unique_ptr<IInit> m_EngineHooks;
+			std::unique_ptr<IInit> m_EnginePatches;
 
 			void* m_MapInfoBlock;
 			uint16_t* m_MapResetBit;
@@ -20,13 +19,10 @@ namespace Anvil
 			std::string m_Version;
 			volatile bool m_RenderingEnabled;
 
-			AnvilClient();
-
-		protected:
-			~AnvilClient();
-
+			
 		public:
-			static AnvilClient* GetInstance();
+			AnvilClient();
+			static std::shared_ptr<AnvilClient> GetInstance();
 			bool Init() override;
 			bool PreInit() override;
 			bool PostInit() override;
@@ -36,6 +32,8 @@ namespace Anvil
 			bool IsRenderingEnabled();
 
 			std::string GetVersion();
+
+			bool Shutdown();
 		};
 	}
 }

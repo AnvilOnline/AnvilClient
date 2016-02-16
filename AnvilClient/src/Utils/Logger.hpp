@@ -2,6 +2,7 @@
 #include <Misc/IInit.hpp>
 #include <mutex>
 #include <fstream>
+#include <memory>
 
 #ifdef _DEBUG
 #define WriteLog(p_Format, ...) Anvil::Utils::Logger::GetInstance()->InternalWriteLog(__FUNCTION__, __LINE__, p_Format, __VA_ARGS__);
@@ -20,15 +21,8 @@ namespace Anvil
 			std::ofstream m_Stream;
 			void* m_ConsoleHandle;
 
-			static Logger* m_Instance;
-
-		protected:
-			~Logger()
-			{
-			}
-
 		public:
-			static Logger* GetInstance();
+			static std::shared_ptr<Logger> GetInstance();
 			bool Init() override;
 
 			bool InitConsole(std::string p_Title);
