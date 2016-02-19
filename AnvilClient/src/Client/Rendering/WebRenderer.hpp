@@ -2,8 +2,8 @@
 #include <Misc/IInit.hpp>
 #include <d3d9.h>
 #include <d3dx9.h>
-#include <include/internal/cef_ptr.h>
-#include <include/cef_app.h>
+#include <internal/cef_ptr.h>
+#include <cef_app.h>
 #include "WebRendererClient.hpp"
 #include <memory>
 #include <mutex>

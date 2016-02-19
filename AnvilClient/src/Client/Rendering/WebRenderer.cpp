@@ -135,7 +135,6 @@ bool WebRenderer::Init()
 
 	s_BrowserSettings.windowless_frame_rate = 60;
 	s_BrowserSettings.webgl = STATE_ENABLED;
-	s_BrowserSettings.java = STATE_DISABLED;
 	s_BrowserSettings.local_storage = STATE_DISABLED;
 	s_BrowserSettings.databases = STATE_ENABLED;
 	s_BrowserSettings.application_cache = STATE_DISABLED;

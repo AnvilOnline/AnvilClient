@@ -7,6 +7,8 @@
 #include <Misc/BuildInfo.hpp>
 #include "Functions/SDKFunctions.h"
 
+#include <sstream>
+
 using Anvil::Client::AnvilClient;
 
 AnvilClient::AnvilClient() : 
