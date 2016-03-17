@@ -377,13 +377,31 @@ bool WebRenderer::Resize(uint32_t p_Width, uint32_t p_Height)
 	if (!m_RenderHandler)
 		return false;
 
-	auto s_Result = 
-		static_cast<WebRendererHandler*>(m_RenderHandler.get())->Resize(p_Width, p_Height);
+	auto s_RenderHandler = static_cast<WebRendererHandler*>(m_RenderHandler.get());
+
+	auto s_Result = s_RenderHandler->Resize(p_Width, p_Height);
 
 	if (!s_Result)
 	{
 		WriteLog("Resize failed.");
 		return false;
+	}
+
+	// Recreate the D3D Texture
+	if (m_Texture)
+	{
+		m_Texture->Release();
+		m_Texture = nullptr;
+
+		if (m_Device->CreateTexture(p_Width, p_Height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_Texture, nullptr))
+			return false;
+	}
+
+	auto s_Browser = s_RenderHandler->GetBrowser();
+	if (s_Browser)
+	{
+		s_Browser->GetHost()->NotifyScreenInfoChanged();
+		s_Browser->GetHost()->WasResized();
 	}
 
 	return true;
