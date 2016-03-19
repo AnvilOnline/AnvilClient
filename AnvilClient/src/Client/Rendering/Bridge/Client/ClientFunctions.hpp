@@ -1,6 +1,7 @@
 #pragma once
 #include <include/cef_v8.h>
 #include <Utils/Logger.hpp>
+#include <Client/Rendering/WebRenderer.hpp>
 #include <Client/AnvilClient.hpp>
 #include <Utils/Util.hpp>
 #include <SDK/Unsorted/simulation_sandbox_engine_globals_definition.h>
@@ -48,6 +49,9 @@ namespace Anvil
 
 						p_RetVal = CefV8Value::CreateBool(true);
 						Sleep(25);
+						
+						auto s_WebRenderer = Rendering::WebRenderer::GetInstance();
+						s_WebRenderer->ShowRenderer(!s_WebRenderer->IsRendering(), false);
 
 						return true;
 					}
