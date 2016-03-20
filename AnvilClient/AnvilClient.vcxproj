@@ -127,6 +127,7 @@
     <ClCompile Include="src\Client\Rendering\WebRendererHandler.cpp" />
     <ClCompile Include="src\Client\Rendering\WebRendererSchemeHandler.cpp" />
     <ClCompile Include="src\Client\Rendering\WebRendererSchemeHandlerFactory.cpp" />
+    <ClCompile Include="src\Client\Settings\SettingsManager.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\SDK\Network\network.cpp" />
     <ClCompile Include="src\SDK\Network\network_observer.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="src\Client\Rendering\WebRendererHandler.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererSchemeHandler.hpp" />
     <ClInclude Include="src\Client\Rendering\WebRendererSchemeHandlerFactory.hpp" />
+    <ClInclude Include="src\Client\Settings\SettingsManager.hpp" />
     <ClInclude Include="src\Misc\BuildInfo.hpp" />
     <ClInclude Include="src\Misc\IInit.hpp" />
     <ClInclude Include="src\Misc\Macros.hpp" />

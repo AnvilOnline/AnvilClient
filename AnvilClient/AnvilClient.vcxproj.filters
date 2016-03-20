@@ -33,6 +33,7 @@
     <ClCompile Include="src\Client\Rendering\Bridge\WebRendererJSHandler.cpp" />
     <ClCompile Include="src\Client\Functions\SDKFunctions.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\Bink.cpp" />
+    <ClCompile Include="src\Client\Settings\SettingsManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />
@@ -63,5 +64,6 @@
     <ClInclude Include="src\Client\Rendering\Bridge\WebRendererBridge.hpp" />
     <ClInclude Include="src\Client\Rendering\Bridge\WebRendererJSHandler.hpp" />
     <ClInclude Include="src\Client\Functions\SDKFunctions.h" />
+    <ClInclude Include="src\Client\Settings\SettingsManager.hpp" />
   </ItemGroup>
 </Project>

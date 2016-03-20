@@ -26,23 +26,5 @@ bool EnginePatches::Init()
 	else
 		WriteLog("could not find wasapi fmod fix.");
 
-	// Halo Online 11.x
-	auto s_EnglishV11Patch = Utils::Util::FindPattern(reinterpret_cast<void*>(s_BaseAddress), s_BaseAddress, "\x83\x3D\x00\x00\x00\x01\x0B\x74\x2F\xC7\x05\x00\x00\x00\x01\x0B", "xx???xxxxxx???xx");
-	if (s_EnglishV11Patch)
-	{
-		auto s_Ret = Utils::Util::PatchAddressInMemory(s_EnglishV11Patch + 6, "\x00", 1);
-		WriteLog("First english patch %s.", (s_Ret ? "applied" : "not applied"));
-
-		s_Ret = Utils::Util::PatchAddressInMemory(s_EnglishV11Patch + 15, "\x00", 1);
-		WriteLog("Second english patch %s.", (s_Ret ? "applied" : "not applied"));
-	}
-	else
-		WriteLog("English Fix Patch Failed.");
-
-	// Halo Online 12.x
-	// TODO: Signature based
-	/*auto s_EnglishV12Patch = Utils::Util::PatchAddressInFile(0x2C73DD, "\xBB\x00", 2);
-	WriteLog("English patch v2 applied %s.", (s_EnglishV12Patch ? "successfully" : "unsuccessfully"));*/
-
 	return true;
 }
