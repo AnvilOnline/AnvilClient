@@ -46,6 +46,7 @@ void WebRendererApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 	s_AnvilObject->AddFunction("Connect", Bridge::ClientFunctions::OnConnect);
 	s_AnvilObject->AddFunction("LoadMap", Bridge::ClientFunctions::OnLoadMap);
 	s_AnvilObject->AddFunction("Quit", Bridge::ClientFunctions::OnQuit);
+	s_AnvilObject->AddFunction("Login", Bridge::ClientFunctions::OnLogin);
 
 	m_Bridge->AddHandler(s_AnvilObject);
 }

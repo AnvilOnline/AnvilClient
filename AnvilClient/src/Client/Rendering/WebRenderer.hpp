@@ -43,6 +43,7 @@ namespace Anvil
 				LPD3DXSPRITE m_Sprite;
 				LPD3DXFONT m_Font;
 				D3DXVECTOR3 m_Position;
+				D3DLOCKED_RECT m_TextureRect;
 
 			public:
 				WebRenderer();

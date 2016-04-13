@@ -1,10 +1,11 @@
-#include <Windows.h>
 #include <Client/Hooks/WinHooks.hpp>
 #include <Client/Rendering/WebRenderer.hpp>
 
 #define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
 #define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
 #include <Client/AnvilClient.hpp>
+
+#include <Windows.h>
 using namespace Anvil::Client::Hooks;
 
 LRESULT WinHooks::HookMouseProc(int p_Code, WPARAM p_WParam, LPARAM p_LParam)

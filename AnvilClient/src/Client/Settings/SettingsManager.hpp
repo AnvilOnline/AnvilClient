@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
-#include <memory>
 #include <list>
+#include <Misc/IInit.hpp>
+#include "SettingsGroup.hpp"
 
 namespace Anvil
 {
@@ -9,22 +10,19 @@ namespace Anvil
 	{
 		namespace Settings
 		{
-			class SettingsManager
+
+			class SettingsManager : public IInit
 			{
-				template <class T>
-				class SettingsObject
-				{
-					std::shared_ptr<T> m_Object;
-					std::string m_Name;
-					std::string m_Description;
+				std::list<SettingsGroup> m_Groups;
 
-				public:
-					SettingsObject(std::string p_Name, std::string p_Description);
+			public:
+				bool Init() override;
 
-					SettingsObject(std::string p_Name, std::string p_Description, T* p_Object);
-				};
+				bool AddSettingsGroup(std::string p_Name, std::string p_Description);
 
-				std::list<SettingsObject<void>> m_Settings;
+				std::list<SettingsGroup>& GetGroups();
+
+				SettingsGroup& GetGroup(std::string p_Name);
 			};
 		}
 	}

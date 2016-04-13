@@ -34,6 +34,9 @@
     <ClCompile Include="src\Client\Functions\SDKFunctions.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\Bink.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsManager.cpp" />
+    <ClCompile Include="src\Client\Hooks\Win\Rendering\D3DDevice9_SetViewport.cpp" />
+    <ClCompile Include="src\Client\Settings\SettingsEntry.cpp" />
+    <ClCompile Include="src\Client\Settings\SettingsGroup.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />
@@ -65,5 +68,7 @@
     <ClInclude Include="src\Client\Rendering\Bridge\WebRendererJSHandler.hpp" />
     <ClInclude Include="src\Client\Functions\SDKFunctions.h" />
     <ClInclude Include="src\Client\Settings\SettingsManager.hpp" />
+    <ClInclude Include="src\Client\Settings\SettingsGroup.hpp" />
+    <ClInclude Include="src\Client\Settings\SettingsEntry.hpp" />
   </ItemGroup>
 </Project>

@@ -7,12 +7,18 @@ namespace Anvil
 {
 	namespace Client
 	{
+		namespace Settings
+		{
+			class SettingsManager;
+		}
+
 		class AnvilClient : IInit
 		{
 			std::unique_ptr<IInit> m_WinHooks;
 			std::unique_ptr<IInit> m_EngineHooks;
 			std::unique_ptr<IInit> m_EnginePatches;
 			std::unique_ptr<IInit> m_SDKFunctions;
+			std::shared_ptr<IInit> m_Settings;
 
 			void* m_WindowHandle;
 			void* m_MapInfoBlock;
@@ -39,6 +45,8 @@ namespace Anvil
 
 			void* GetWindowHandle();
 			void SetWindowHandle(void* p_Window);
+
+			std::shared_ptr<IInit> GetSettingsManager();
 		};
 	}
 }

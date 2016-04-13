@@ -5,9 +5,6 @@ Code was used from NoFaTe (http://nofate.me)
 #include "WebRendererSchemeHandler.hpp"
 #include <Utils/Logger.hpp>
 
-#define _WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-
 #include <boost/network/uri.hpp>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
@@ -165,7 +162,7 @@ void WebRendererSchemeHandler::ProcessRequestInternal(CefRefPtr<CefRequest> p_Re
 	if (s_Result && s_RangeIt != s_Headers.end())
 	{
 		// Parse the range info.
-		std::string s_Range = s_RangeIt->second.ToString();
+		auto s_Range = s_RangeIt->second.ToString();
 		auto s_Sep = s_Range.find("=");
 
 		if (s_Sep != std::string::npos)
@@ -173,19 +170,19 @@ void WebRendererSchemeHandler::ProcessRequestInternal(CefRefPtr<CefRequest> p_Re
 			s_Range = s_Range.substr(s_Sep + 1);
 
 			std::vector<std::string> s_Ranges;
-			boost::split(s_Ranges, s_Range, boost::is_any_of(","));
+			split(s_Ranges, s_Range, boost::is_any_of(","));
 
 			// We only handle the first requested range for now.
 			// TODO: Change that?
 			m_RequestedRange = s_Ranges[0];
 
 			s_Ranges.clear();
-			boost::split(s_Ranges, m_RequestedRange, boost::is_any_of("-"));
+			split(s_Ranges, m_RequestedRange, boost::is_any_of("-"));
 
 			if (s_Ranges.size() == 2)
 			{
-				size_t s_Start = s_Ranges[0].size() == 0 ? 0 : boost::lexical_cast<size_t>(s_Ranges[0]);
-				size_t s_End = s_Ranges[1].size() == 0 ? 0 : boost::lexical_cast<size_t>(s_Ranges[1]);
+				auto s_Start = s_Ranges[0].size() == 0 ? 0 : boost::lexical_cast<size_t>(s_Ranges[0]);
+				auto s_End = s_Ranges[1].size() == 0 ? 0 : boost::lexical_cast<size_t>(s_Ranges[1]);
 
 				if (s_Ranges[0].size() == 0)
 				{
@@ -324,6 +321,8 @@ bool WebRendererSchemeHandler::ReadLocalFile(std::string p_Host, std::string p_P
 	auto s_DirectoryPath = s_UIDirectory + "/" + p_Host;
 
 	auto s_FilePath = s_DirectoryPath + p_Path;
+
+	auto s_RealFilePath = boost::filesystem::absolute(s_FilePath, s_UIDirectory).string();
 
 	try
 	{

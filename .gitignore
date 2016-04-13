@@ -196,3 +196,4 @@ FakesAssemblies/
 *.opt
 AnvilClient/depends/include/boost/*
 *.opendb
+*.db

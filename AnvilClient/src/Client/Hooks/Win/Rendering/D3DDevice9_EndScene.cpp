@@ -7,7 +7,16 @@ using namespace Anvil::Client::Hooks;
 
 HookedFunction(WinHooks, HRESULT, D3DDevice9_EndScene, WINAPI, LPDIRECT3DDEVICE9 p_Device)
 {
+	D3DVIEWPORT9 s_Viewport;
+	p_Device->GetViewport(&s_Viewport);
+	s_Viewport.X = 0;
+	p_Device->SetViewport(&s_Viewport);
+
 	auto s_Ret = o_D3DDevice9_EndScene(p_Device);
+
+	p_Device->GetViewport(&s_Viewport);
+	s_Viewport.X = 0;
+	p_Device->SetViewport(&s_Viewport);
 
 	// Get an instance of our WebRenderer
 	auto s_WebRenderer = Rendering::WebRenderer::GetInstance();

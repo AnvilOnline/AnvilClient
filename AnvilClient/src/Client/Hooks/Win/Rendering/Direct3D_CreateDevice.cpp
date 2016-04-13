@@ -25,13 +25,16 @@ HookedFunction(WinHooks, HRESULT, Direct3D_CreateDevice, __stdcall, void* Th, UI
 	pVTable = reinterpret_cast<uint32_t*>(pVTable[0]);
 
 	// Get all of the addresses to hook by vtable
+	
 	auto s_BeginScene = pVTable[41];
 	auto s_EndScene = pVTable[42];
 	auto s_Reset = pVTable[16];
+	auto s_SetViewport = pVTable[47];
 
 	DeclareHookAtOffset(D3DDevice9_BeginScene, s_BeginScene);
 	DeclareHookAtOffset(D3DDevice9_EndScene, s_EndScene);
 	DeclareHookAtOffset(D3DDevice9_Reset, s_Reset);
+	DeclareHookAtOffset(D3DDevice9_SetViewport, s_SetViewport);
 
 	WriteLog("CreateDevice called, DirectX functions hooked.");
 

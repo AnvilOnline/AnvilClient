@@ -8,6 +8,7 @@
 #include "Functions/SDKFunctions.h"
 
 #include <sstream>
+#include "Settings/SettingsManager.hpp"
 
 using Anvil::Client::AnvilClient;
 
@@ -16,6 +17,7 @@ AnvilClient::AnvilClient() :
 	m_EngineHooks(nullptr),
 	m_EnginePatches(nullptr),
 	m_SDKFunctions(nullptr),
+	m_Settings(nullptr),
 	m_WindowHandle(nullptr),
 	m_MapInfoBlock(nullptr),
 	m_RenderingEnabled(true)
@@ -64,6 +66,11 @@ bool AnvilClient::Init()
 
 bool AnvilClient::PreInit()
 {
+	// Init settings.
+	m_Settings = std::make_unique<Settings::SettingsManager>();
+	if (m_Settings)
+		m_Settings->Init();
+
 	// TODO: Move the SDK assignments somewhere else
 	m_SDKFunctions = std::make_unique<Functions::SDKFunctions>();
 	if (m_SDKFunctions)
@@ -184,4 +191,9 @@ void* AnvilClient::GetWindowHandle()
 void AnvilClient::SetWindowHandle(void* p_Window)
 {
 	m_WindowHandle = p_Window;
+}
+
+std::shared_ptr<Anvil::IInit> AnvilClient::GetSettingsManager()
+{
+	return m_Settings;
 }

@@ -1,6 +1,4 @@
 #pragma once
-#define WIN32_LEAN_AND_MEAN
-
 #include <boost/thread.hpp>
 #include <boost/thread/lockable_adapter.hpp>
 #include <include/cef_scheme.h>

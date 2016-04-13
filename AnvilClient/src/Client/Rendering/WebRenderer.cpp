@@ -289,19 +289,19 @@ bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 	if (!s_RenderHandler)
 		return false;
 
-	s_RenderHandler->LockTexture();
-
-	D3DLOCKED_RECT s_Rect;
-	auto s_Result = m_Texture->LockRect(0, &s_Rect, nullptr, D3DLOCK_DISCARD);
+	
+	uint32_t s_Width = 0, s_Height = 0;
+	if (!s_RenderHandler->GetViewportInformation(s_Width, s_Height))
+	{
+		m_Texture->UnlockRect(0);
+		s_RenderHandler->UnlockTexture();
+		return false;
+	}
+	
+	auto s_Result = m_Texture->LockRect(0, &m_TextureRect, nullptr, D3DLOCK_DISCARD);
 	if (SUCCEEDED(s_Result))
 	{
-		uint32_t s_Width = 0, s_Height = 0;
-		if (!s_RenderHandler->GetViewportInformation(s_Width, s_Height))
-		{
-			m_Texture->UnlockRect(0);
-			s_RenderHandler->UnlockTexture();
-			return false;
-		}
+		s_RenderHandler->LockTexture();
 
 		auto s_TextureData = s_RenderHandler->GetTexture();
 		if (!s_TextureData)
@@ -311,12 +311,11 @@ bool WebRenderer::Render(LPDIRECT3DDEVICE9 p_Device)
 			return false;
 		}
 
-		memcpy(s_Rect.pBits, s_TextureData, s_Width * s_Height * 4);
+		memcpy(m_TextureRect.pBits, s_TextureData, s_Width * s_Height * 4);
+		s_RenderHandler->UnlockTexture();
 
 		m_Texture->UnlockRect(0);
 	}
-
-	s_RenderHandler->UnlockTexture();
 
 	if (GetState() == RendererState_Shown)
 		p_Device->Clear(1, nullptr, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 128, 128, 128), 0, 0);
