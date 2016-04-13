@@ -54,7 +54,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_DEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_NO_ASYNCRTIMP;WIN32;WIN32_LEAN_AND_MEAN;_DEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)depends/include;$(BOOST160_DIR);$(CEF3_DIR)/include;$(CEF3_DIR);$(CPPNETLIB_DIR);$(CPPNETLIB_DIR)\deps\asio\asio\include;$(CPPRESTSDK_DIR)\Release\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -63,7 +63,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)depends/lib;$(BOOST160_DIR)/lib32-msvc-14.0;$(CEF3_DIR)/Debug;$(CPPNETLIB_DIR)/build/libs/network/src/Debug;$(CEF3_DIR)/build/libcef_dll/Debug;$(CPPRESTSDK_DIR)\Binaries\Win32\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;libcef.lib;libcef_dll_wrapper.lib;cppnetlib-uri.lib;cpprest140d_2_8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;libcef.lib;libcef_dll_wrapper.lib;cppnetlib-uri.lib;cpprest140d_2_8.lib;winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>call "$(ProjectDir)PreBuild.bat"</Command>
@@ -80,7 +80,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;NDEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_NO_ASYNCRTIMP;WIN32;WIN32_LEAN_AND_MEAN;NDEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)depends/include;$(BOOST160_DIR);$(CEF3_DIR)/include;$(CEF3_DIR);$(CPPNETLIB_DIR);$(CPPNETLIB_DIR)\deps\asio\asio\include;$(CPPRESTSDK_DIR)\Release\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -91,7 +91,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(BOOST160_DIR)/lib32-msvc-14.0;$(ProjectDir)depends/lib;$(CEF3_DIR)/Release;$(CPPNETLIB_DIR)/build/libs/network/src/Release;$(CEF3_DIR)/build/libcef_dll/Release;$(CPPRESTSDK_DIR)\Binaries\Win32\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;libcef.lib;libcef_dll_wrapper.lib;cppnetlib-uri.lib;cpprest140_2_8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;libcef.lib;libcef_dll_wrapper.lib;cppnetlib-uri.lib;cpprest140_2_8.lib;winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
