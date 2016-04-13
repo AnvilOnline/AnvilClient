@@ -92,7 +92,7 @@ bool WebRenderer::Init()
 	CefSettings s_Settings;
 	s_Settings.multi_threaded_message_loop = true;
 	CefString(&s_Settings.product_version) = "AnvilOnline";
-	CefString(&s_Settings.browser_subprocess_path) = "cefsimple.exe"; // TODO: see about pre-compiling this
+	//CefString(&s_Settings.browser_subprocess_path) = "cefsimple.exe"; // TODO: see about pre-compiling this
 	s_Settings.no_sandbox = true;
 	s_Settings.pack_loading_disabled = false;
 	s_Settings.windowless_rendering_enabled = true;
