@@ -54,16 +54,16 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_DEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_NO_ASYNCRTIMP;WIN32;WIN32_LEAN_AND_MEAN;_DEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)depends/include;$(BOOST160_DIR);$(CEF3_DIR)/include;$(CEF3_DIR);$(CPPNETLIB_DIR);$(CPPNETLIB_DIR)\deps\asio\asio\include;$(SolutionDir)cpprestsdk\Release\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)depends/lib;%(AdditionalLibraryDirectories);$(BOOST160_DIR)/lib32-msvc-14.0;$(CEF3_DIR)/Debug;$(CPPNETLIB_DIR)/build/libs/network/src/Debug;$(CEF3_DIR)/build/libcef_dll/Debug;$(SolutionDir)cpprestsdk\Binaries\Win32\Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)depends/lib;$(BOOST160_DIR)/lib32-msvc-14.0;$(CEF3_DIR)/Debug;$(CPPNETLIB_DIR)/build/libs/network/src/Debug;$(CEF3_DIR)/build/libcef_dll/Debug;$(SolutionDir)cpprestsdk\Binaries\Win32\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;libcef.lib;libcef_dll_wrapper.lib;cppnetlib-uri.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;libcef.lib;libcef_dll_wrapper.lib;cppnetlib-uri.lib;cpprest140d_2_8.lib;winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>call "$(ProjectDir)PreBuild.bat"</Command>
@@ -104,6 +104,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Client\AnvilClient.cpp" />
+    <ClCompile Include="src\Client\Arch\ArchClient.cpp" />
     <ClCompile Include="src\Client\Functions\SDKFunctions.cpp" />
     <ClCompile Include="src\Client\Hooks\EngineHooks.cpp" />
     <ClCompile Include="src\Client\Hooks\Engine\Bink.cpp" />
@@ -142,6 +143,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />
+    <ClInclude Include="src\Client\Arch\ArchClient.hpp" />
+    <ClInclude Include="src\Client\Arch\ArchStatus.hpp" />
     <ClInclude Include="src\Client\Functions\SDKFunctions.h" />
     <ClInclude Include="src\Client\Hooks\EngineHooks.hpp" />
     <ClInclude Include="src\Client\Hooks\WinHooks.hpp" />

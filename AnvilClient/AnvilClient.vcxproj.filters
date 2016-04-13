@@ -37,6 +37,7 @@
     <ClCompile Include="src\Client\Hooks\Win\Rendering\D3DDevice9_SetViewport.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsEntry.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsGroup.cpp" />
+    <ClCompile Include="src\Client\Arch\ArchClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />
@@ -70,5 +71,7 @@
     <ClInclude Include="src\Client\Settings\SettingsManager.hpp" />
     <ClInclude Include="src\Client\Settings\SettingsGroup.hpp" />
     <ClInclude Include="src\Client\Settings\SettingsEntry.hpp" />
+    <ClInclude Include="src\Client\Arch\ArchClient.hpp" />
+    <ClInclude Include="src\Client\Arch\ArchStatus.hpp" />
   </ItemGroup>
 </Project>

@@ -11,6 +11,23 @@
 #include <Client/Settings/SettingsManager.hpp>
 #include <Client/Settings/SettingsGroup.hpp>
 
+#include <cpprest/http_client.h>
+#include <cpprest/filestream.h>
+
+#include <string>
+#include <sstream>
+#include <memory>
+#include <Client/Arch/ArchClient.hpp>
+using namespace utility;                    // Common utilities like string conversions
+using namespace web;                        // Common features like URIs.
+using namespace web::http;                  // Common HTTP functionality
+using namespace web::http::client;          // HTTP client features
+using namespace concurrency::streams;       // Asynchronous streams
+
+//using namespace web::http::experimental::listener;          // HTTP server
+//using namespace web::experimental::web_sockets::client;     // WebSockets client
+using namespace web::json;                                  // JSON library
+
 namespace Anvil
 {
 	namespace Client
@@ -97,53 +114,19 @@ namespace Anvil
 
 					static bool OnLogin(const CefV8ValueList& p_Arguments, CefRefPtr<CefV8Value>& p_RetVal)
 					{
-						return false;
-						//p_RetVal = CefV8Value::CreateBool(false);
+						p_RetVal = CefV8Value::CreateBool(false);
 
-						//if (p_Arguments.empty() || p_Arguments.size() != 2)
-						//	return false;
+						if (p_Arguments.empty() || p_Arguments.size() != 2)
+							return false;
 
-						//auto s_Username = p_Arguments[0]->GetStringValue().ToString();
-						//auto s_Password = p_Arguments[1]->GetStringValue().ToString();
+						auto s_Username = p_Arguments[0]->GetStringValue().ToWString();
+						auto s_Password = p_Arguments[1]->GetStringValue().ToWString();
 
-						//// TODO: Hash Password
+						auto s_Client = std::make_shared<Client::Arch::ArchClient>(L"http://localhost:33642");
+						
+						p_RetVal = CefV8Value::CreateBool(s_Client->Login(s_Username, s_Password));
 
-						//// TODO: Request login
-
-						//// Create Request
-						//boost::property_tree::ptree s_Request;
-						//s_Request.add("Username", "kiwidog");
-						//s_Request.add("Password", "password");
-
-						//std::ostringstream s_Stream;
-
-						//try
-						//{
-						//	write_json(s_Stream, s_Request, true);
-						//}
-						//catch (std::exception p_Exception)
-						//{
-						//	WriteLog("write_json failed (%s).", p_Exception.what());
-						//	return false;
-						//	// ignored
-						//}
-
-						//http::client s_Client;
-						//http::client::request s_PostRequest("http://localhost:33642/api/Users/Login");
-
-						//s_PostRequest << body(s_Stream.str());
-
-						//s_PostRequest << header("Connection", "close");
-
-						//http::client::response s_Response = s_Client.post(s_PostRequest);
-
-						//std::string s_Out = body(s_Response);
-
-						//WriteLog("Body Response: %s", s_Out.c_str());
-
-						//// TODO: Validate
-						//p_RetVal = CefV8Value::CreateBool(true);
-						//return true;
+						return true;
 					}
 				};
 			}
