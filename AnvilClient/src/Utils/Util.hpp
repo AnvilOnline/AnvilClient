@@ -10,7 +10,7 @@ namespace Anvil
 			static uint32_t m_BaseAddress;
 			static uint32_t m_CodeSize;
 
-			static int Match(void* p_SrcArray, void* p_DstArray, const char* p_Mask, uint32_t p_Length);
+			static int32_t Match(void* p_SrcArray, void* p_DstArray, const char* p_Mask, uint32_t p_Length);
 
 		public:
 			static bool PatchAddressInFile(uint32_t p_Address, std::string p_HexString, int32_t p_Length = -1);
