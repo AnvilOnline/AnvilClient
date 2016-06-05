@@ -5,7 +5,6 @@ Code was used from NoFaTe (http://nofate.me)
 #include "WebRendererSchemeHandler.hpp"
 #include <Utils/Logger.hpp>
 
-#include <boost/network/uri.hpp>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
@@ -16,7 +15,6 @@ Code was used from NoFaTe (http://nofate.me)
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/filesystem.hpp>
 
-#pragma comment(lib, "cppnetlib-uri")
 #include "WebRenderer.hpp"
 using namespace Anvil::Client::Rendering;
 
@@ -56,21 +54,24 @@ void WebRendererSchemeHandler::ProcessRequestInternal(CefRefPtr<CefRequest> p_Re
 	//	Logger(Util::LogLevel::Debug, "%ls => %ls", it->first.c_str(), it->second.c_str());
 
 	// [scheme:][//authority][path][?query][#fragment]
-	boost::network::uri::uri s_RequestURI(p_Request->GetURL().ToString());
+	auto s_RequestURI = p_Request->GetURL().ToString();
+	std::string s_Scheme("anvil://");
 
-	if (!s_RequestURI.is_valid())
+	if (s_RequestURI.compare(0, s_Scheme.length(), s_Scheme) != 0)
 	{
 		p_Callback->Cancel();
 		return;
 	}
 
-	if (s_RequestURI.scheme() != "anvil")
+	auto s_HostAndPath = s_RequestURI.substr(s_Scheme.length());
+	auto s_HostEndPoint = s_HostAndPath.find_first_of("/");
+	if (s_HostEndPoint == std::string::npos)
 	{
 		p_Callback->Cancel();
 		return;
 	}
 
-	auto s_FinalPath = s_RequestURI.path();
+	auto s_FinalPath = s_HostAndPath.substr(s_HostEndPoint);
 
 	if (s_FinalPath.size() == 0)
 		s_FinalPath = "/";
@@ -78,7 +79,9 @@ void WebRendererSchemeHandler::ProcessRequestInternal(CefRefPtr<CefRequest> p_Re
 	if (s_FinalPath.substr(s_FinalPath.size() - 1) == "/")
 		s_FinalPath += "index.html";
 
-	auto s_Host = s_RequestURI.host();
+	
+
+	auto s_Host = s_HostAndPath.substr(0, s_HostEndPoint);
 
 	// Deny access to the internal pages from other frames?
 	if (s_Host == "menu" && !m_Main)
@@ -91,7 +94,7 @@ void WebRendererSchemeHandler::ProcessRequestInternal(CefRefPtr<CefRequest> p_Re
 	boost::filesystem::path s_Path(s_FinalPath);
 	m_TempFileName = s_Path.filename().string();
 
-	auto s_VFSPath = str(boost::format("/%s/%s") % s_RequestURI.host() % s_FinalPath.substr(1));
+	auto s_VFSPath = str(boost::format("/%s/%s") % s_Host % s_FinalPath.substr(1));
 
 	m_TempData.clear();
 	m_TempFileName.clear();
