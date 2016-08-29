@@ -73,5 +73,8 @@
     <ClInclude Include="src\Client\Settings\SettingsEntry.hpp" />
     <ClInclude Include="src\Client\Arch\ArchClient.hpp" />
     <ClInclude Include="src\Client\Arch\ArchStatus.hpp" />
+    <ClInclude Include="src\H5SDK\i343\XboxLiveServicesWrapper.hpp" />
+    <ClInclude Include="src\H5SDK\i343\License.hpp" />
+    <ClInclude Include="src\H5SDK\i343\NetProtocol.hpp" />
   </ItemGroup>
 </Project>

@@ -161,6 +161,9 @@
     <ClInclude Include="src\Client\Settings\SettingsEntry.hpp" />
     <ClInclude Include="src\Client\Settings\SettingsGroup.hpp" />
     <ClInclude Include="src\Client\Settings\SettingsManager.hpp" />
+    <ClInclude Include="src\H5SDK\i343\NetProtocol.hpp" />
+    <ClInclude Include="src\H5SDK\i343\XboxLiveServicesWrapper.hpp" />
+    <ClInclude Include="src\H5SDK\i343\License.hpp" />
     <ClInclude Include="src\Misc\BuildInfo.hpp" />
     <ClInclude Include="src\Misc\IInit.hpp" />
     <ClInclude Include="src\Misc\Macros.hpp" />
