@@ -24,7 +24,7 @@ namespace Anvil
 			void* m_MapInfoBlock;
 			uint16_t* m_MapResetBit;
 
-			std::string m_Version;
+			std::wstring m_Version;
 			volatile bool m_RenderingEnabled;
 
 			
@@ -36,10 +36,10 @@ namespace Anvil
 			bool PostInit() override;
 			
 			void* GetMapInfoBlock();
-			bool ForceLoadMap(std::string p_MapName, int32_t p_GameEngineMode, int32_t p_GameType);
+			bool ForceLoadMap(std::wstring p_MapName, int32_t p_GameEngineMode, int32_t p_GameType);
 			bool IsRenderingEnabled();
 
-			std::string GetVersion();
+			std::wstring GetVersion();
 
 			bool Shutdown();
 

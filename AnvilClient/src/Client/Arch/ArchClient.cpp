@@ -47,7 +47,7 @@ bool ArchClient::Login(std::wstring p_Username, std::wstring p_Password)
 //
 //	auto s_Result = s_ResultValue.as_bool();
 //
-//	WriteLog("Result: %s", s_Result ? "successful" : "unsuccessful");
+//	WriteLog(L"Result: %s", s_Result ? "successful" : "unsuccessful");
 //
 //	/*Anvil::Client::Rendering::WebRenderer::GetInstance()->ShowNotification("Login", s_Result ? "successful" : "unsuccessful");
 //*/

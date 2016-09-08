@@ -14,5 +14,6 @@ bool SDKFunctions::Init()
 	if (!Utils::Util::GetExecutableInfo(s_BaseAddress, s_BaseSize))
 		return false;
 
+	WriteLog(L"SDKFunctions init.");
 	return true;
 }

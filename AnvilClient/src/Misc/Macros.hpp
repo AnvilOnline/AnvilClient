@@ -22,16 +22,16 @@
 
 #define DeclareHookAtOffset64(name, offset) \
 	auto s_ ## name = reinterpret_cast<void*>(offset); \
-	if (MH_CreateHook(s_ ## name, reinterpret_cast<void*>(c_ ## name), o_ ## name) != MH_OK) \
-	{	WriteLog("Hooking failed for %s.", #name); }
+	if (MH_CreateHook(s_ ## name, reinterpret_cast<void*>(c_ ## name), reinterpret_cast<void**>(&o_ ## name)) != MH_OK) \
+	{	WriteLog(L"Hooking failed for %s.", #name); } else { WriteLog(L"%s has been detoured.", #name); }
 
 //#define DeclareHookPattern(name, offset, length, pattern, mask) \
 //	uint32_t s_ ## name = Anvil::Utils::Util::FindPattern(reinterpret_cast<void*>(offset), length, pattern, mask); \
 //	if (!s_ ## name) { \
-//		WriteLog("Hooking Failed for %s.", #name); }\
+//		WriteLog(L"Hooking Failed for %s.", #name); }\
 //				else { \
 //		o_ ## name = (name ## _t)DetourFunction((PBYTE)s_ ## name, (PBYTE)c_ ## name); \
-//		WriteLog("%s Hooked.", #name); }
+//		WriteLog(L"%s Hooked.", #name); }
 
 #define DeclareFunctionValue(nameSpace, name) \
 	nameSpace ## :: ## name ## _t nameSpace ## :: ## o_ ## name = nullptr;

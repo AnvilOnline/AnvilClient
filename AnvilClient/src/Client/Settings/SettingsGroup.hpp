@@ -11,25 +11,25 @@ namespace Anvil
 		{
 			class SettingsGroup
 			{
-				std::string m_Name;
-				std::string m_Description;
+				std::wstring m_Name;
+				std::wstring m_Description;
 
 				std::list<SettingsEntry> m_Settings;
 
 			public:
-				SettingsGroup(std::string p_Name, std::string p_Description);
+				SettingsGroup(std::wstring p_Name, std::wstring p_Description);
 
-				std::string& GetName();
+				std::wstring& GetName();
 
-				std::string& GetDescription();
+				std::wstring& GetDescription();
 
 				bool AddSetting(SettingsEntry p_Entry);
 
-				bool GetSetting(std::string p_Name, SettingsEntry& p_Entry);
+				bool GetSetting(std::wstring p_Name, SettingsEntry& p_Entry);
 
-				bool RemoveSetting(std::string p_Name);
+				bool RemoveSetting(std::wstring p_Name);
 
-				bool Contains(std::string p_Name);
+				bool Contains(std::wstring p_Name);
 			};
 		}
 	}

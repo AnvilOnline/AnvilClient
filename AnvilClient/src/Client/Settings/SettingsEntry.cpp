@@ -2,7 +2,7 @@
 
 using namespace Anvil::Client::Settings;
 
-SettingsEntry::SettingsEntry(std::string p_Name, std::string p_Description, std::string p_DefaultValue)
+SettingsEntry::SettingsEntry(std::wstring p_Name, std::wstring p_Description, std::wstring p_DefaultValue)
 	: m_Name(p_Name),
 	m_Description(p_Description),
 	m_Value(p_DefaultValue),
@@ -25,7 +25,7 @@ auto& SettingsEntry::GetValue()
 	return m_Value;
 }
 
-void SettingsEntry::SetValue(std::string p_Value)
+void SettingsEntry::SetValue(std::wstring p_Value)
 {
 	m_Value = p_Value;
 }

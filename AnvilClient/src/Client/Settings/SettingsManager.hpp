@@ -18,11 +18,11 @@ namespace Anvil
 			public:
 				bool Init() override;
 
-				bool AddSettingsGroup(std::string p_Name, std::string p_Description);
+				bool AddSettingsGroup(std::wstring p_Name, std::wstring p_Description);
 
 				std::list<SettingsGroup>& GetGroups();
 
-				SettingsGroup& GetGroup(std::string p_Name);
+				SettingsGroup& GetGroup(std::wstring p_Name);
 			};
 		}
 	}

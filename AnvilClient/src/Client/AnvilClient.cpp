@@ -4,13 +4,15 @@
 #include <Client/Patches/Engine/EnginePatches.hpp>
 
 #include <Misc/BuildInfo.hpp>
+
 #include "Functions/SDKFunctions.h"
 
 #include <sstream>
 #include "Settings/SettingsManager.hpp"
 
 #include <MinHook.h>
-#pragma comment(lib, "libMinHook-x64-v140-mtd.lib")
+
+#include <shellapi.h>
 
 using Anvil::Client::AnvilClient;
 
@@ -36,36 +38,6 @@ bool AnvilClient::Init()
 {
 	PreInit();
 
-	if (MH_Initialize() != MH_OK)
-	{
-		WriteLog("Could not init the hooking library.");
-		return false;
-	}
-	/*uint32_t s_BaseAddress = 0;
-	uint32_t s_BaseSize = 0;*/
-
-	//if (Utils::Util::GetExecutableInfo(s_BaseAddress, s_BaseSize))
-	//{
-	//	// This pattern allows us to find the force load map block, this has been tested on the alpha->12.x
-	//	auto s_Address = Utils::Util::FindPattern(reinterpret_cast<void*>(s_BaseAddress), s_BaseSize,
-	//		"\x56\x8B\xF1\x85\xF6\x74\x15", "xxxxxxx");
-
-	//	if (s_Address)
-	//	{
-	//		auto s_MapBlockAddress = *reinterpret_cast<uint32_t*>(s_Address + 14);
-
-	//		m_MapInfoBlock = reinterpret_cast<void*>(s_MapBlockAddress);
-
-	//		auto s_MapResetBitAddress = *reinterpret_cast<uint32_t*>(s_Address + 0x25);
-
-	//		m_MapResetBit = reinterpret_cast<uint16_t*>(s_MapResetBitAddress);
-
-	//		WriteLog("Block Address %p, Reset Bit %p.", s_MapBlockAddress, s_MapResetBitAddress);
-	//	}
-	//	else
-	//		WriteLog("Could not find force-load map info block.");
-	//}
-
 	PostInit();
 
 	return true;
@@ -73,6 +45,13 @@ bool AnvilClient::Init()
 
 bool AnvilClient::PreInit()
 {
+	// Initialize MinHook
+	if (MH_Initialize() != MH_OK)
+	{
+		WriteLog(L"Could not init the hooking library.");
+		return false;
+	}
+
 	// Init settings.
 	m_Settings = std::make_unique<Settings::SettingsManager>();
 	if (m_Settings)
@@ -84,8 +63,8 @@ bool AnvilClient::PreInit()
 		m_SDKFunctions->Init();
 
 	// Generate version string
-	std::stringstream s_Stream;
-	s_Stream << "AnvilOnline (H5F) Alpha Build: " << __DATE__ << " - " << ANVIL_BUILD;
+	std::wstringstream s_Stream;
+	s_Stream << L"AnvilOnline (H5F) Alpha Build: " << __DATE__ << L" - " << ANVIL_BUILD;
 	m_Version = s_Stream.str();
 
 	// Set up our windows hooks, this will allow us to hook the window creation and set up for the dx hooks
@@ -103,31 +82,33 @@ bool AnvilClient::PreInit()
 	if (m_EnginePatches)
 		m_EnginePatches->Init();
 
+
 	return true;
 }
 
 bool AnvilClient::PostInit()
 {
 	auto s_ArgCount = 0;
-	auto s_Args = Utils::Util::CommandLineToArgvA(GetCommandLineA(), &s_ArgCount);
+	auto s_Args = CommandLineToArgvW(GetCommandLine(), &s_ArgCount); //Utils::Util::CommandLineToArgvA(GetCommandLineA(), &s_ArgCount);
 
 	// TODO: Command line argument->function manager if this gets too large
 	for (auto i = 0; i < s_ArgCount; ++i)
 	{
 		auto l_Argument = s_Args[i];
-		if (!_strcmpi(l_Argument, "-norenderer"))
+		if (!_wcsicmp(l_Argument, L"-norenderer"))
 			m_RenderingEnabled = false;
 
-		if (!_strcmpi(l_Argument, "-sleep"))
+		if (!_wcsicmp(l_Argument, L"-sleep"))
 		{
-			WriteLog("Sleeping for 10s.");
+			WriteLog(L"Sleeping for 10s.");
 			Sleep(10000);
 		}
 	}
 
 	// This is some superhacks right here.
 	// This kick-starts all threads that have been created if they haven't already (aka this thread should be the only one running.)
-	Utils::Util::ResumeAllThreads();
+	// TODO: Figure out if this is needed in a UWP application.
+	//Utils::Util::ResumeAllThreads();
 
 	return true;
 }
@@ -138,12 +119,12 @@ void* AnvilClient::GetMapInfoBlock()
 }
 
 // TODO: Use engine enums for the engine game mode and game type
-bool AnvilClient::ForceLoadMap(std::string p_MapName, int32_t p_GameEngineMode, int32_t p_GameType)
+bool AnvilClient::ForceLoadMap(std::wstring p_MapName, int32_t p_GameEngineMode, int32_t p_GameType)
 {
 	if (!m_MapInfoBlock || !m_MapResetBit)
 		return false;
 
-	WriteLog("Force Loading %s %d %d.", p_MapName.c_str(), p_GameEngineMode, p_GameType);
+	WriteLog(L"Force Loading %s %d %d.", p_MapName.c_str(), p_GameEngineMode, p_GameType);
 
 	auto s_MapNameAddress = reinterpret_cast<char*>(m_MapInfoBlock) + 0x24;
 	auto s_GameTypeAddress = reinterpret_cast<int32_t*>(s_MapNameAddress + 0x308);
@@ -153,7 +134,8 @@ bool AnvilClient::ForceLoadMap(std::string p_MapName, int32_t p_GameEngineMode, 
 	memset(s_MapNameAddress, 0, 32);
 
 	// Copy over our new map name
-	strncpy_s(s_MapNameAddress, 32, p_MapName.c_str(), p_MapName.size());
+	std::string s_AsciiName(p_MapName.begin(), p_MapName.end());
+	strncpy_s(s_MapNameAddress, 32, s_AsciiName.c_str(), s_AsciiName.size());
 
 	// Set our gametype and engine mode
 	*s_GameTypeAddress = p_GameType;
@@ -173,7 +155,7 @@ bool AnvilClient::IsRenderingEnabled()
 	return m_RenderingEnabled;
 }
 
-std::string AnvilClient::GetVersion()
+std::wstring AnvilClient::GetVersion()
 {
 	return m_Version;
 }
@@ -183,7 +165,7 @@ bool AnvilClient::Shutdown()
 	m_RenderingEnabled = false;
 /*
 	if (!Rendering::WebRenderer::GetInstance()->Shutdown())
-		WriteLog("WebRenderer failed to shut down properly.");*/
+		WriteLog(L"WebRenderer failed to shut down properly.");*/
 
 	TerminateProcess(GetCurrentProcess(), 0);
 

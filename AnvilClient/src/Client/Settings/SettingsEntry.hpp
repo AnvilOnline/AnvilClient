@@ -9,18 +9,18 @@ namespace Anvil
 		{
 			class SettingsEntry
 			{
-				std::string m_Name;
-				std::string m_Description;
-				std::string m_Value;
-				std::string m_DefaultValue;
+				std::wstring m_Name;
+				std::wstring m_Description;
+				std::wstring m_Value;
+				std::wstring m_DefaultValue;
 
 			public:
-				SettingsEntry(std::string p_Name, std::string p_Description, std::string p_DefaultValue = "");
+				SettingsEntry(std::wstring p_Name, std::wstring p_Description, std::wstring p_DefaultValue = L"");
 
 				auto& GetName();
 				auto& GetDescription();
 				auto& GetValue();
-				void SetValue(std::string p_Value);
+				void SetValue(std::wstring p_Value);
 				void Reset();
 			};
 		}

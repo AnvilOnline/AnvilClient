@@ -8,9 +8,6 @@
     <ClCompile Include="src\Client\Hooks\EngineHooks.cpp" />
     <ClCompile Include="src\Client\Patches\Engine\EnginePatches.cpp" />
     <ClCompile Include="src\Client\Hooks\WinHooks.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\CreateWindowExA.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\Input\MouseProc.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\Input\WindowProc.cpp" />
     <ClCompile Include="src\SDK\Network\network.cpp" />
     <ClCompile Include="src\SDK\Network\network_session.cpp" />
     <ClCompile Include="src\SDK\Network\network_observer.cpp" />
@@ -21,6 +18,8 @@
     <ClCompile Include="src\Client\Settings\SettingsEntry.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsGroup.cpp" />
     <ClCompile Include="src\Client\Arch\ArchClient.cpp" />
+    <ClCompile Include="src\Misc\UwpHelper.cpp" />
+    <ClCompile Include="src\Client\Hooks\Win\CreateFileW.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />
@@ -50,5 +49,6 @@
     <ClInclude Include="src\H5SDK\i343\XboxLiveServicesWrapper.hpp" />
     <ClInclude Include="src\H5SDK\i343\License.hpp" />
     <ClInclude Include="src\H5SDK\i343\NetProtocol.hpp" />
+    <ClInclude Include="src\Misc\UwpHelper.hpp" />
   </ItemGroup>
 </Project>

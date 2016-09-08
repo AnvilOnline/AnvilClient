@@ -21,14 +21,14 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -55,15 +55,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_NO_ASYNCRTIMP;WIN32;WIN32_LEAN_AND_MEAN;_DEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)depends/include;$(BOOST160_DIR);P:\Development\Dependencies\libMinHook\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)depends/include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)depends/lib;$(BOOST160_DIR)/lib64-msvc-14.0;P:\Development\Dependencies\libMinHook\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)depends/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libMinHook-x64-v140-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>call "$(ProjectDir)PreBuild.bat"</Command>
@@ -81,7 +81,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_NO_ASYNCRTIMP;WIN32;WIN32_LEAN_AND_MEAN;NDEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)depends/include;$(BOOST160_DIR);$(CEF3_DIR)/include;$(CEF3_DIR);$(CPPRESTSDK_DIR)\Release\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)depends/include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -89,9 +89,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(BOOST160_DIR)/lib32-msvc-14.0;$(ProjectDir)depends/lib;$(CEF3_DIR)/Release;$(CPPNETLIB_DIR)/build/libs/network/src/Release;$(CEF3_DIR)/build/libcef_dll/Release;$(CPPRESTSDK_DIR)\Binaries\Win32\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)depends/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;libcef.lib;libcef_dll_wrapper.lib;cpprest140_2_8.lib;winhttp.lib;Bcrypt.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libMinHook-x64-v140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
@@ -108,14 +108,13 @@
     <ClCompile Include="src\Client\Functions\SDKFunctions.cpp" />
     <ClCompile Include="src\Client\Hooks\EngineHooks.cpp" />
     <ClCompile Include="src\Client\Hooks\WinHooks.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\CreateWindowExA.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\Input\MouseProc.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\Input\WindowProc.cpp" />
+    <ClCompile Include="src\Client\Hooks\Win\CreateFileW.cpp" />
     <ClCompile Include="src\Client\Patches\Engine\EnginePatches.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsEntry.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsGroup.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsManager.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Misc\UwpHelper.cpp" />
     <ClCompile Include="src\SDK\Network\network.cpp" />
     <ClCompile Include="src\SDK\Network\network_observer.cpp" />
     <ClCompile Include="src\SDK\Network\network_session.cpp" />
@@ -141,6 +140,7 @@
     <ClInclude Include="src\Misc\BuildInfo.hpp" />
     <ClInclude Include="src\Misc\IInit.hpp" />
     <ClInclude Include="src\Misc\Macros.hpp" />
+    <ClInclude Include="src\Misc\UwpHelper.hpp" />
     <ClInclude Include="src\SDK\Messages\Message.h" />
     <ClInclude Include="src\SDK\Network\network.hpp" />
     <ClInclude Include="src\SDK\Network\network_observer.hpp" />

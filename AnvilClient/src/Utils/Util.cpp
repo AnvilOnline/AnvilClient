@@ -26,7 +26,7 @@ bool Util::PatchAddressInFile(uint32_t p_OffsetInFile, std::string p_HexString, 
 	// Ensure that the address is valid
 	if (!p_OffsetInFile)
 	{
-		WriteLog("could not patch, invalid address passed.");
+		WriteLog(L"could not patch, invalid address passed.");
 		return false;
 	}
 
@@ -42,7 +42,7 @@ bool Util::PatchAddressInMemory(uint32_t p_Address, std::string p_HexString, int
 	auto s_Length = (p_Length == -1 ? p_HexString.length() : p_Length);
 	if (s_Length <= 0)
 	{
-		WriteLog("invalid patch data.");
+		WriteLog(L"invalid patch data.");
 		return false;
 	}
 
@@ -53,17 +53,17 @@ bool Util::PatchAddressInMemory(uint32_t p_Address, std::string p_HexString, int
 	auto s_Ret = VirtualProtect(reinterpret_cast<void*>(p_Address), s_Length, PAGE_EXECUTE_READWRITE, reinterpret_cast<PDWORD>(&s_Protection));
 	if (!s_Ret)
 	{
-		WriteLog("could not change protection to patch address %p (%x).", p_Address, GetLastError());
+		WriteLog(L"could not change protection to patch address %p (%x).", p_Address, GetLastError());
 		return false;
 	}
 
-	WriteLog("changed protection of %x with a length of %x.", p_Address, s_Length);
+	WriteLog(L"changed protection of %x with a length of %x.", p_Address, s_Length);
 
 	// Copy our patch over
 	s_Ret = memcpy_s(reinterpret_cast<void*>(p_Address), s_Length, p_HexString.c_str(), s_Length);
 	if (s_Ret)
 	{
-		WriteLog("could not write patch to address %p.", p_Address);
+		WriteLog(L"could not write patch to address %p.", p_Address);
 		return false;
 	}
 
@@ -71,7 +71,7 @@ bool Util::PatchAddressInMemory(uint32_t p_Address, std::string p_HexString, int
 	s_Ret = VirtualProtect(reinterpret_cast<void*>(p_Address), s_Length, s_Protection, reinterpret_cast<PDWORD>(&s_Protection));
 	if (!s_Ret)
 	{
-		WriteLog("could not change protection back to default for address %p, be warned.", p_Address);
+		WriteLog(L"could not change protection back to default for address %p, be warned.", p_Address);
 		return false;
 	}
 
@@ -266,7 +266,7 @@ bool Util::ResumeAllThreads()
 	{
 		CloseHandle(s_ThreadSnap);
 
-		WriteLog("Could not get the thread snapshot (%x).", GetLastError());
+		WriteLog(L"Could not get the thread snapshot (%x).", GetLastError());
 		return false;
 	}
 
@@ -279,7 +279,7 @@ bool Util::ResumeAllThreads()
 			if (l_ThreadHandle == INVALID_HANDLE_VALUE)
 				continue;
 
-			//WriteLog("Resuming thread : %x.", s_Entry.th32ThreadID);
+			//WriteLog(L"Resuming thread : %x.", s_Entry.th32ThreadID);
 
 			ResumeThread(l_ThreadHandle);
 
@@ -289,6 +289,6 @@ bool Util::ResumeAllThreads()
 
 	CloseHandle(s_ThreadSnap);
 
-	WriteLog("All threads resumed successfully.");
+	WriteLog(L"All threads resumed successfully.");
 	return true;
 }

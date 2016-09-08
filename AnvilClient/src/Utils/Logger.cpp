@@ -4,6 +4,8 @@
 #include <consoleapi.h>
 #include <vector>
 
+#include <Misc/UwpHelper.hpp>
+
 using Anvil::Utils::Logger;
 
 std::shared_ptr<Logger> Logger::GetInstance()
@@ -14,28 +16,30 @@ std::shared_ptr<Logger> Logger::GetInstance()
 
 bool Logger::Init()
 {
-	std::stringstream s_Stream;
-	s_Stream << "AnvilOnline Alpha Build: " << __DATE__ << "-" << ANVIL_BUILD;
+	std::wstringstream s_Stream;
+	s_Stream << L"AnvilOnline (H5F) Alpha Build: " << __DATE__ << L" - " << ANVIL_BUILD;
 	auto s_Version = s_Stream.str();
 	
 	try
 	{
 		// Try to open the log file if one exists and append to it
-		m_Stream.open("C:\\Users\\godiwik\\AppData\\Local\\Packages\\Microsoft.Halo5Forge_8wekyb3d8bbwe\\LocalCache\\anvil-runtime.log", std::ofstream::out | std::ofstream::app);
+		auto s_Path = UwpHelper::GetInstance()->GetLocalCachePath() + L"\\anvil-runtime.log";
+
+		m_Stream.open(s_Path, std::wofstream::out | std::wofstream::app);
 	}
 	catch (std::exception& p_Exception)
 	{
-		WriteLog("Could not create log file %s.", p_Exception.what());
+		WriteLog(L"Could not create log file %s.", p_Exception.what());
 	}
 
-	WriteLog("\r\n\r\nAnvil Init: %s", s_Version.c_str());
+	WriteLog(L"\r\n\r\nAnvil Init: %s.", s_Version.c_str());
 
 	InitConsole(s_Version);
 
 	return true;
 }
 
-bool Logger::InitConsole(std::string p_Title)
+bool Logger::InitConsole(std::wstring p_Title)
 {
 #ifndef _DEBUG
 	// In release mode we don't log to console
@@ -54,31 +58,31 @@ bool Logger::InitConsole(std::string p_Title)
 #endif
 }
 
-bool Logger::InternalWriteLog(char* p_Function, int32_t p_Line, char* p_Format, ...)
+bool Logger::InternalWriteLog(char* p_Function, int32_t p_Line, wchar_t* p_Format, ...)
 {
 	va_list s_Args;
 	va_start(s_Args, p_Format);
 
-	auto s_FinalLength = _vscprintf(p_Format, s_Args) + 1;
+	auto s_FinalLength = _vscwprintf(p_Format, s_Args) + 1;
 
-	std::vector<char> s_FinalString;
+	std::vector<wchar_t> s_FinalString;
 	s_FinalString.resize(s_FinalLength);
 	fill(s_FinalString.begin(), s_FinalString.end(), 0);
 
 
-	vsprintf_s(s_FinalString.data(), s_FinalLength, p_Format, s_Args);
+	vswprintf_s(s_FinalString.data(), s_FinalLength, p_Format, s_Args);
 
 	va_end(s_Args);
 
-	std::stringstream s_Stream;
-	s_Stream << "[" << p_Function << " : " << p_Line << "] " << s_FinalString.data() << "\r\n";
+	std::wstringstream s_Stream;
+	s_Stream << L"[" << p_Function << L" : " << p_Line << L"] " << s_FinalString.data() << L"\r\n";
 
 	auto s_OutputString = s_Stream.str();
 
 	// Output to the console first
-	size_t s_OutputLength = 0;
+	DWORD s_OutputLength = 0;
 	if (m_ConsoleHandle && m_ConsoleHandle != INVALID_HANDLE_VALUE)
-		WriteConsole(m_ConsoleHandle, s_OutputString.c_str(), s_OutputString.length(), reinterpret_cast<LPDWORD>(&s_OutputLength), nullptr);
+		WriteConsole(m_ConsoleHandle, s_OutputString.c_str(), static_cast<DWORD>(s_OutputString.length()), &s_OutputLength, nullptr);
 
 	// Try to log to file
 	if (!m_Stream.is_open())

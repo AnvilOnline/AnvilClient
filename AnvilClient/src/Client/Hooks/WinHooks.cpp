@@ -2,16 +2,7 @@
 
 using Anvil::Client::Hooks::WinHooks;
 
-DeclareFunctionValue(WinHooks, CreateWindowExA);
-DeclareFunctionValue(WinHooks, D3DDevice9_EndScene);
-DeclareFunctionValue(WinHooks, D3DDevice9_Reset);
-DeclareFunctionValue(WinHooks, D3DDevice9_BeginScene);
-DeclareFunctionValue(WinHooks, Direct3DCreate9);
-DeclareFunctionValue(WinHooks, Direct3D_CreateDevice);
-DeclareFunctionValue(WinHooks, D3DDevice9_SetViewport);
-
-HHOOK WinHooks::m_MouseHook = nullptr;
-HHOOK WinHooks::m_WindowHook = nullptr;
+DeclareFunctionValue(WinHooks, CreateFileW);
 
 WinHooks::WinHooks()
 {
@@ -19,46 +10,34 @@ WinHooks::WinHooks()
 
 bool WinHooks::Init()
 {
-	// CreateWindowEx Hook
-	//auto s_CreateWindowEx = reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle("user32.dll"), "CreateWindowExA"));
-	//DeclareHookAtOffset(CreateWindowExA, s_CreateWindowEx);
+	Hook_FileIo();
 
-	auto s_CreateWindowExA = reinterpret_cast<void*>(GetProcAddress(GetModuleHandle("user32.dll"), "CreateWindowExA"));
-	if (MH_CreateHook(s_CreateWindowExA, c_CreateWindowExA, reinterpret_cast<void**>(&o_CreateWindowExA)) != MH_OK)
-	{
-		WriteLog("CreateWindowExA Hook failed.");
-	}
-	//Hook_DirectX();
-
-	WriteLog("WinHooks init success.");
-
+	WriteLog(L"WinHooks init.");
 	return true;
 }
 
-void WinHooks::Hook_DirectX()
+void WinHooks::Hook_FileIo()
 {
-	auto s_Library = LoadLibrary("d3d9.dll");
-	if (!s_Library)
+	auto s_KernelBase = GetModuleHandle(L"KernelBase.dll");
+	if (!s_KernelBase)
 	{
-		WriteLog("Could not load the d3d module.");
+		WriteLog(L"Could not get the handle for kernelbase.dll.");
+		return;
+	}
+		
+	auto s_CreateFileW = GetProcAddress(s_KernelBase, "CreateFileW");
+	if (MH_CreateHook(s_CreateFileW, (LPVOID*)&c_CreateFileW, (LPVOID*)&o_CreateFileW) != MH_OK)
+	{
+		WriteLog(L"Could not create CreateFileW hook.");
 		return;
 	}
 
-	auto s_Direct3DModule = GetModuleHandle("d3d9.dll");
-	if (!s_Direct3DModule)
+	if (MH_EnableHook(s_CreateFileW) != MH_OK)
 	{
-		WriteLog("Could not get d3d module.");
+		WriteLog(L"Could not enable CreateFileW hook.");
 		return;
 	}
 
-	auto s_D3DCreate9 = GetProcAddress(s_Direct3DModule, "Direct3DCreate9");
-	if (!s_D3DCreate9)
-	{
-		WriteLog("Could not get Direct3DCreate9 address.");
-		return;
-	}
+	//DeclareHookAtOffset64(CreateFileW, GetProcAddress(s_KernelBase, "CreateFileW"));
 
-	WriteLog("D3DCreate9 Address: %p", s_D3DCreate9);
-
-	//DeclareHookAtOffset(Direct3DCreate9, reinterpret_cast<uint32_t>(s_D3DCreate9));
 }

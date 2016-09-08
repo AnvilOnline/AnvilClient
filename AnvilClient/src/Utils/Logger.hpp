@@ -18,15 +18,15 @@ namespace Anvil
 		class Logger : IInit
 		{
 			std::mutex m_Lock;
-			std::ofstream m_Stream;
+			std::wofstream m_Stream;
 			void* m_ConsoleHandle;
 
 		public:
 			static std::shared_ptr<Logger> GetInstance();
 			bool Init() override;
 
-			bool InitConsole(std::string p_Title);
-			bool InternalWriteLog(char* p_Function, int32_t p_line, char* p_Format, ...);
+			bool InitConsole(std::wstring p_Title);
+			bool InternalWriteLog(char* p_Function, int32_t p_line, wchar_t* p_Format, ...);
 		};
 	}
 }
