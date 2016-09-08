@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
+    <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
+    <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -17,13 +17,13 @@
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
@@ -35,35 +35,35 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_NO_ASYNCRTIMP;WIN32;WIN32_LEAN_AND_MEAN;_DEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)depends/include;$(BOOST160_DIR);$(CEF3_DIR)/include;$(CEF3_DIR);$(CPPRESTSDK_DIR)\Release\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)depends/include;$(BOOST160_DIR);P:\Development\Dependencies\libMinHook\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)depends/lib;$(BOOST160_DIR)/lib32-msvc-14.0;$(CEF3_DIR)/Debug;$(CEF3_DIR)/build/libcef_dll/Debug;$(CPPRESTSDK_DIR)\Binaries\Win32\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)depends/lib;$(BOOST160_DIR)/lib64-msvc-14.0;P:\Development\Dependencies\libMinHook\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;libcef.lib;libcef_dll_wrapper.lib;cpprest140d_2_8.lib;winhttp.lib;Bcrypt.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>call "$(ProjectDir)PreBuild.bat"</Command>
@@ -72,7 +72,7 @@
       <Message>Incrementing Build Number</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
@@ -107,28 +107,11 @@
     <ClCompile Include="src\Client\Arch\ArchClient.cpp" />
     <ClCompile Include="src\Client\Functions\SDKFunctions.cpp" />
     <ClCompile Include="src\Client\Hooks\EngineHooks.cpp" />
-    <ClCompile Include="src\Client\Hooks\Engine\Bink.cpp" />
-    <ClCompile Include="src\Client\Hooks\Engine\GameTick.cpp" />
-    <ClCompile Include="src\Client\Hooks\Engine\PrintDebug.cpp" />
     <ClCompile Include="src\Client\Hooks\WinHooks.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\CreateWindowExA.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\Input\MouseProc.cpp" />
     <ClCompile Include="src\Client\Hooks\Win\Input\WindowProc.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\Rendering\D3DDevice9_BeginScene.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\Rendering\D3DDevice9_EndScene.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\Rendering\D3DDevice9_Reset.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\Rendering\D3DDevice9_SetViewport.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\Rendering\Direct3DCreate9.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\Rendering\Direct3D_CreateDevice.cpp" />
     <ClCompile Include="src\Client\Patches\Engine\EnginePatches.cpp" />
-    <ClCompile Include="src\Client\Rendering\Bridge\WebRendererBridge.cpp" />
-    <ClCompile Include="src\Client\Rendering\Bridge\WebRendererJSHandler.cpp" />
-    <ClCompile Include="src\Client\Rendering\WebRenderer.cpp" />
-    <ClCompile Include="src\Client\Rendering\WebRendererApp.cpp" />
-    <ClCompile Include="src\Client\Rendering\WebRendererClient.cpp" />
-    <ClCompile Include="src\Client\Rendering\WebRendererHandler.cpp" />
-    <ClCompile Include="src\Client\Rendering\WebRendererSchemeHandler.cpp" />
-    <ClCompile Include="src\Client\Rendering\WebRendererSchemeHandlerFactory.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsEntry.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsGroup.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsManager.cpp" />
@@ -149,15 +132,6 @@
     <ClInclude Include="src\Client\Hooks\EngineHooks.hpp" />
     <ClInclude Include="src\Client\Hooks\WinHooks.hpp" />
     <ClInclude Include="src\Client\Patches\Engine\EnginePatches.hpp" />
-    <ClInclude Include="src\Client\Rendering\Bridge\Client\ClientFunctions.hpp" />
-    <ClInclude Include="src\Client\Rendering\Bridge\WebRendererBridge.hpp" />
-    <ClInclude Include="src\Client\Rendering\Bridge\WebRendererJSHandler.hpp" />
-    <ClInclude Include="src\Client\Rendering\WebRenderer.hpp" />
-    <ClInclude Include="src\Client\Rendering\WebRendererApp.hpp" />
-    <ClInclude Include="src\Client\Rendering\WebRendererClient.hpp" />
-    <ClInclude Include="src\Client\Rendering\WebRendererHandler.hpp" />
-    <ClInclude Include="src\Client\Rendering\WebRendererSchemeHandler.hpp" />
-    <ClInclude Include="src\Client\Rendering\WebRendererSchemeHandlerFactory.hpp" />
     <ClInclude Include="src\Client\Settings\SettingsEntry.hpp" />
     <ClInclude Include="src\Client\Settings\SettingsGroup.hpp" />
     <ClInclude Include="src\Client\Settings\SettingsManager.hpp" />

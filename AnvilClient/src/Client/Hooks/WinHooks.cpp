@@ -20,10 +20,15 @@ WinHooks::WinHooks()
 bool WinHooks::Init()
 {
 	// CreateWindowEx Hook
-	auto s_CreateWindowEx = reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle("user32.dll"), "CreateWindowExA"));
-	DeclareHookAtOffset(CreateWindowExA, s_CreateWindowEx);
+	//auto s_CreateWindowEx = reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle("user32.dll"), "CreateWindowExA"));
+	//DeclareHookAtOffset(CreateWindowExA, s_CreateWindowEx);
 
-	Hook_DirectX();
+	auto s_CreateWindowExA = reinterpret_cast<void*>(GetProcAddress(GetModuleHandle("user32.dll"), "CreateWindowExA"));
+	if (MH_CreateHook(s_CreateWindowExA, c_CreateWindowExA, reinterpret_cast<void**>(&o_CreateWindowExA)) != MH_OK)
+	{
+		WriteLog("CreateWindowExA Hook failed.");
+	}
+	//Hook_DirectX();
 
 	WriteLog("WinHooks init success.");
 
@@ -55,5 +60,5 @@ void WinHooks::Hook_DirectX()
 
 	WriteLog("D3DCreate9 Address: %p", s_D3DCreate9);
 
-	DeclareHookAtOffset(Direct3DCreate9, reinterpret_cast<uint32_t>(s_D3DCreate9));
+	//DeclareHookAtOffset(Direct3DCreate9, reinterpret_cast<uint32_t>(s_D3DCreate9));
 }

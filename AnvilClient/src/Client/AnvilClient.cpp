@@ -2,13 +2,15 @@
 #include <Client/Hooks/WinHooks.hpp>
 #include <Client/Hooks/EngineHooks.hpp>
 #include <Client/Patches/Engine/EnginePatches.hpp>
-#include "Rendering/WebRenderer.hpp"
 
 #include <Misc/BuildInfo.hpp>
 #include "Functions/SDKFunctions.h"
 
 #include <sstream>
 #include "Settings/SettingsManager.hpp"
+
+#include <MinHook.h>
+#pragma comment(lib, "libMinHook-x64-v140-mtd.lib")
 
 using Anvil::Client::AnvilClient;
 
@@ -34,30 +36,35 @@ bool AnvilClient::Init()
 {
 	PreInit();
 
-	uint32_t s_BaseAddress = 0;
-	uint32_t s_BaseSize = 0;
-
-	if (Utils::Util::GetExecutableInfo(s_BaseAddress, s_BaseSize))
+	if (MH_Initialize() != MH_OK)
 	{
-		// This pattern allows us to find the force load map block, this has been tested on the alpha->12.x
-		auto s_Address = Utils::Util::FindPattern(reinterpret_cast<void*>(s_BaseAddress), s_BaseSize,
-			"\x56\x8B\xF1\x85\xF6\x74\x15", "xxxxxxx");
-
-		if (s_Address)
-		{
-			auto s_MapBlockAddress = *reinterpret_cast<uint32_t*>(s_Address + 14);
-
-			m_MapInfoBlock = reinterpret_cast<void*>(s_MapBlockAddress);
-
-			auto s_MapResetBitAddress = *reinterpret_cast<uint32_t*>(s_Address + 0x25);
-
-			m_MapResetBit = reinterpret_cast<uint16_t*>(s_MapResetBitAddress);
-
-			WriteLog("Block Address %p, Reset Bit %p.", s_MapBlockAddress, s_MapResetBitAddress);
-		}
-		else
-			WriteLog("Could not find force-load map info block.");
+		WriteLog("Could not init the hooking library.");
+		return false;
 	}
+	/*uint32_t s_BaseAddress = 0;
+	uint32_t s_BaseSize = 0;*/
+
+	//if (Utils::Util::GetExecutableInfo(s_BaseAddress, s_BaseSize))
+	//{
+	//	// This pattern allows us to find the force load map block, this has been tested on the alpha->12.x
+	//	auto s_Address = Utils::Util::FindPattern(reinterpret_cast<void*>(s_BaseAddress), s_BaseSize,
+	//		"\x56\x8B\xF1\x85\xF6\x74\x15", "xxxxxxx");
+
+	//	if (s_Address)
+	//	{
+	//		auto s_MapBlockAddress = *reinterpret_cast<uint32_t*>(s_Address + 14);
+
+	//		m_MapInfoBlock = reinterpret_cast<void*>(s_MapBlockAddress);
+
+	//		auto s_MapResetBitAddress = *reinterpret_cast<uint32_t*>(s_Address + 0x25);
+
+	//		m_MapResetBit = reinterpret_cast<uint16_t*>(s_MapResetBitAddress);
+
+	//		WriteLog("Block Address %p, Reset Bit %p.", s_MapBlockAddress, s_MapResetBitAddress);
+	//	}
+	//	else
+	//		WriteLog("Could not find force-load map info block.");
+	//}
 
 	PostInit();
 
@@ -78,7 +85,7 @@ bool AnvilClient::PreInit()
 
 	// Generate version string
 	std::stringstream s_Stream;
-	s_Stream << "AnvilOnline Alpha Build: " << __DATE__ << " - " << ANVIL_BUILD;
+	s_Stream << "AnvilOnline (H5F) Alpha Build: " << __DATE__ << " - " << ANVIL_BUILD;
 	m_Version = s_Stream.str();
 
 	// Set up our windows hooks, this will allow us to hook the window creation and set up for the dx hooks
@@ -174,9 +181,9 @@ std::string AnvilClient::GetVersion()
 bool AnvilClient::Shutdown()
 {
 	m_RenderingEnabled = false;
-
+/*
 	if (!Rendering::WebRenderer::GetInstance()->Shutdown())
-		WriteLog("WebRenderer failed to shut down properly.");
+		WriteLog("WebRenderer failed to shut down properly.");*/
 
 	TerminateProcess(GetCurrentProcess(), 0);
 

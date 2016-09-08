@@ -1,5 +1,4 @@
 #include <Client/Hooks/WinHooks.hpp>
-#include <Client/Rendering/WebRenderer.hpp>
 #include <Client/AnvilClient.hpp>
 
 #include <Windows.h>
@@ -29,7 +28,7 @@ HookedFunction(WinHooks, HWND, CreateWindowExA, __stdcall, DWORD dwExStyle, LPCS
 		WriteLog("Window hook failed (%x).", GetLastError());
 
 	// Call resize on the renderer to prepare the buffers.
-	Rendering::WebRenderer::GetInstance()->Resize(nWidth, nHeight);
+	//Rendering::WebRenderer::GetInstance()->Resize(nWidth, nHeight);
 
 	return s_Ret;
 }

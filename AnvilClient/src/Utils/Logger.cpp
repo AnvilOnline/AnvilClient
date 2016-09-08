@@ -21,7 +21,7 @@ bool Logger::Init()
 	try
 	{
 		// Try to open the log file if one exists and append to it
-		m_Stream.open("anvil-runtime.log", std::ofstream::out | std::ofstream::app);
+		m_Stream.open("C:\\Users\\godiwik\\AppData\\Local\\Packages\\Microsoft.Halo5Forge_8wekyb3d8bbwe\\LocalCache\\anvil-runtime.log", std::ofstream::out | std::ofstream::app);
 	}
 	catch (std::exception& p_Exception)
 	{
@@ -76,7 +76,7 @@ bool Logger::InternalWriteLog(char* p_Function, int32_t p_Line, char* p_Format, 
 	auto s_OutputString = s_Stream.str();
 
 	// Output to the console first
-	auto s_OutputLength = 0;
+	size_t s_OutputLength = 0;
 	if (m_ConsoleHandle && m_ConsoleHandle != INVALID_HANDLE_VALUE)
 		WriteConsole(m_ConsoleHandle, s_OutputString.c_str(), s_OutputString.length(), reinterpret_cast<LPDWORD>(&s_OutputLength), nullptr);
 
