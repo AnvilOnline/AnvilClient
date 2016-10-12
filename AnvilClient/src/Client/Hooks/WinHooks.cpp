@@ -2,8 +2,6 @@
 
 using Anvil::Client::Hooks::WinHooks;
 
-DeclareFunctionValue(WinHooks, CreateFileW);
-
 WinHooks::WinHooks()
 {
 }
@@ -26,7 +24,7 @@ void WinHooks::Hook_FileIo()
 	}
 		
 	auto s_CreateFileW = GetProcAddress(s_KernelBase, "CreateFileW");
-	if (MH_CreateHook(s_CreateFileW, (LPVOID*)&c_CreateFileW, (LPVOID*)&o_CreateFileW) != MH_OK)
+	if (MH_CreateHook(s_CreateFileW, reinterpret_cast<void*>(&c_CreateFileW), reinterpret_cast<void**>(&o_CreateFileW)) != MH_OK)
 	{
 		WriteLog(L"Could not create CreateFileW hook.");
 		return;

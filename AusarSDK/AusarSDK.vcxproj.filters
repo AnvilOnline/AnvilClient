@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="Src\i343\XboxLiveServicesWrapper.hpp" />
+    <ClInclude Include="Src\Initializer.hpp" />
+    <ClInclude Include="Src\Functions.hpp" />
+    <ClInclude Include="Src\i343\XboxLiveServicesWrapper\License.hpp" />
+    <ClInclude Include="Src\i343\XboxLiveServicesWrapper\UserFacade.hpp" />
+    <ClInclude Include="Src\i343\XboxLiveServicesWrapper\XboxLiveServicesEngineInterface.hpp" />
+    <ClInclude Include="Src\i343\XboxLiveServicesWrapper\Chat.hpp" />
+    <ClInclude Include="Src\i343\XboxLiveServicesWrapper\Chat\ChatPerformanceCounters.hpp" />
+    <ClInclude Include="Src\i343\XboxLiveServicesWrapper\Chat\ChatUser.hpp" />
+    <ClInclude Include="Src\i343\XboxLiveServicesWrapper\Chat\MessageType.hpp" />
+    <ClInclude Include="Src\i343\XboxLiveServicesWrapper\Chat\Quality.hpp" />
+    <ClInclude Include="Src\i343\XboxLiveServicesWrapper\Chat\TraceLevel.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\i343\XboxLiveServicesWrapper.cpp" />
+    <ClCompile Include="Src\Initializer.cpp" />
+    <ClCompile Include="Src\i343\XboxLiveServicesWrapper\License.cpp" />
+  </ItemGroup>
+</Project>

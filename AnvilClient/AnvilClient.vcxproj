@@ -104,11 +104,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Client\AnvilClient.cpp" />
-    <ClCompile Include="src\Client\Arch\ArchClient.cpp" />
-    <ClCompile Include="src\Client\Functions\SDKFunctions.cpp" />
-    <ClCompile Include="src\Client\Hooks\EngineHooks.cpp" />
+    <ClCompile Include="src\Client\Hooks.hpp" />
+    <ClCompile Include="src\Client\Hooks\Windows.cpp" />
     <ClCompile Include="src\Client\Hooks\WinHooks.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\CreateFileW.cpp" />
     <ClCompile Include="src\Client\Patches\Engine\EnginePatches.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsEntry.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsGroup.cpp" />
@@ -125,10 +123,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />
-    <ClInclude Include="src\Client\Arch\ArchClient.hpp" />
-    <ClInclude Include="src\Client\Arch\ArchStatus.hpp" />
-    <ClInclude Include="src\Client\Functions\SDKFunctions.h" />
-    <ClInclude Include="src\Client\Hooks\EngineHooks.hpp" />
     <ClInclude Include="src\Client\Hooks\WinHooks.hpp" />
     <ClInclude Include="src\Client\Patches\Engine\EnginePatches.hpp" />
     <ClInclude Include="src\Client\Settings\SettingsEntry.hpp" />
@@ -152,6 +146,9 @@
     <ClInclude Include="src\SDK\Unsorted\simulation_sandbox_engine_globals_definition.h" />
     <ClInclude Include="src\Utils\Logger.hpp" />
     <ClInclude Include="src\Utils\Util.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PreBuild.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

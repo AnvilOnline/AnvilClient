@@ -5,7 +5,6 @@
     <ClCompile Include="src\Client\AnvilClient.cpp" />
     <ClCompile Include="src\Utils\Logger.cpp" />
     <ClCompile Include="src\Utils\Util.cpp" />
-    <ClCompile Include="src\Client\Hooks\EngineHooks.cpp" />
     <ClCompile Include="src\Client\Patches\Engine\EnginePatches.cpp" />
     <ClCompile Include="src\Client\Hooks\WinHooks.cpp" />
     <ClCompile Include="src\SDK\Network\network.cpp" />
@@ -13,20 +12,18 @@
     <ClCompile Include="src\SDK\Network\network_observer.cpp" />
     <ClCompile Include="src\SDK\Network\Packets\packets.cpp" />
     <ClCompile Include="src\SDK\Network\network_session_parameter_remote_join_data.cpp" />
-    <ClCompile Include="src\Client\Functions\SDKFunctions.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsManager.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsEntry.cpp" />
     <ClCompile Include="src\Client\Settings\SettingsGroup.cpp" />
-    <ClCompile Include="src\Client\Arch\ArchClient.cpp" />
     <ClCompile Include="src\Misc\UwpHelper.cpp" />
-    <ClCompile Include="src\Client\Hooks\Win\CreateFileW.cpp" />
+    <ClCompile Include="src\Client\Hooks\Windows.cpp" />
+    <ClCompile Include="src\Client\Hooks.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client\AnvilClient.hpp" />
     <ClInclude Include="src\Misc\IInit.hpp" />
     <ClInclude Include="src\Utils\Logger.hpp" />
     <ClInclude Include="src\Utils\Util.hpp" />
-    <ClInclude Include="src\Client\Hooks\EngineHooks.hpp" />
     <ClInclude Include="src\Misc\Macros.hpp" />
     <ClInclude Include="src\Client\Patches\Engine\EnginePatches.hpp" />
     <ClInclude Include="src\SDK\Messages\Message.h" />
@@ -40,15 +37,15 @@
     <ClInclude Include="src\SDK\Network\network_observer.hpp" />
     <ClInclude Include="src\SDK\Network\Packets\packets.hpp" />
     <ClInclude Include="src\SDK\Network\network_session_parameter_remote_join_data.hpp" />
-    <ClInclude Include="src\Client\Functions\SDKFunctions.h" />
     <ClInclude Include="src\Client\Settings\SettingsManager.hpp" />
     <ClInclude Include="src\Client\Settings\SettingsGroup.hpp" />
     <ClInclude Include="src\Client\Settings\SettingsEntry.hpp" />
-    <ClInclude Include="src\Client\Arch\ArchClient.hpp" />
-    <ClInclude Include="src\Client\Arch\ArchStatus.hpp" />
     <ClInclude Include="src\H5SDK\i343\XboxLiveServicesWrapper.hpp" />
     <ClInclude Include="src\H5SDK\i343\License.hpp" />
     <ClInclude Include="src\H5SDK\i343\NetProtocol.hpp" />
     <ClInclude Include="src\Misc\UwpHelper.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PreBuild.bat" />
   </ItemGroup>
 </Project>
