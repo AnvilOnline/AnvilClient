@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Source\Source.cpp" />
+    <ClCompile Include="Source\Utils\Logger.cpp" />
+    <ClCompile Include="Source\Client\Client.cpp" />
+    <ClCompile Include="Source\Globals.cpp" />
+    <ClCompile Include="Source\Utils\Util.cpp" />
+    <ClCompile Include="Source\Client\Patches\Tags.cpp" />
+    <ClCompile Include="Source\Client\Patch.cpp" />
+    <ClCompile Include="Source\Client\Patches\Accounting.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Misc\BuildInfo.hpp" />
+    <ClInclude Include="Source\Misc\IInitializable.hpp" />
+    <ClInclude Include="Source\Utils\Logger.hpp" />
+    <ClInclude Include="Source\Client\Client.hpp" />
+    <ClInclude Include="Source\Globals.hpp" />
+    <ClInclude Include="Source\Utils\Util.hpp" />
+    <ClInclude Include="Source\Client\Patch.hpp" />
+  </ItemGroup>
+</Project>
