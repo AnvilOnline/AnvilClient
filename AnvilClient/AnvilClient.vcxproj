@@ -90,6 +90,9 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -120,6 +123,8 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -149,7 +154,12 @@
     <ClCompile Include="Source\Client\Client.cpp" />
     <ClCompile Include="Source\Client\Patch.cpp" />
     <ClCompile Include="Source\Client\Patches\Accounting.cpp" />
+    <ClCompile Include="Source\Client\Patches\Audio.cpp" />
+    <ClCompile Include="Source\Client\Patches\Camera.cpp" />
+    <ClCompile Include="Source\Client\Patches\Equipment.cpp" />
+    <ClCompile Include="Source\Client\Patches\Rendering.cpp" />
     <ClCompile Include="Source\Client\Patches\Tags.cpp" />
+    <ClCompile Include="Source\Client\Patches\Weapons.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\Source.cpp" />
     <ClCompile Include="Source\Utils\Logger.cpp" />

@@ -9,6 +9,11 @@
     <ClCompile Include="Source\Client\Patches\Tags.cpp" />
     <ClCompile Include="Source\Client\Patch.cpp" />
     <ClCompile Include="Source\Client\Patches\Accounting.cpp" />
+    <ClCompile Include="Source\Client\Patches\Camera.cpp" />
+    <ClCompile Include="Source\Client\Patches\Weapons.cpp" />
+    <ClCompile Include="Source\Client\Patches\Audio.cpp" />
+    <ClCompile Include="Source\Client\Patches\Equipment.cpp" />
+    <ClCompile Include="Source\Client\Patches\Rendering.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Misc\BuildInfo.hpp" />
