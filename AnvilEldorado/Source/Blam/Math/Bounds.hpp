@@ -8,25 +8,10 @@ namespace Blam::Math
 		T Lower;
 		T Upper;
 
-		Bounds(const T &lower, const T &upper)
-			: Lower(lower), Upper(upper)
-		{
-		}
+		Bounds();
+		Bounds(const T &lower, const T &upper);
 
-		Bounds()
-			: Bounds(T(), T())
-		{
-		}
-
-		bool operator==(const Bounds<T> &other) const
-		{
-			return Lower == other.Lower
-				&& Upper == other.Upper;
-		}
-
-		bool operator!=(const Bounds<T> &other) const
-		{
-			return !(*this == other);
-		}
+		bool operator==(const Bounds<T> &other) const;
+		bool operator!=(const Bounds<T> &other) const;
 	};
 }
