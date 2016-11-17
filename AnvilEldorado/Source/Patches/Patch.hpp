@@ -1,9 +1,9 @@
 #pragma once
-#include <Misc/IInitializable.hpp>
+#include <Interfaces/IInitializable.hpp>
 
-namespace Anvil::Client
+namespace AnvilEldorado::Patches
 {
-	class AnvilPatch : IInitializable
+	class AnvilPatch : AnvilCommon::IInitializable
 	{
 	protected:
 		void Patch_Tags();
@@ -15,10 +15,6 @@ namespace Anvil::Client
 		void Patch_Rendering();
 
 	public:
-		virtual bool PreInit() override;
-
 		virtual bool Init() override;
-
-		virtual bool PostInit() override;
 	};
 }

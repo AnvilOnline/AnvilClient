@@ -1,12 +1,12 @@
 #include "Logger.hpp"
+#include <Globals.hpp>
 #include <Utils/Util.hpp>
 
-#include <Globals.hpp>
 #include <sstream>
 #include <consoleapi.h>
 #include <vector>
 
-using Anvil::Utils::Logger;
+using namespace AnvilCommon::Utils;
 
 std::shared_ptr<Logger> Logger::GetInstance()
 {
@@ -16,8 +16,13 @@ std::shared_ptr<Logger> Logger::GetInstance()
 
 bool Logger::Init()
 {
-	auto s_Version = Anvil::g_BuildInfo;
+	auto s_Version = AnvilCommon::g_BuildInfo;
+
+#if _DEBUG
+	m_Debug = true;
+#else
 	m_Debug = Util::HasCommandLine("-debug");
+#endif
 
 	try
 	{

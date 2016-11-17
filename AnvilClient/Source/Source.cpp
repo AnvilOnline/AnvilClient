@@ -1,14 +1,11 @@
 #include <Windows.h>
 #include <Client/Client.hpp>
+
 #include <Utils/Logger.hpp>
-#include <Globals.hpp>
 
 DWORD WINAPI Initialize(LPVOID)
 {
-	Anvil::Utils::Logger::GetInstance()->Init();
-
-	while (!GetModuleHandle("d3dx9_43.dll"))
-		Sleep(250);
+	AnvilCommon::Utils::Logger::GetInstance()->Init();
 
 	Anvil::Client::AnvilClient::GetInstance()->Init();
 

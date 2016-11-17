@@ -9,7 +9,7 @@
 
 #pragma comment(lib, "psapi.lib")
 
-using namespace Anvil::Utils;
+using namespace AnvilCommon::Utils;
 
 bool Util::HasCommandLine(std::string p_Command)
 {
@@ -29,7 +29,7 @@ bool Util::HasCommandLine(std::string p_Command)
 	return false;
 }
 
-bool Util::PatchAddressInMemory(uint32_t p_Offset, std::string p_HexString, int32_t p_Length)
+bool Util::PatchAddressInMemory(uint64_t p_Offset, std::string p_HexString, int32_t p_Length)
 {
 	return PatchAddressInMemory(reinterpret_cast<void*>(p_Offset), p_HexString, p_Length);
 }
@@ -77,7 +77,7 @@ bool Util::PatchAddressInMemory(void* p_Address, std::string p_HexString, int32_
 	return true;
 }
 
-bool Util::PatchAddressInFile(uint32_t p_Offset, std::string p_HexString, int32_t p_Length)
+bool Util::PatchAddressInFile(uint64_t p_Offset, std::string p_HexString, int32_t p_Length)
 {
 	return PatchAddressInFile(reinterpret_cast<void*>(p_Offset), p_HexString, p_Length);
 }
@@ -91,7 +91,7 @@ bool Util::PatchAddressInFile(void* p_OffsetInFile, std::string p_HexString, int
 		return false;
 	}
 
-	auto s_BaseAddress = reinterpret_cast<uint32_t>(GetModuleHandle(nullptr));
+	auto s_BaseAddress = reinterpret_cast<uint64_t>(GetModuleHandle(nullptr));
 	auto s_Address = s_BaseAddress + reinterpret_cast<uint8_t*>(p_OffsetInFile);
 
 	return PatchAddressInMemory(s_Address, p_HexString, p_Length);

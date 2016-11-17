@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Source\Engine.cpp" />
+    <ClCompile Include="Source\Globals.cpp" />
+    <ClCompile Include="Source\Patches\Patch.cpp" />
+    <ClCompile Include="Source\Patches\Accounting.cpp" />
+    <ClCompile Include="Source\Patches\Audio.cpp" />
+    <ClCompile Include="Source\Patches\Camera.cpp" />
+    <ClCompile Include="Source\Patches\Equipment.cpp" />
+    <ClCompile Include="Source\Patches\Rendering.cpp" />
+    <ClCompile Include="Source\Patches\Tags.cpp" />
+    <ClCompile Include="Source\Patches\Weapons.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Engine.hpp" />
+    <ClInclude Include="Source\Patches\Patch.hpp" />
+  </ItemGroup>
+</Project>

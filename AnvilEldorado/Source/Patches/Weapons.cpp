@@ -1,7 +1,8 @@
-#include <Client/Patch.hpp>
+#include "Patch.hpp"
 #include <Utils/Util.hpp>
 
-using namespace Anvil::Client;
+using namespace AnvilCommon;
+using namespace AnvilEldorado::Patches;
 
 void AnvilPatch::Patch_Weapons()
 {
