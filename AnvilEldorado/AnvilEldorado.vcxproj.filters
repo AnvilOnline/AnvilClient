@@ -11,9 +11,12 @@
     <ClCompile Include="Source\Patches\Rendering.cpp" />
     <ClCompile Include="Source\Patches\Tags.cpp" />
     <ClCompile Include="Source\Patches\Weapons.cpp" />
+    <ClCompile Include="Source\Hooks\Hook.cpp" />
+    <ClCompile Include="Source\Hooks\DirectX.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
     <ClInclude Include="Source\Patches\Patch.hpp" />
+    <ClInclude Include="Source\Hooks\Hook.hpp" />
   </ItemGroup>
 </Project>
