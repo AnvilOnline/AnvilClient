@@ -19,11 +19,57 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Blam\Cache\StringIDCache.hpp" />
+    <ClInclude Include="Source\Blam\Math\Angle.hpp" />
+    <ClInclude Include="Source\Blam\Math\Bounds.hpp" />
+    <ClInclude Include="Source\Blam\Math\ColorARGB.hpp" />
+    <ClInclude Include="Source\Blam\Math\ColorRGB.hpp" />
+    <ClInclude Include="Source\Blam\Math\Point2D.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealColorARGB.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealColorRGB.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealEulerAngles2D.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealEulerAngles3D.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealMatrix3x3.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealMatrix4x3.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealOrientation3D.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealPlane2D.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealPlane3D.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealPoint2D.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealPoint3D.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealQuaternion.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealRectangle2D.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealRectangle3D.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealVector2D.hpp" />
+    <ClInclude Include="Source\Blam\Math\RealVector3D.hpp" />
+    <ClInclude Include="Source\Blam\Math\Rectangle2D.hpp" />
     <ClInclude Include="Source\Engine.hpp" />
     <ClInclude Include="Source\Hooks\Hook.hpp" />
     <ClInclude Include="Source\Patches\Patch.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Blam\Cache\StringIDCache.cpp" />
+    <ClCompile Include="Source\Blam\Math\Angle.cpp" />
+    <ClCompile Include="Source\Blam\Math\Bounds.cpp" />
+    <ClCompile Include="Source\Blam\Math\ColorARGB.cpp" />
+    <ClCompile Include="Source\Blam\Math\ColorRGB.cpp" />
+    <ClCompile Include="Source\Blam\Math\Point2D.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealColorARGB.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealColorRGB.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealEulerAngles2D.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealEulerAngles3D.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealMatrix3x3.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealMatrix4x3.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealOrientation3D.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealPlane2D.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealPlane3D.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealPoint2D.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealPoint3D.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealQuaternion.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealRectangle2D.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealRectangle3D.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealVector2D.cpp" />
+    <ClCompile Include="Source\Blam\Math\RealVector3D.cpp" />
+    <ClCompile Include="Source\Blam\Math\Rectangle2D.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\Hooks\DirectX.cpp" />
