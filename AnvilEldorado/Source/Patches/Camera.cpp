@@ -7,6 +7,6 @@ using namespace AnvilEldorado::Patches;
 void AnvilPatch::Patch_Camera()
 {
 	// Prevent FOV from being overridden when the game loads
-	Utils::Util::PatchAddressInFile(0x25FA79, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
-	Utils::Util::PatchAddressInFile(0x25FA86, "\x90\x90\x90\x90\x90", 6);
+	Utils::Util::PatchAddressInFile(0x65FA79, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
+	Utils::Util::PatchAddressInFile(0x65FA86, "\x90\x90\x90\x90\x90", 6);
 }
