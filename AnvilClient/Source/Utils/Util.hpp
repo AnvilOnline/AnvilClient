@@ -11,5 +11,7 @@ namespace Anvil::Utils
 		static bool PatchAddressInMemory(void* p_Address, std::string p_HexString, int32_t p_Length);
 		static bool PatchAddressInFile(uint32_t p_Offset, std::string p_HexString, int32_t p_Length);
 		static bool PatchAddressInFile(void* p_Offset, std::string p_HexString, int32_t p_Length);
+
+		static bool ResumeAllThreads();
 	};
 }

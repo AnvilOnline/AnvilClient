@@ -2,8 +2,12 @@
 #include <Windows.h>
 #include <stdio.h>
 #include <shellapi.h>
+#include <Psapi.h>
+#include <TlHelp32.h>
 
 #include <Utils/Logger.hpp>
+
+#pragma comment(lib, "psapi.lib")
 
 using namespace Anvil::Utils;
 
@@ -91,4 +95,49 @@ bool Util::PatchAddressInFile(void* p_OffsetInFile, std::string p_HexString, int
 	auto s_Address = s_BaseAddress + reinterpret_cast<uint8_t*>(p_OffsetInFile);
 
 	return PatchAddressInMemory(s_Address, p_HexString, p_Length);
+}
+
+bool Util::ResumeAllThreads()
+{
+	auto s_ThreadSnap = INVALID_HANDLE_VALUE;
+
+	THREADENTRY32 s_Entry;
+	ZeroMemory(&s_Entry, sizeof(s_Entry));
+	s_Entry.dwSize = sizeof(THREADENTRY32);
+
+	// Snapshot all running threads
+	s_ThreadSnap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+	if (s_ThreadSnap == INVALID_HANDLE_VALUE)
+		return false;
+
+	// Get information about the first thread
+	if (!Thread32First(s_ThreadSnap, &s_Entry))
+	{
+		CloseHandle(s_ThreadSnap);
+
+		WriteLog("Could not get the thread snapshot (%x).", GetLastError());
+		return false;
+	}
+
+	auto s_CurrentProcess = GetCurrentProcessId();
+	do
+	{
+		if (s_Entry.th32OwnerProcessID == s_CurrentProcess)
+		{
+			auto l_ThreadHandle = OpenThread(THREAD_SUSPEND_RESUME, FALSE, s_Entry.th32ThreadID);
+			if (l_ThreadHandle == INVALID_HANDLE_VALUE)
+				continue;
+
+			//WriteLog("Resuming thread : %x.", s_Entry.th32ThreadID);
+
+			ResumeThread(l_ThreadHandle);
+
+			CloseHandle(l_ThreadHandle);
+		}
+	} while (Thread32Next(s_ThreadSnap, &s_Entry));
+
+	CloseHandle(s_ThreadSnap);
+
+	WriteLog("All threads resumed successfully.");
+	return true;
 }
