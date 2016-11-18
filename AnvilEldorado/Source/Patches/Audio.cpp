@@ -12,8 +12,5 @@ void AnvilPatch::Patch_Audio()
 
 	// increase software channels from 192 to 256
 	// http://www.fmod.org/docs/content/generated/FMOD_System_SetSoftwareChannels.html
-	//
-	// TODO: Fix this, causes access violation error
-	// 
-	//*reinterpret_cast<uint32_t*>(0x404DF8 + 1) = 256;
+	Utils::Util::PatchAddressInMemory(reinterpret_cast<void *>(0x404DF8 + 1), "\x00\x00\x01\x00", 4);
 }
