@@ -13,13 +13,13 @@ AND THAT THEY ARE USING THE RIGHT INFILE/INMEMORY FUNCTIONS!!!!!!
 bool AnvilPatch::Init()
 {
 	// Remove Preferences.dat hash check
-	Utils::Util::PatchAddressInFile(0x50C99A, "\x90\x90\x90\x90\x90\x90", 6);
+	Utils::Util::PatchAddressInFile(0x10C99A, "\x90\x90\x90\x90\x90\x90", 6);
 
 	// Allow spawning AI through effects
-	Utils::Util::PatchAddressInFile(0x1433321, "\x90\x90", 2);
+	Utils::Util::PatchAddressInFile(0x1033321, "\x90\x90", 2);
 
 	// Fix random colored lighting
-	Utils::Util::PatchAddressInFile(0x18F2FFC, "\x00\x00\x00\x00", 4);
+	Utils::Util::PatchAddressInFile(0x14F2FFC, "\x00\x00\x00\x00", 4);
 	
 	Patch_Tags();
 	Patch_Accounting();

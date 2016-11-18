@@ -30,7 +30,7 @@ bool Util::HasCommandLine(std::string p_Command)
 	return false;
 }
 
-bool Util::PatchAddressInMemory(uint64_t p_Offset, std::string p_HexString, int32_t p_Length)
+bool Util::PatchAddressInMemory(uint32_t p_Offset, std::string p_HexString, int32_t p_Length)
 {
 	return PatchAddressInMemory(reinterpret_cast<void*>(p_Offset), p_HexString, p_Length);
 }
@@ -78,7 +78,7 @@ bool Util::PatchAddressInMemory(void* p_Address, std::string p_HexString, int32_
 	return true;
 }
 
-bool Util::PatchAddressInFile(uint64_t p_Offset, std::string p_HexString, int32_t p_Length)
+bool Util::PatchAddressInFile(uint32_t p_Offset, std::string p_HexString, int32_t p_Length)
 {
 	return PatchAddressInFile(reinterpret_cast<void*>(p_Offset), p_HexString, p_Length);
 }
