@@ -4,6 +4,7 @@
 #include <shellapi.h>
 #include <Psapi.h>
 #include <TlHelp32.h>
+#include <sstream>
 
 #include <Utils/Logger.hpp>
 
@@ -95,6 +96,62 @@ bool Util::PatchAddressInFile(void* p_OffsetInFile, std::string p_HexString, int
 	auto s_Address = s_BaseAddress + reinterpret_cast<uint8_t*>(p_OffsetInFile);
 
 	return PatchAddressInMemory(s_Address, p_HexString, p_Length);
+}
+
+void Util::WriteCall(void *p_Address, void* p_NewFunction)
+{
+	DWORD temp;
+	DWORD temp2;
+	uint8_t tempJMP[5] = { 0xE8, 0x90, 0x90, 0x90, 0x90 };
+	uint32_t JMPSize = ((uint32_t)p_NewFunction - (uint32_t)p_Address - 5);
+	if (!VirtualProtect(p_Address, 5, PAGE_READWRITE, &temp))
+	{
+		std::stringstream ss;
+		ss << "Failed to set protection on memory address " << std::hex << p_Address;
+		OutputDebugString(ss.str().c_str());
+		return;
+	}
+	memcpy(&tempJMP[1], &JMPSize, 4);
+	memcpy(p_Address, tempJMP, 5);
+	VirtualProtect(p_Address, 5, temp, &temp2);
+}
+
+void Util::WriteJump(void *p_Address, void* p_NewFunction, int p_Flags)
+{
+	DWORD temp;
+	DWORD temp2;
+	uint8_t tempJMP[5] = { 0xE9, 0x90, 0x90, 0x90, 0x90 };
+	uint8_t tempJE[6] = { 0x0F, 0x84, 0x90, 0x90, 0x90, 0x90 };
+	uint32_t patchSize = (p_Flags & HookFlags::IsJmpIfEqual) ? 6 : 5;
+	uint32_t JMPSize = ((uint32_t)p_NewFunction - (uint32_t)p_Address - patchSize);
+	if (!VirtualProtect(p_Address, patchSize, PAGE_READWRITE, &temp))
+	{
+		std::stringstream ss;
+		ss << "Failed to set protection on memory address " << std::hex << p_Address;
+		OutputDebugString(ss.str().c_str());
+		return;
+	}
+	if (p_Flags & HookFlags::IsJmpIfEqual)
+	{
+		memcpy(&tempJE[2], &JMPSize, 4);
+		memcpy(p_Address, tempJE, 6);
+	}
+	else
+	{
+		memcpy(&tempJMP[1], &JMPSize, 4);
+		memcpy(p_Address, tempJMP, 5);
+	}
+	VirtualProtect(p_Address, patchSize, temp, &temp2);
+}
+
+void Util::ApplyHook(size_t p_Offset, void *p_DestFunc, int p_Flags)
+{
+	auto p_Address = reinterpret_cast<void *>(p_Offset);
+
+	if (p_Flags & HookFlags::IsCall)
+		WriteCall(p_Address, p_DestFunc);
+	else
+		WriteJump(p_Address, p_DestFunc, p_Flags);
 }
 
 bool Util::ResumeAllThreads()

@@ -5,5 +5,8 @@ using namespace AnvilEldorado;
 
 bool Engine::Init()
 {
-	return AnvilEldorado::Patches::AnvilPatch().Init();
+	if (!AnvilEldorado::Patches::AnvilPatch().Init())
+		return false;
+
+	return true;
 }
