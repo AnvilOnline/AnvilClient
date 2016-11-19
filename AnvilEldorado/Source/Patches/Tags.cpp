@@ -28,5 +28,5 @@ void AnvilPatch::Patch_Tags()
 	Utils::Util::PatchAddressInFile(0x1030AA, "\x90\x90", 2);
 	
 	// Used to call Patches::ApplyAfterTagsLoaded when tags have loaded
-	Utils::Util::ApplyHook(0x5030EA, TagsLoadedHook);
+	Utils::Util::ApplyHook(0x1030EA, TagsLoadedHook);
 }
