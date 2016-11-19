@@ -20,7 +20,10 @@ bool AnvilPatch::Init()
 
 	// Fix random colored lighting
 	Utils::Util::PatchAddressInFile(0x14F2FFC, "\x00\x00\x00\x00", 4);
-	
+
+	// English patch
+	Utils::Util::PatchAddressInFile(0x2333FD, "\x00", 1);
+
 	Patch_Tags();
 	Patch_Accounting();
 	Patch_Camera();

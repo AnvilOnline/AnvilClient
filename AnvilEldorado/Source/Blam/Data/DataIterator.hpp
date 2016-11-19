@@ -12,20 +12,55 @@ namespace Blam::Data
 	{
 		static_assert(std::is_base_of<DatumBase, TDatum>::value, "Blam::Data::DataIterator<TDatum>: TDatum must inherit from Blam::Data::DatumBase");
 
-		DataIterator();
-		explicit DataIterator(DataArray<TDatum> *p_Data);
+		DataIterator(DataArray<TDatum> *p_Data)
+			: DataIteratorBase(p_Data)
+		{
+		}
 
-		TDatum *Next();
+		DataIterator()
+			: DataIteratorBase(nullptr)
+		{
+		}
 
-		DataIterator<TDatum> &operator++();
-		DataIterator<TDatum> operator++(int32_t);
+		TDatum *Next()
+		{
+			return static_cast<TDatum *>(DataIteratorBase::Next());
+		}
 
-		TDatum *operator->() const;
+		DataIterator<TDatum> &operator++()
+		{
+			Next();
+			return *this;
+		}
 
-		TDatum &operator*() const;
+		DataIterator<TDatum> operator++(int32_t)
+		{
+			auto result = *this;
+			operator++();
+			return result;
+		}
 
-		bool operator==(const DataIterator<TDatum> &p_Other) const;
-		bool operator!=(const DataIterator<TDatum> &p_Other) const;
+		TDatum *operator->() const
+		{
+			return static_cast<TDatum *>(Array->GetAddress(CurrentDatumIndex));
+		}
+
+		TDatum &operator*() const
+		{
+			return *operator->();
+		}
+
+		bool operator==(const DataIterator<TDatum> &p_Other) const
+		{
+			return Array == p_Other.Array
+				&& CurrentIndex == p_Other.CurrentIndex
+				&& CurrentDatumIndex == p_Other.CurrentDatumIndex;
+		}
+
+		bool operator!=(const DataIterator<TDatum> &p_Other) const
+		{
+			return !(*this == other);
+		}
 	};
 	static_assert(sizeof(DataIterator<DatumBase>) == sizeof(DataIteratorBase), "Blam::Data::DataIterator<TDatum>: Invalid size.");
 }

@@ -1,6 +1,6 @@
 #include "BitStream.hpp"
 
-namespace Blam::Network
+namespace Blam::Data
 {
 	template<class T>
 	int32_t CountBits(T p_Value)
