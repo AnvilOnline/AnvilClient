@@ -25,6 +25,11 @@
     <ClInclude Include="Source\Blam\Data\DataIteratorBase.hpp" />
     <ClInclude Include="Source\Blam\Data\DataPoolBase.hpp" />
     <ClInclude Include="Source\Blam\Data\LruvCacheBase.hpp" />
+    <ClInclude Include="Source\Blam\Game\Damage.hpp" />
+    <ClInclude Include="Source\Blam\Game\Event.hpp" />
+    <ClInclude Include="Source\Blam\Game\Medals.hpp" />
+    <ClInclude Include="Source\Blam\Game\Player.hpp" />
+    <ClInclude Include="Source\Blam\Game\Stats.hpp" />
     <ClInclude Include="Source\Blam\Input\Actions.hpp" />
     <ClInclude Include="Source\Blam\Input\Bindings.hpp" />
     <ClInclude Include="Source\Blam\Input\Controller.hpp" />
@@ -64,6 +69,8 @@
     <ClInclude Include="Source\Blam\Math\RealVector3D.hpp" />
     <ClInclude Include="Source\Blam\Math\Rectangle2D.hpp" />
     <ClInclude Include="Source\Blam\Padding.hpp" />
+    <ClInclude Include="Source\Blam\Tags\Tag.hpp" />
+    <ClInclude Include="Source\Blam\Tags\TagReference.hpp" />
     <ClInclude Include="Source\Blam\Text\StringID.hpp" />
     <ClInclude Include="Source\Engine.hpp" />
     <ClInclude Include="Source\Hooks\Hook.hpp" />
@@ -73,6 +80,11 @@
     <ClCompile Include="Source\Blam\Data\DataIteratorBase.cpp" />
     <ClCompile Include="Source\Blam\Data\DataPoolBase.cpp" />
     <ClCompile Include="Source\Blam\Data\LruvCacheBase.cpp" />
+    <ClCompile Include="Source\Blam\Game\Damage.cpp" />
+    <ClCompile Include="Source\Blam\Game\Event.cpp" />
+    <ClCompile Include="Source\Blam\Game\Medals.cpp" />
+    <ClCompile Include="Source\Blam\Game\Player.cpp" />
+    <ClCompile Include="Source\Blam\Game\Stats.cpp" />
     <ClCompile Include="Source\Blam\Input\Actions.cpp" />
     <ClCompile Include="Source\Blam\Input\Bindings.cpp" />
     <ClCompile Include="Source\Blam\Input\Input.cpp" />
@@ -105,6 +117,8 @@
     <ClCompile Include="Source\Blam\Math\RealVector3D.cpp" />
     <ClCompile Include="Source\Blam\Math\Rectangle2D.cpp" />
     <ClCompile Include="Source\Blam\Objects\ObjectDatum.cpp" />
+    <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
+    <ClCompile Include="Source\Blam\Tags\TagReference.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\Hooks\DirectX.cpp" />

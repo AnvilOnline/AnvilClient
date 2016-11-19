@@ -34,7 +34,6 @@
     <ClCompile Include="Source\Blam\Math\RealVector2D.cpp" />
     <ClCompile Include="Source\Blam\Math\RealVector3D.cpp" />
     <ClCompile Include="Source\Blam\Math\Rectangle2D.cpp" />
-    <ClCompile Include="Source\Blam\Text\StringID.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumIndex.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
     <ClCompile Include="Source\Blam\Data\DataArrayBase.cpp" />
@@ -49,6 +48,13 @@
     <ClCompile Include="Source\Blam\Input\Keyboard.cpp" />
     <ClCompile Include="Source\Blam\Input\Input.cpp" />
     <ClCompile Include="Source\Blam\Data\BitStream.cpp" />
+    <ClCompile Include="Source\Blam\Game\Player.cpp" />
+    <ClCompile Include="Source\Blam\Game\Stats.cpp" />
+    <ClCompile Include="Source\Blam\Tags\TagReference.cpp" />
+    <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
+    <ClCompile Include="Source\Blam\Game\Damage.cpp" />
+    <ClCompile Include="Source\Blam\Game\Event.cpp" />
+    <ClCompile Include="Source\Blam\Game\Medals.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -100,5 +106,12 @@
     <ClInclude Include="Source\Blam\Input\Controller.hpp" />
     <ClInclude Include="Source\Blam\Input\Input.hpp" />
     <ClInclude Include="Source\Blam\Data\BitStream.hpp" />
+    <ClInclude Include="Source\Blam\Game\Player.hpp" />
+    <ClInclude Include="Source\Blam\Game\Stats.hpp" />
+    <ClInclude Include="Source\Blam\Game\Medals.hpp" />
+    <ClInclude Include="Source\Blam\Game\Damage.hpp" />
+    <ClInclude Include="Source\Blam\Game\Event.hpp" />
+    <ClInclude Include="Source\Blam\Tags\TagReference.hpp" />
+    <ClInclude Include="Source\Blam\Tags\Tag.hpp" />
   </ItemGroup>
 </Project>

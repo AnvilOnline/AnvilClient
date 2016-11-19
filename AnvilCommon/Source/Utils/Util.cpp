@@ -155,6 +155,23 @@ void Util::ApplyHook(size_t p_Offset, void *p_DestFunc, int p_Flags)
 		WriteJump(s_Address, p_DestFunc, p_Flags);
 }
 
+void *Util::GetTls(size_t p_Offset)
+{
+	static void *s_TLS;
+
+	if (s_TLS == nullptr)
+	{
+		_asm
+		{
+			mov     eax, dword ptr fs : [2Ch]
+			mov     eax, dword ptr ds : [eax]
+			mov		s_TLS, eax
+		}
+	}
+
+	return (char *)s_TLS + p_Offset;
+}
+
 bool Util::ResumeAllThreads()
 {
 	auto s_ThreadSnap = INVALID_HANDLE_VALUE;
