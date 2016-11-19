@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace Blam
+namespace Blam::Memory
 {
 	struct GlobalMemoryMapStage
 	{
@@ -10,6 +10,8 @@ namespace Blam
 		uint32_t IsInitialized;
 		uint32_t DataAllocationCount;
 		uint32_t CacheAllocationCount;
+
+		GlobalMemoryMapStage();
 	};
 
 	struct GlobalMemoryMap
@@ -20,11 +22,10 @@ namespace Blam
 		char* CacheBaseAddress;
 		uint32_t IsInitialized;
 		GlobalMemoryMapStage Stages[8];
-	};
-	static_assert(sizeof(GlobalMemoryMap) == 0xB4, "Invalid GlobalMemoryMap size");
 
-	inline GlobalMemoryMap* GetGlobalMemoryMap()
-	{
-		return reinterpret_cast<GlobalMemoryMap*>(0x238EC50);
-	}
+		GlobalMemoryMap();
+
+		static GlobalMemoryMap *Instance();
+	};
+	static_assert(sizeof(GlobalMemoryMap) == 0xB4, "Blam::Memory::GlobalMemoryMap");
 }
