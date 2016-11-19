@@ -1,6 +1,6 @@
 #include "BitStream.hpp"
 
-namespace Blam
+namespace Blam::Network
 {
 	template<class T>
 	int32_t CountBits(T p_Value)
@@ -16,11 +16,8 @@ namespace Blam
 		return result;
 	}
 
-	BitStream::BitStream() :
-		Start(nullptr),
-		End(nullptr),
-		Unknown14(nullptr),
-		CurrentPointer(nullptr)
+	BitStream::BitStream()
+		: Start(nullptr), End(nullptr), Unknown14(nullptr), CurrentPointer(nullptr)
 	{
 	}
 

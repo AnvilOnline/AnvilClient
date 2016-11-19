@@ -36,12 +36,18 @@
     <ClCompile Include="Source\Blam\Math\RealVector2D.cpp" />
     <ClCompile Include="Source\Blam\Math\RealVector3D.cpp" />
     <ClCompile Include="Source\Blam\Math\Rectangle2D.cpp" />
-    <ClCompile Include="Source\Blam\BitStream.cpp" />
-    <ClCompile Include="Source\Blam\BlamData.cpp" />
     <ClCompile Include="Source\Blam\BlamInput.cpp" />
     <ClCompile Include="Source\Blam\Text\StringID.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumIndex.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
+    <ClCompile Include="Source\Blam\Data\DataArrayBase.cpp" />
+    <ClCompile Include="Source\Blam\Network\BitStream.cpp" />
+    <ClCompile Include="Source\Blam\Data\DataPoolBase.cpp" />
+    <ClCompile Include="Source\Blam\Data\LruvCacheBase.cpp" />
+    <ClCompile Include="Source\Blam\Data\DataIteratorBase.cpp" />
+    <ClCompile Include="Source\Blam\Data\DataArray.cpp" />
+    <ClCompile Include="Source\Blam\Data\DataIterator.cpp" />
+    <ClCompile Include="Source\Blam\Data\ConstDataIterator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -71,8 +77,6 @@
     <ClInclude Include="Source\Blam\Math\RealVector3D.hpp" />
     <ClInclude Include="Source\Blam\Math\Rectangle2D.hpp" />
     <ClInclude Include="Source\Blam\Text\StringID.hpp" />
-    <ClInclude Include="Source\Blam\BitStream.hpp" />
-    <ClInclude Include="Source\Blam\BlamData.hpp" />
     <ClInclude Include="Source\Blam\BlamInput.hpp" />
     <ClInclude Include="Source\Blam\BlamMemory.hpp" />
     <ClInclude Include="Source\Blam\BlamObjects.hpp" />
@@ -80,5 +84,13 @@
     <ClInclude Include="Source\Blam\Padding.hpp" />
     <ClInclude Include="Source\Blam\Data\DatumIndex.hpp" />
     <ClInclude Include="Source\Blam\Data\DatumBase.hpp" />
+    <ClInclude Include="Source\Blam\Data\DataArrayBase.hpp" />
+    <ClInclude Include="Source\Blam\Network\BitStream.hpp" />
+    <ClInclude Include="Source\Blam\Data\DataPoolBase.hpp" />
+    <ClInclude Include="Source\Blam\Data\LruvCacheBase.hpp" />
+    <ClInclude Include="Source\Blam\Data\DataIteratorBase.hpp" />
+    <ClInclude Include="Source\Blam\Data\DataArray.hpp" />
+    <ClInclude Include="Source\Blam\Data\DataIterator.hpp" />
+    <ClInclude Include="Source\Blam\Data\ConstDataIterator.hpp" />
   </ItemGroup>
 </Project>

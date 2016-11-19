@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace Blam
+namespace Blam::Network
 {
 	struct BitStream
 	{

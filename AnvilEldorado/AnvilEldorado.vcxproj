@@ -19,13 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Blam\BitStream.hpp" />
-    <ClInclude Include="Source\Blam\BlamData.hpp" />
+    <ClInclude Include="Source\Blam\Data\ConstDataIterator.hpp" />
+    <ClInclude Include="Source\Blam\Data\DataArray.hpp" />
+    <ClInclude Include="Source\Blam\Data\DataIterator.hpp" />
+    <ClInclude Include="Source\Blam\Data\DataIteratorBase.hpp" />
+    <ClInclude Include="Source\Blam\Data\DataPoolBase.hpp" />
+    <ClInclude Include="Source\Blam\Data\LruvCacheBase.hpp" />
+    <ClInclude Include="Source\Blam\Network\BitStream.hpp" />
     <ClInclude Include="Source\Blam\BlamInput.hpp" />
     <ClInclude Include="Source\Blam\BlamMemory.hpp" />
     <ClInclude Include="Source\Blam\BlamObjects.hpp" />
     <ClInclude Include="Source\Blam\BlamTypes.hpp" />
     <ClInclude Include="Source\Blam\Cache\StringIDCache.hpp" />
+    <ClInclude Include="Source\Blam\Data\DataArrayBase.hpp" />
     <ClInclude Include="Source\Blam\Data\DatumBase.hpp" />
     <ClInclude Include="Source\Blam\Data\DatumIndex.hpp" />
     <ClInclude Include="Source\Blam\Math\Angle.hpp" />
@@ -57,10 +63,16 @@
     <ClInclude Include="Source\Patches\Patch.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Blam\BitStream.cpp" />
-    <ClCompile Include="Source\Blam\BlamData.cpp" />
+    <ClCompile Include="Source\Blam\Data\ConstDataIterator.cpp" />
+    <ClCompile Include="Source\Blam\Data\DataArray.cpp" />
+    <ClCompile Include="Source\Blam\Data\DataIterator.cpp" />
+    <ClCompile Include="Source\Blam\Data\DataIteratorBase.cpp" />
+    <ClCompile Include="Source\Blam\Data\DataPoolBase.cpp" />
+    <ClCompile Include="Source\Blam\Data\LruvCacheBase.cpp" />
+    <ClCompile Include="Source\Blam\Network\BitStream.cpp" />
     <ClCompile Include="Source\Blam\BlamInput.cpp" />
     <ClCompile Include="Source\Blam\Cache\StringIDCache.cpp" />
+    <ClCompile Include="Source\Blam\Data\DataArrayBase.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumIndex.cpp" />
     <ClCompile Include="Source\Blam\Math\Angle.cpp" />
