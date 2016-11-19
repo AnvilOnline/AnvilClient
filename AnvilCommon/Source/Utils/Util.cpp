@@ -92,7 +92,7 @@ bool Util::PatchAddressInFile(void* p_OffsetInFile, std::string p_HexString, int
 		return false;
 	}
 
-	auto s_BaseAddress = reinterpret_cast<uint64_t>(GetModuleHandle(nullptr));
+	auto s_BaseAddress = reinterpret_cast<size_t>(GetModuleHandle(nullptr));
 	auto s_Address = s_BaseAddress + reinterpret_cast<uint8_t*>(p_OffsetInFile);
 
 	return PatchAddressInMemory(s_Address, p_HexString, p_Length);
@@ -146,12 +146,13 @@ void Util::WriteJump(void *p_Address, void* p_NewFunction, int p_Flags)
 
 void Util::ApplyHook(size_t p_Offset, void *p_DestFunc, int p_Flags)
 {
-	auto p_Address = reinterpret_cast<void *>(p_Offset);
+	auto s_BaseAddress = reinterpret_cast<size_t>(GetModuleHandle(nullptr));
+	auto s_Address = s_BaseAddress + reinterpret_cast<uint8_t *>(p_Offset);
 
 	if (p_Flags & HookFlags::IsCall)
-		WriteCall(p_Address, p_DestFunc);
+		WriteCall(s_Address, p_DestFunc);
 	else
-		WriteJump(p_Address, p_DestFunc, p_Flags);
+		WriteJump(s_Address, p_DestFunc, p_Flags);
 }
 
 bool Util::ResumeAllThreads()

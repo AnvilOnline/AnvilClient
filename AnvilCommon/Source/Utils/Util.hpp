@@ -21,8 +21,8 @@ namespace AnvilCommon::Utils
 		static bool PatchAddressInFile(void* p_Offset, std::string p_HexString, int32_t p_Length);
 		
 		static void WriteCall(void *p_Address, void *p_NewFunction);
-		static void WriteJump(void *p_Address, void *p_NewFunction, int p_Flags);
-		static void ApplyHook(size_t p_Offset, void *p_DestFunc, int p_Flags);
+		static void WriteJump(void *p_Address, void *p_NewFunction, int p_Flags = 0);
+		static void ApplyHook(size_t p_Offset, void *p_DestFunc, int p_Flags = 0);
 
 		static bool ResumeAllThreads();
 	};
