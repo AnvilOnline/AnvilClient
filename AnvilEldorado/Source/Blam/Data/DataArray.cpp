@@ -1,4 +1,4 @@
-#include "DataArrayBase.hpp"
+#include "DataArray.hpp"
 
 namespace Blam::Data
 {

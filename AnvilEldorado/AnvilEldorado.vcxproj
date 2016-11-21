@@ -19,17 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Blam\Data\ConstDataIterator.hpp" />
     <ClInclude Include="Source\Blam\Data\DataArray.hpp" />
     <ClInclude Include="Source\Blam\Data\DataIterator.hpp" />
-    <ClInclude Include="Source\Blam\Data\DataIteratorBase.hpp" />
     <ClInclude Include="Source\Blam\Data\DataPoolBase.hpp" />
     <ClInclude Include="Source\Blam\Data\LruvCacheBase.hpp" />
     <ClInclude Include="Source\Blam\Game\Damage.hpp" />
-    <ClInclude Include="Source\Blam\Game\Event.hpp" />
+    <ClInclude Include="Source\Blam\Game\Events.hpp" />
     <ClInclude Include="Source\Blam\Game\Medals.hpp" />
-    <ClInclude Include="Source\Blam\Game\Player.hpp" />
+    <ClInclude Include="Source\Blam\Game\Players.hpp" />
     <ClInclude Include="Source\Blam\Game\Stats.hpp" />
+    <ClInclude Include="Source\Blam\Game\Variants.hpp" />
     <ClInclude Include="Source\Blam\Input\Actions.hpp" />
     <ClInclude Include="Source\Blam\Input\Bindings.hpp" />
     <ClInclude Include="Source\Blam\Input\Controller.hpp" />
@@ -43,7 +42,6 @@
     <ClInclude Include="Source\Blam\Objects\ObjectDatum.hpp" />
     <ClInclude Include="Source\Blam\BlamTypes.hpp" />
     <ClInclude Include="Source\Blam\Cache\StringIDCache.hpp" />
-    <ClInclude Include="Source\Blam\Data\DataArrayBase.hpp" />
     <ClInclude Include="Source\Blam\Data\DatumBase.hpp" />
     <ClInclude Include="Source\Blam\Data\DatumIndex.hpp" />
     <ClInclude Include="Source\Blam\Math\Angle.hpp" />
@@ -77,13 +75,10 @@
     <ClInclude Include="Source\Patches\Patch.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Blam\Data\DataIteratorBase.cpp" />
+    <ClCompile Include="Source\Blam\Data\DataIterator.cpp" />
     <ClCompile Include="Source\Blam\Data\DataPoolBase.cpp" />
     <ClCompile Include="Source\Blam\Data\LruvCacheBase.cpp" />
-    <ClCompile Include="Source\Blam\Game\Damage.cpp" />
-    <ClCompile Include="Source\Blam\Game\Event.cpp" />
-    <ClCompile Include="Source\Blam\Game\Medals.cpp" />
-    <ClCompile Include="Source\Blam\Game\Player.cpp" />
+    <ClCompile Include="Source\Blam\Game\Players.cpp" />
     <ClCompile Include="Source\Blam\Game\Stats.cpp" />
     <ClCompile Include="Source\Blam\Input\Actions.cpp" />
     <ClCompile Include="Source\Blam\Input\Bindings.cpp" />
@@ -93,7 +88,7 @@
     <ClCompile Include="Source\Blam\Memory\GlobalMemoryMap.cpp" />
     <ClCompile Include="Source\Blam\Data\BitStream.cpp" />
     <ClCompile Include="Source\Blam\Cache\StringIDCache.cpp" />
-    <ClCompile Include="Source\Blam\Data\DataArrayBase.cpp" />
+    <ClCompile Include="Source\Blam\Data\DataArray.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumIndex.cpp" />
     <ClCompile Include="Source\Blam\Math\Angle.cpp" />

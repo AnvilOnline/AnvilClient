@@ -1,4 +1,4 @@
-#include "DataIteratorBase.hpp"
+#include "DataIterator.hpp"
 
 namespace Blam::Data
 {
