@@ -47,8 +47,6 @@
     <ClCompile Include="Source\Blam\Input\Input.cpp" />
     <ClCompile Include="Source\Blam\Data\BitStream.cpp" />
     <ClCompile Include="Source\Blam\Game\Stats.cpp" />
-    <ClCompile Include="Source\Blam\Tags\TagReference.cpp" />
-    <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
     <ClCompile Include="Source\Blam\Data\DataArray.cpp" />
     <ClCompile Include="Source\Blam\Data\DataIterator.cpp" />
     <ClCompile Include="Source\Blam\Game\Players.cpp" />
@@ -80,7 +78,6 @@
     <ClInclude Include="Source\Blam\Math\RealVector3D.hpp" />
     <ClInclude Include="Source\Blam\Math\Rectangle2D.hpp" />
     <ClInclude Include="Source\Blam\Text\StringID.hpp" />
-    <ClInclude Include="Source\Blam\BlamTypes.hpp" />
     <ClInclude Include="Source\Blam\Padding.hpp" />
     <ClInclude Include="Source\Blam\Data\DatumIndex.hpp" />
     <ClInclude Include="Source\Blam\Data\DatumBase.hpp" />
@@ -108,5 +105,7 @@
     <ClInclude Include="Source\Blam\Game\Variants.hpp" />
     <ClInclude Include="Source\Blam\Game\Events.hpp" />
     <ClInclude Include="Source\Blam\Game\Players.hpp" />
+    <ClInclude Include="Source\Blam\Tags\TagBlock.hpp" />
+    <ClInclude Include="Source\Blam\Tags\TagData.hpp" />
   </ItemGroup>
 </Project>
