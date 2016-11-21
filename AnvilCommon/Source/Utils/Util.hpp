@@ -24,8 +24,6 @@ namespace AnvilCommon::Utils
 		static void WriteJump(void *p_Address, void *p_NewFunction, int p_Flags = 0);
 		static void ApplyHook(size_t p_Offset, void *p_DestFunc, int p_Flags = 0);
 
-		static void *GetTls(size_t p_Offset = 0);
-
 		static bool ResumeAllThreads();
 	};
 }

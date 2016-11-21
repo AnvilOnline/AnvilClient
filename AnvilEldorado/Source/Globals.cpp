@@ -4,7 +4,7 @@
 std::string AnvilCommon::g_BuildInfo = "AnvilEldorado Client - " + std::string(__DATE__) + " - Build: " + std::to_string(ANVIL_BUILD);
 void* AnvilCommon::g_ThreadStorage = AnvilCommon::Internal_GetThreadStorage();
 
-void* AnvilCommon::Internal_GetThreadStorage()
+void *AnvilCommon::Internal_GetThreadStorage(const size_t p_Offset)
 {
 	void* s_ThreadStorage = nullptr;
 	__asm
@@ -14,5 +14,5 @@ void* AnvilCommon::Internal_GetThreadStorage()
 		mov	s_ThreadStorage, eax
 	}
 
-	return s_ThreadStorage;
+	return ((char *)s_ThreadStorage + p_Offset);
 }
