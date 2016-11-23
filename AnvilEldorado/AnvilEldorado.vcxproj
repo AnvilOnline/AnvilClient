@@ -66,9 +66,12 @@
     <ClInclude Include="Source\Blam\Math\RealVector3D.hpp" />
     <ClInclude Include="Source\Blam\Math\Rectangle2D.hpp" />
     <ClInclude Include="Source\Blam\Padding.hpp" />
+    <ClInclude Include="Source\Blam\Tags\Game\Globals.hpp" />
+    <ClInclude Include="Source\Blam\Tags\Game\MultiplayerGlobals.hpp" />
     <ClInclude Include="Source\Blam\Tags\Tag.hpp" />
     <ClInclude Include="Source\Blam\Tags\TagBlock.hpp" />
     <ClInclude Include="Source\Blam\Tags\TagData.hpp" />
+    <ClInclude Include="Source\Blam\Tags\TagInstance.hpp" />
     <ClInclude Include="Source\Blam\Tags\TagReference.hpp" />
     <ClInclude Include="Source\Blam\Text\StringID.hpp" />
     <ClInclude Include="Source\Engine.hpp" />
@@ -115,6 +118,7 @@
     <ClCompile Include="Source\Blam\Objects\ObjectDatum.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
+    <ClCompile Include="Source\Hooks\Armor.cpp" />
     <ClCompile Include="Source\Hooks\DirectX.cpp" />
     <ClCompile Include="Source\Hooks\Hook.cpp" />
     <ClCompile Include="Source\Patches\Accounting.cpp" />

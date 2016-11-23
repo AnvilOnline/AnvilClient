@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include "..\Text\StringID.hpp"
 
 namespace Blam::Cache
 {
@@ -22,6 +23,6 @@ namespace Blam::Cache
 		static StringIDCache Instance;
 
 		bool Load(const std::string &path);
-		char *GetString(const uint32_t stringID);
+		char *GetString(const Text::StringID &stringID);
 	};
 }

@@ -4,6 +4,9 @@
 
 namespace AnvilEldorado::Hooks
 {
+	void Armor_AfterTagsLoaded();
+	void Armor_RefreshUiPlayer();
+
 	class Hook : AnvilCommon::IInitializable
 	{
 	private:
@@ -13,6 +16,7 @@ namespace AnvilEldorado::Hooks
 
 	private:
 		void Hook_DirectX();
+		void Hook_Armor();
 
 	public:
 		virtual bool Init() override;

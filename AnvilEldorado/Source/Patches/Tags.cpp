@@ -1,12 +1,20 @@
 #include "Patch.hpp"
-#include <Utils/Util.hpp>
+#include "Hooks\Hook.hpp"
+#include "Utils\Util.hpp"
 
 using namespace AnvilCommon;
 using namespace AnvilEldorado::Patches;
 
+#include <Windows.h>
+
 void ApplyAfterTagsLoaded()
 {
-	// TODO: Perform any actions that need to be done after tags are loaded here.
+	MessageBox(NULL, "Tags were loaded!", "Tags", MB_OK);
+
+	AnvilEldorado::Hooks::Armor_AfterTagsLoaded();
+	MessageBox(NULL, "Armor tags were loaded!", "Tags", MB_OK);
+
+	AnvilEldorado::Hooks::Armor_RefreshUiPlayer();
 }
 
 __declspec(naked) void TagsLoadedHook()
@@ -26,7 +34,7 @@ void AnvilPatch::Patch_Tags()
 	Utils::Util::PatchAddressInFile(0x101A5B, "\xEB", 1);
 	Utils::Util::PatchAddressInFile(0x102874, "\x90\x90", 2);
 	Utils::Util::PatchAddressInFile(0x1030AA, "\x90\x90", 2);
-	
+
 	// Used to call Patches::ApplyAfterTagsLoaded when tags have loaded
 	Utils::Util::ApplyHook(0x1030EA, TagsLoadedHook);
 }

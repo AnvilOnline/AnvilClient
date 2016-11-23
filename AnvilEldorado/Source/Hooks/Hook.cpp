@@ -6,6 +6,7 @@ using namespace AnvilEldorado::Hooks;
 bool Hook::Init()
 {
 	Hook_DirectX();
+	Hook_Armor();
 
 	return false;
 }

@@ -50,6 +50,7 @@
     <ClCompile Include="Source\Blam\Data\DataArray.cpp" />
     <ClCompile Include="Source\Blam\Data\DataIterator.cpp" />
     <ClCompile Include="Source\Blam\Game\Players.cpp" />
+    <ClCompile Include="Source\Hooks\Armor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -107,5 +108,9 @@
     <ClInclude Include="Source\Blam\Game\Players.hpp" />
     <ClInclude Include="Source\Blam\Tags\TagBlock.hpp" />
     <ClInclude Include="Source\Blam\Tags\TagData.hpp" />
+    <ClInclude Include="Source\Blam\Tags\TagInstance.hpp" />
+    <ClInclude Include="Source\Blam\Tags\Game\Globals.hpp" />
+    <ClInclude Include="Source\Blam\Text\StringID.hpp" />
+    <ClInclude Include="Source\Blam\Tags\Game\MultiplayerGlobals.hpp" />
   </ItemGroup>
 </Project>

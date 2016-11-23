@@ -56,14 +56,14 @@ namespace Blam::Cache
 		return true;
 	}
 
-	char *StringIDCache::GetString(const uint32_t StringID)
+	char *StringIDCache::GetString(const Text::StringID &StringID)
 	{
 		int32_t setMin = 0x1;
 		int32_t setMax = 0xF1E;
 		int32_t setOffsets[] = { 0x90F, 0x1, 0x685, 0x720, 0x7C4, 0x778, 0x7D0, 0x8EA, 0x902 };
 
-		int32_t set = (int32_t)((StringID >> 16) & 0xFF);
-		int32_t index = (int32_t)(StringID & 0xFFFF);
+		int32_t set = (int32_t)(((uint32_t)StringID >> 16) & 0xFF);
+		int32_t index = (int32_t)((uint32_t)StringID & 0xFFFF);
 
 		if (set == 0 && (index < setMin || index > setMax))
 			return Strings[index];

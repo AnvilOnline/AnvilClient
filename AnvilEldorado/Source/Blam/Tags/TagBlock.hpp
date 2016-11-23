@@ -25,6 +25,16 @@ namespace Blam::Tags
 			return Elements;
 		}
 
+		inline Element *begin() const
+		{
+			return Elements;
+		}
+
+		inline Element *end() const
+		{
+			return &Elements[Count];
+		}
+
 		Element &operator[](const size_t p_Index) const
 		{
 			return Elements[p_Index];
@@ -36,5 +46,5 @@ namespace Blam::Tags
 				&& (Elements != nullptr);
 		}
 	};
-	static_assert(sizeof(TagBlock<void>) == 0xC, "Blam::Tags::TagBlock<>");
+	static_assert(sizeof(TagBlock<int32_t>) == 0xC, "Blam::Tags::TagBlock<>");
 }
