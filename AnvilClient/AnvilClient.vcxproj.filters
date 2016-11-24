@@ -7,4 +7,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Client\Client.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="PreBuild.bat" />
+  </ItemGroup>
 </Project>

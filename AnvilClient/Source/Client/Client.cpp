@@ -4,6 +4,7 @@
 #include <Utils/Logger.hpp>
 
 #include <Engine.hpp>
+#include <MinHook.h>
 
 using namespace AnvilCommon;
 using namespace Anvil::Client;
@@ -24,6 +25,13 @@ std::shared_ptr<AnvilClient> AnvilClient::GetInstance()
 
 bool AnvilClient::Init()
 {
+	// Initialize MinHook
+	if (MH_Initialize() != MH_OK)
+	{
+		WriteLog("Failed to initialize libMinHook.");
+		return false;
+	}
+
 #ifdef ANVIL_DEW
 	// Initialize Dewrito
 	m_Engine = std::shared_ptr<AnvilCommon::IInitializable>(new AnvilEldorado::Engine);
@@ -31,6 +39,7 @@ bool AnvilClient::Init()
 
 #ifdef ANVIL_AUSAR
 	// Initialize Ausar
+	m_Engine = std::shared_ptr<AnvilCommon::IInitializable>(new AnvilAusar::Engine);
 #endif
 
 	if (!m_Engine->Init())

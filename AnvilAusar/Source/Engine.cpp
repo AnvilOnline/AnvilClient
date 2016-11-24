@@ -11,9 +11,6 @@ bool Engine::Init()
 {
 	if (!InitializeDirectories())
 		return false;
-
-	// Initialize MinHook
-	
 	
 	return true;
 }

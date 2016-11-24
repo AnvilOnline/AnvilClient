@@ -89,7 +89,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;ANVIL_DEW;_DEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilEldorado\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilEldorado\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -102,6 +102,12 @@
       <AdditionalDependencies>winmm.lib;ws2_32.lib;AnvilCommon.lib;libMinHook.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Debug;$(SolutionDir)AnvilCommon\Depends\Library\x86\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PreBuildEvent>
+      <Command>call $(ProjectDir)PreBuild.bat</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Incrementing Build Number</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -110,7 +116,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>ANVIL_AUSAR;_DEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilAusar\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilAusar\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StringPooling>true</StringPooling>
@@ -123,6 +129,12 @@
       <AdditionalLibraryDirectories>$(SolutionDir)x64\Debug;$(SolutionDir)AnvilCommon\Depends\Library\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>AnvilCommon.lib;libMinHook.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>call $(ProjectDir)PreBuild.bat</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Incrementing Build Number</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -134,7 +146,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;ANVIL_DEW;NDEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilEldorado\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilEldorado\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>true</StringPooling>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
@@ -148,6 +160,12 @@
       <AdditionalDependencies>winmm.lib;ws2_32.lib;AnvilCommon.lib;libMinHook.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Release;$(SolutionDir)AnvilCommon\Depends\Library\x86\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PreBuildEvent>
+      <Command>call $(ProjectDir)PreBuild.bat</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Incrementing Build Number</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -158,7 +176,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>ANVIL_AUSAR;NDEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilAusar\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilAusar\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -171,8 +189,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)x64\Release;$(SolutionDir)AnvilCommon\Depends\Library\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>AnvilCommon.lib;libMinHook.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </Link>
+    <PreBuildEvent>
+      <Command>call $(ProjectDir)PreBuild.bat</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Incrementing Build Number</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\Client\Client.cpp" />
@@ -180,6 +203,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Client\Client.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PreBuild.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
