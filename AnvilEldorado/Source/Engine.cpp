@@ -1,6 +1,11 @@
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#include <WinSock2.h>
+#include <WS2tcpip.h>
 #include <TlHelp32.h>
 #include <vector>
+#include "BuildInfo.hpp"
 #include "Globals.hpp"
 #include "Utils\Logger.hpp"
 #include "Utils\Singleton.hpp"
@@ -24,7 +29,7 @@ void *GetModuleBase()
 	if (s_Base == nullptr)
 	{
 		auto s_Snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, GetCurrentProcessId());
-		
+
 		if (s_Snapshot == INVALID_HANDLE_VALUE)
 			return nullptr;
 
@@ -44,13 +49,13 @@ void *GetModuleBase()
 void UnprotectMemory()
 {
 	size_t Offset = 0, Total = 0;
-	
+
 	MEMORY_BASIC_INFORMATION MemInfo;
 
 	while (VirtualQuery((uint8_t *)GetModuleBase() + Offset, &MemInfo, sizeof(MEMORY_BASIC_INFORMATION)))
 	{
 		Offset += MemInfo.RegionSize;
-		
+
 		if (MemInfo.Protect == PAGE_EXECUTE_READ)
 		{
 			Total += MemInfo.RegionSize;
@@ -77,7 +82,7 @@ HWND CreateGameWindowHook()
 
 void WindowTitleSprintfHook(char *destBuf, char *format, char *version)
 {
-	std::string windowTitle = "ANVIL: ONLINE - DEVELOPMENT BUILD";
+	std::string windowTitle = AnvilCommon::g_BuildInfo;
 	strcpy_s(destBuf, 0x40, windowTitle.c_str());
 }
 
@@ -314,7 +319,7 @@ void __fastcall MenuUpdateHook(void *a1, int unused, int menuIdToLoad)
 {
 	/*auto& dorito = ElDorito::Instance();
 	if (menuIdToLoad == 0x10083)
-		dorito.OnMainMenuShown();*/
+	dorito.OnMainMenuShown();*/
 
 	bool shouldUpdate = *(DWORD*)((uint8_t*)a1 + 0x10) >= 0x1E;
 	int uiData0x18Value = 1;
@@ -361,7 +366,9 @@ bool LocalizedStringImpl(int tagIndex, int stringId, wchar_t *outputBuffer)
 		case 0x1010A: // start_new_campaign
 		{
 			// Get the version string, convert it to uppercase UTF-16, and return it
-			swprintf(outputBuffer, MaxStringLength, L"  ANVIL: ONLINE  DEV BUILD");
+			auto s_BuildInfo = std::string("  ANVIL: ONLINE  ") + std::string("DEV BUILD ") + std::to_string(ANVIL_BUILD);
+			auto s_WideBuildInfo = std::wstring(s_BuildInfo.begin(), s_BuildInfo.end());
+			swprintf(outputBuffer, MaxStringLength, s_WideBuildInfo.c_str());
 			return true;
 		}
 	}
@@ -389,11 +396,11 @@ __declspec(naked) void LocalizedStringHook()
 		pop ebp
 		ret
 
-	fallback:
+		fallback :
 		// Execute replaced code and jump back to original function
 		sub esp, 0x800
-		mov edx, 0x51E049
-		jmp edx
+			mov edx, 0x51E049
+			jmp edx
 	}
 }
 
@@ -405,10 +412,10 @@ bool MainMenuCreateLobbyHook(int lobbyType)
 	switch (lobbyType)
 	{
 	case 1: // Matchmaking
-		//Web::Ui::ScreenLayer::Show("browser", "{}");
+			//Web::Ui::ScreenLayer::Show("browser", "{}");
 		return true;
 	case 4: // Theater (rip)
-		//ShowLanBrowser();
+			//ShowLanBrowser();
 		return true;
 	default:
 		return UI_CreateLobby(lobbyType);
@@ -521,16 +528,16 @@ DWORD __cdecl ManagedSession_CreateSessionInternalHook(int32_t a1, int32_t a2)
 		/*
 		auto& voipvars = Modules::ModuleVoIP::Instance();
 		if (voipvars.VarVoIPServerEnabled->ValueInt == 1) {
-			//Start the Teamspeak VoIP Server since this is the host
-			CreateThread(0, 0, StartTeamspeakServer, 0, 0, 0);
+		//Start the Teamspeak VoIP Server since this is the host
+		CreateThread(0, 0, StartTeamspeakServer, 0, 0, 0);
 
-			if (voipvars.VarVoIPEnabled->ValueInt == 1)
-			{
-				//Make sure teamspeak is stopped before we try to start it.
-				StopTeamspeakClient();
-				//Join the Teamspeak VoIP Server so the host can talk
-				CreateThread(0, 0, StartTeamspeakClient, 0, 0, 0);
-			}
+		if (voipvars.VarVoIPEnabled->ValueInt == 1)
+		{
+		//Make sure teamspeak is stopped before we try to start it.
+		StopTeamspeakClient();
+		//Join the Teamspeak VoIP Server so the host can talk
+		CreateThread(0, 0, StartTeamspeakClient, 0, 0, 0);
+		}
 		}
 		// TODO: give output if StartInfoServer fails
 		Patches::Network::StartInfoServer();
@@ -695,7 +702,7 @@ const size_t PlayerPropertiesPacketFooterSize = 0x4;
 size_t GetPlayerPropertiesPacketSize()
 {
 	static size_t size;
-	
+
 	if (size == 0)
 	{
 		size_t extensionSize = PlayerPropertiesExtender::Instance().GetTotalSize();
@@ -864,6 +871,109 @@ bool DeserializePlayerPropertiesHook(Blam::Data::BitStream *stream, uint8_t *buf
 	return succeeded;
 }
 
+const auto Network_Leader_RequestBootMachine = reinterpret_cast<bool(__thiscall *)(void *, void *, int32_t)>(0x45D4A0);
+
+bool __fastcall RequestBootMachineHook(void *thisPtr, void *unused, Blam::Network::PeerInfo *peer, int reason)
+{
+	auto session = Blam::Network::GetActiveSession();
+	auto membership = &session->MembershipInfo;
+	auto peerIndex = peer - membership->Peers;
+	auto playerIndex = membership->GetPeerPlayer(peerIndex);
+
+	if (!Network_Leader_RequestBootMachine(thisPtr, peer, reason))
+		return false;
+
+	/* TODO: Boot the player from VoIP
+	std::string playerName;
+	if (playerIndex >= 0)
+	playerName = Utils::String::ThinString(membership->PlayerSessions[playerIndex].Properties.DisplayName);
+
+	if (playerIndex >= 0)
+	kickTeamspeakClient(playerName);
+	*/
+
+	return true;
+}
+
+typedef std::function<void(const Blam::Network::NetworkAddress &, uint32_t, uint16_t, uint32_t)> PongCallback;
+std::vector<PongCallback> g_PongCallbacks;
+
+void PongReceivedImpl(const Blam::Network::NetworkAddress &from, const Blam::Network::PongPacket &pong, uint32_t latency)
+{
+	for (auto &&callback : g_PongCallbacks)
+		callback(from, pong.Timestamp, pong.ID, latency);
+}
+
+__declspec(naked) void PongReceivedHook()
+{
+	__asm
+	{
+		push esi // Latency
+		push edi // Pong packet
+		push dword ptr[ebp + 8] // Sender
+		call PongReceivedImpl
+		add esp, 12
+		push 0x49D9FA
+		ret
+	}
+}
+
+typedef std::function<void(Blam::Network::LifeCycleState)> LifeCycleStateChangedCallback;
+std::vector<LifeCycleStateChangedCallback> g_LifeCycleStateChangedCallbacks;
+
+void LifeCycleStateChangedImpl(Blam::Network::LifeCycleState p_NewState)
+{
+	for (auto &&s_Callback : g_LifeCycleStateChangedCallbacks)
+		s_Callback(p_NewState);
+}
+
+__declspec(naked) void LifeCycleStateChangedHook()
+{
+	__asm
+	{
+		pop esi // HACK: esi = return address
+
+				// Execute replaced code
+				mov ecx, edi // ecx = New lifecycle state object
+				call dword ptr[eax + 8] // lifecycle->enter()
+
+				push dword ptr[ebx] // Lifecycle state type
+				call LifeCycleStateChangedImpl
+				add esp, 4
+				jmp esi
+	}
+}
+
+bool __fastcall Network_Session_HandleJoinRequest_Hook(Blam::Network::Session *p_This, void *p_Unused, const Blam::Network::NetworkAddress &p_Address, void *p_Request)
+{
+	// Convert the IP to a string
+	struct in_addr s_InAddr;
+	s_InAddr.S_un.S_addr = p_Address.ToInAddr();
+	char ipStr[INET_ADDRSTRLEN];
+	if (inet_ntop(AF_INET, &s_InAddr, ipStr, sizeof(ipStr)))
+	{
+		/* TODO:
+		// Check if the IP is in the ban list
+		auto banList = Server::LoadDefaultBanList();
+		if (banList.ContainsIp(ipStr))
+		{
+		// Send a join refusal
+		typedef void(__thiscall *Network_session_acknowledge_join_requestFunc)(Blam::Network::Session *thisPtr, const Blam::Network::NetworkAddress &address, int reason);
+		auto Network_session_acknowledge_join_request = reinterpret_cast<Network_session_acknowledge_join_requestFunc>(0x45A230);
+		Network_session_acknowledge_join_request(thisPtr, address, 0); // TODO: Use a special code for bans and hook the join refusal handler so we can display a message to the player
+
+		Utils::Logger::Instance().Log(Utils::LogTypes::Network, Utils::LogLevel::Info, "Refused join request from banned IP %s", ipStr);
+		return true;
+		}
+		*/
+	}
+
+	// Continue the join process
+	typedef bool(__thiscall *Network_session_handle_join_requestFunc)(Blam::Network::Session *thisPtr, const Blam::Network::NetworkAddress &address, void *request);
+	auto Network_session_handle_join_request = reinterpret_cast<Network_session_handle_join_requestFunc>(0x4DA410);
+	return Network_session_handle_join_request(p_This, p_Address, p_Request);
+}
+
 bool Engine::Init()
 {
 	//Disable Windows DPI scaling
@@ -956,7 +1066,7 @@ bool Engine::Init()
 	Util::ApplyHook(0x10FC2C, LoadMapHook, HookFlags::IsCall);
 	Util::ApplyHook(0x1671BE, LoadMapHook, HookFlags::IsCall);
 	Util::ApplyHook(0x167B4F, LoadMapHook, HookFlags::IsCall);
-	
+
 	// Remove aim assist for keyboard/mouse input
 	Util::ApplyHook(0x18AA17, AimAssistHook);
 	Util::ApplyHook(0x18ABAB, DualAimAssistHook, HookFlags::IsCall);
@@ -1035,6 +1145,19 @@ bool Engine::Init()
 	Util::ApplyHook(0xDFF7E, RegisterPlayerPropertiesPacketHook, HookFlags::IsCall);
 	Util::ApplyHook(0xDFD53, SerializePlayerPropertiesHook, HookFlags::IsCall);
 	Util::ApplyHook(0xDE178, DeserializePlayerPropertiesHook, HookFlags::IsCall);
+
+	// Hook leader_request_boot_machine so we can do some extra things if the boot succeeded
+	Util::ApplyHook(0x37E17, RequestBootMachineHook, HookFlags::IsCall);
+
+	// Pong hook
+	Util::ApplyHook(0x9D9DB, PongReceivedHook);
+
+	// Lifecycle state change hook
+	Util::ApplyHook(0x8E527, LifeCycleStateChangedHook, HookFlags::IsCall);
+	Util::ApplyHook(0x8E10F, LifeCycleStateChangedHook, HookFlags::IsCall);
+
+	// Hook the join request handler to check the user's IP address against the ban list
+	Util::ApplyHook(0x9D0F7, Network_Session_HandleJoinRequest_Hook, HookFlags::IsCall);
 
 	return true;
 }
