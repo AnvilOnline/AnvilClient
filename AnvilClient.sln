@@ -44,8 +44,7 @@ Global
 		{89774CFE-D1EA-435F-B484-DC092221BE23}.Release|Ausar.Build.0 = Release|x64
 		{89774CFE-D1EA-435F-B484-DC092221BE23}.Release|Eldorado.ActiveCfg = Release|Win32
 		{89774CFE-D1EA-435F-B484-DC092221BE23}.Release|Eldorado.Build.0 = Release|Win32
-		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Debug|Ausar.ActiveCfg = Debug|x64
-		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Debug|Ausar.Build.0 = Debug|x64
+		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Debug|Ausar.ActiveCfg = Debug|Win32
 		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Debug|Eldorado.ActiveCfg = Debug|Win32
 		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Debug|Eldorado.Build.0 = Debug|Win32
 		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Release|Ausar.ActiveCfg = Release|x64

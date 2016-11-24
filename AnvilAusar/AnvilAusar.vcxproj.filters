@@ -3,8 +3,10 @@
   <ItemGroup>
     <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
+    <ClCompile Include="Source\Hooks\Windows.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
+    <ClInclude Include="Source\Hooks\Windows.hpp" />
   </ItemGroup>
 </Project>

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Depends\Include\MinHook.h" />
     <ClInclude Include="Source\BuildInfo.hpp" />
     <ClInclude Include="Source\Globals.hpp" />
     <ClInclude Include="Source\Interfaces\IInitializable.hpp" />

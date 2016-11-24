@@ -7,6 +7,7 @@
     <ClInclude Include="Source\BuildInfo.hpp" />
     <ClInclude Include="Source\Globals.hpp" />
     <ClInclude Include="Source\Utils\Singleton.hpp" />
+    <ClInclude Include="Depends\Include\MinHook.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utils\Util.cpp" />
