@@ -3,16 +3,6 @@
   <ItemGroup>
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
-    <ClCompile Include="Source\Patches\Patch.cpp" />
-    <ClCompile Include="Source\Patches\Accounting.cpp" />
-    <ClCompile Include="Source\Patches\Audio.cpp" />
-    <ClCompile Include="Source\Patches\Camera.cpp" />
-    <ClCompile Include="Source\Patches\Equipment.cpp" />
-    <ClCompile Include="Source\Patches\Rendering.cpp" />
-    <ClCompile Include="Source\Patches\Tags.cpp" />
-    <ClCompile Include="Source\Patches\Weapons.cpp" />
-    <ClCompile Include="Source\Hooks\Hook.cpp" />
-    <ClCompile Include="Source\Hooks\DirectX.cpp" />
     <ClCompile Include="Source\Blam\Cache\StringIDCache.cpp" />
     <ClCompile Include="Source\Blam\Math\Angle.cpp" />
     <ClCompile Include="Source\Blam\Math\ColorARGB.cpp" />
@@ -50,12 +40,10 @@
     <ClCompile Include="Source\Blam\Data\DataArray.cpp" />
     <ClCompile Include="Source\Blam\Data\DataIterator.cpp" />
     <ClCompile Include="Source\Blam\Game\Players.cpp" />
-    <ClCompile Include="Source\Hooks\Armor.cpp" />
+    <ClCompile Include="Source\Blam\Network\Network.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
-    <ClInclude Include="Source\Patches\Patch.hpp" />
-    <ClInclude Include="Source\Hooks\Hook.hpp" />
     <ClInclude Include="Source\Blam\Cache\StringIDCache.hpp" />
     <ClInclude Include="Source\Blam\Math\Angle.hpp" />
     <ClInclude Include="Source\Blam\Math\Bounds.hpp" />
@@ -112,5 +100,11 @@
     <ClInclude Include="Source\Blam\Tags\Game\Globals.hpp" />
     <ClInclude Include="Source\Blam\Text\StringID.hpp" />
     <ClInclude Include="Source\Blam\Tags\Game\MultiplayerGlobals.hpp" />
+    <ClInclude Include="Source\Blam\Tags\Scenario\Scenario.hpp" />
+    <ClInclude Include="Source\Blam\Tags\Items\Weapon.hpp" />
+    <ClInclude Include="Source\Blam\Tags\Objects\Object.hpp" />
+    <ClInclude Include="Source\Blam\Tags\Items\Item.hpp" />
+    <ClInclude Include="Source\Blam\Sounds\Noise.hpp" />
+    <ClInclude Include="Source\Blam\Network\Network.hpp" />
   </ItemGroup>
 </Project>

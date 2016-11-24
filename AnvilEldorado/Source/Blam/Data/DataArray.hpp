@@ -48,7 +48,7 @@ namespace Blam::Data
 
 		TDatum &operator[](DatumIndex p_Index) const
 		{
-			return *static_cast<TDatum *>(GetAddress(index));
+			return *static_cast<TDatum *>(GetAddress(p_Index));
 		}
 
 		DataIterator<TDatum> begin()
