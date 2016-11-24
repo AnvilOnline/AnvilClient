@@ -47,18 +47,15 @@ Global
 		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Debug|Ausar.ActiveCfg = Debug|Win32
 		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Debug|Eldorado.ActiveCfg = Debug|Win32
 		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Debug|Eldorado.Build.0 = Debug|Win32
-		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Release|Ausar.ActiveCfg = Release|x64
-		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Release|Ausar.Build.0 = Release|x64
+		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Release|Ausar.ActiveCfg = Release|Win32
 		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Release|Eldorado.ActiveCfg = Release|Win32
 		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Release|Eldorado.Build.0 = Release|Win32
 		{349E5495-8A3F-4057-B86B-E192663DA85E}.Debug|Ausar.ActiveCfg = Debug|x64
 		{349E5495-8A3F-4057-B86B-E192663DA85E}.Debug|Ausar.Build.0 = Debug|x64
-		{349E5495-8A3F-4057-B86B-E192663DA85E}.Debug|Eldorado.ActiveCfg = Debug|Win32
-		{349E5495-8A3F-4057-B86B-E192663DA85E}.Debug|Eldorado.Build.0 = Debug|Win32
+		{349E5495-8A3F-4057-B86B-E192663DA85E}.Debug|Eldorado.ActiveCfg = Debug|x64
 		{349E5495-8A3F-4057-B86B-E192663DA85E}.Release|Ausar.ActiveCfg = Release|x64
 		{349E5495-8A3F-4057-B86B-E192663DA85E}.Release|Ausar.Build.0 = Release|x64
-		{349E5495-8A3F-4057-B86B-E192663DA85E}.Release|Eldorado.ActiveCfg = Release|Win32
-		{349E5495-8A3F-4057-B86B-E192663DA85E}.Release|Eldorado.Build.0 = Release|Win32
+		{349E5495-8A3F-4057-B86B-E192663DA85E}.Release|Eldorado.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
