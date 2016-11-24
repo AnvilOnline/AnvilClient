@@ -6,6 +6,7 @@
     <ClInclude Include="Source\Utils\Logger.hpp" />
     <ClInclude Include="Source\BuildInfo.hpp" />
     <ClInclude Include="Source\Globals.hpp" />
+    <ClInclude Include="Source\Utils\Singleton.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utils\Util.cpp" />

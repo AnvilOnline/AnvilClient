@@ -3,6 +3,7 @@
 #include <vector>
 #include "Globals.hpp"
 #include "Utils\Logger.hpp"
+#include "Utils\Singleton.hpp"
 #include "Utils\Util.hpp"
 #include "Blam\Cache\StringIDCache.hpp"
 #include "Blam\Data\DatumIndex.hpp"
@@ -414,6 +415,455 @@ bool MainMenuCreateLobbyHook(int lobbyType)
 	}
 }
 
+char *GetIPStringFromInAddrHook(void *inaddr)
+{
+	static char ipAddrStr[64];
+	memset(ipAddrStr, 0, 64);
+
+	uint8_t ip3 = *(uint8_t *)inaddr;
+	uint8_t ip2 = *((uint8_t *)inaddr + 1);
+	uint8_t ip1 = *((uint8_t *)inaddr + 2);
+	uint8_t ip0 = *((uint8_t *)inaddr + 3);
+
+	uint16_t port = *(uint16_t *)((uint8_t *)inaddr + 0x10);
+	uint16_t type = *(uint16_t *)((uint8_t *)inaddr + 0x12);
+
+	sprintf_s(ipAddrStr, 64, "%hd.%hd.%hd.%hd:%hd (%hd)", ip0, ip1, ip2, ip3, port, type);
+
+	return ipAddrStr;
+}
+
+char XnAddrToInAddrHook(void *pxna, void *pxnkid, void *in_addr)
+{
+	//printf("XnAddrToInAddrHook...");
+	uint32_t maxMachines = *(uint32_t*)(0x228E6D8);
+	uint8_t *syslinkDataPtr = (uint8_t*)*(uint32_t*)(0x228E6D8 + 0x4);
+
+	for (uint32_t i = 0; i < maxMachines; i++)
+	{
+		uint8_t *entryPtr = syslinkDataPtr;
+		syslinkDataPtr += 0x164F8;
+		uint8_t entryStatus = *entryPtr;
+		if (entryStatus == 0)
+			continue;
+
+		uint8_t *xnkidPtr = entryPtr + 0x9E;
+		uint8_t *xnaddrPtr = entryPtr + 0xAE;
+		uint8_t *ipPtr = entryPtr + 0x170;
+		uint8_t *portPtr = entryPtr + 0x174;
+
+		if (memcmp(pxna, xnaddrPtr, 0x10) == 0 && memcmp(pxnkid, xnkidPtr, 0x10) == 0)
+		{
+			// in_addr struct:
+			// 0x0 - 0x10: IP (first 4 bytes for IPv4, 0x10 for IPv6)
+			// 0x10 - 0x12: Port number
+			// 0x12 - 0x14: IP length (4 for IPv4, 0x10 for IPv6)
+
+			memset(in_addr, 0, 0x14);
+			memcpy(in_addr, ipPtr, 4);
+			memcpy((uint8_t*)in_addr + 0x10, portPtr, 2);
+
+			*(uint16_t*)((uint8_t*)in_addr + 0x12) = 4;
+
+			return 1;
+		}
+	}
+
+	typedef char(*Network_XnAddrToInAddrFunc)(void *pxna, void *pxnkid, void *in_addr);
+	Network_XnAddrToInAddrFunc XnAddrToInAddr = (Network_XnAddrToInAddrFunc)0x52D840;
+	return XnAddrToInAddr(pxna, pxnkid, in_addr);
+}
+
+char InAddrToXnAddrHook(void *ina, void  *pxna, void  *pxnkid)
+{
+	uint32_t maxMachines = *(uint32_t*)(0x228E6D8);
+	uint8_t *syslinkDataPtr = (uint8_t*)*(uint32_t*)(0x228E6DC);
+
+	for (uint32_t i = 0; i < maxMachines; i++)
+	{
+		uint8_t *entryPtr = syslinkDataPtr;
+		syslinkDataPtr += 0x164F8;
+		uint8_t entryStatus = *entryPtr;
+		if (entryStatus == 0)
+			continue;
+
+		uint8_t *xnkidPtr = entryPtr + 0x9E;
+		uint8_t *xnaddrPtr = entryPtr + 0xAE;
+		uint8_t *ipPtr = entryPtr + 0x170;
+
+		if (memcmp(ipPtr, ina, 0x4) == 0)
+		{
+			memcpy(pxna, xnaddrPtr, 0x10);
+			memcpy(pxnkid, xnkidPtr, 0x10);
+
+			return 1;
+		}
+	}
+
+	typedef char(*Network_InAddrToXnAddrFunc)(void *ina, void  *pxna, void  *pxnkid);
+	Network_InAddrToXnAddrFunc InAddrToXnAddr = (Network_InAddrToXnAddrFunc)0x52D840;
+	return InAddrToXnAddr(ina, pxna, pxnkid);
+}
+
+const auto ManagedSession_CreateSessionInternal = reinterpret_cast<DWORD(__cdecl *)(int32_t, int32_t)>(0x481550);
+DWORD __cdecl ManagedSession_CreateSessionInternalHook(int32_t a1, int32_t a2)
+{
+	DWORD isOnline = *(DWORD*)a2;
+	bool isHost = (*(uint16_t *)(a2 + 284) & 1);
+
+	auto retval = ManagedSession_CreateSessionInternal(a1, a2);
+
+	if (!isHost)
+		return retval;
+
+	if (isOnline == 1)
+	{
+		/*
+		auto& voipvars = Modules::ModuleVoIP::Instance();
+		if (voipvars.VarVoIPServerEnabled->ValueInt == 1) {
+			//Start the Teamspeak VoIP Server since this is the host
+			CreateThread(0, 0, StartTeamspeakServer, 0, 0, 0);
+
+			if (voipvars.VarVoIPEnabled->ValueInt == 1)
+			{
+				//Make sure teamspeak is stopped before we try to start it.
+				StopTeamspeakClient();
+				//Join the Teamspeak VoIP Server so the host can talk
+				CreateThread(0, 0, StartTeamspeakClient, 0, 0, 0);
+			}
+		}
+		// TODO: give output if StartInfoServer fails
+		Patches::Network::StartInfoServer();
+		*/
+	}
+	else
+	{
+		/*
+		Patches::Network::StopInfoServer();
+		//Stop the VoIP Server and client
+		StopTeamspeakClient();
+		StopTeamspeakServer();
+		*/
+	}
+
+	return retval;
+}
+
+// Base class for a class which adds data to player properties.
+class PlayerPropertiesExtensionBase
+{
+public:
+	virtual ~PlayerPropertiesExtensionBase() { }
+
+	// Builds extension data for a player.
+	virtual void BuildData(int playerIndex, void *out) = 0;
+
+	// Gets the size of the extension data.
+	virtual size_t GetDataSize() const = 0;
+
+	// Applies extension data to a player.
+	virtual void ApplyData(int playerIndex, Blam::Game::PlayerProperties *properties, const void *data) = 0;
+
+	// Serializes the extension data to be sent across the network.
+	virtual void Serialize(Blam::Data::BitStream *stream, const void *data) = 0;
+
+	// Deserializes extension data that was received from the network.
+	virtual void Deserialize(Blam::Data::BitStream *stream, void *out) = 0;
+};
+
+// Helper class which adds type safety to PlayerPropertiesExtensionBase.
+template <class TData>
+class PlayerPropertiesExtension : public PlayerPropertiesExtensionBase
+{
+protected:
+	// Builds extension data for a player.
+	virtual void BuildData(int playerIndex, TData *out) = 0;
+
+	// Applies extension data to a player.
+	virtual void ApplyData(int playerIndex, Blam::Game::PlayerProperties *properties, const TData &data) = 0;
+
+	// Serializes the extension data to be sent across the network.
+	virtual void Serialize(Blam::Data::BitStream *stream, const TData &data) = 0;
+
+	// Deserializes extension data that was received from the network.
+	virtual void Deserialize(Blam::Data::BitStream *stream, TData *out) = 0;
+
+public:
+	void BuildData(int playerIndex, void *out) override
+	{
+		BuildData(playerIndex, static_cast<TData*>(out));
+	}
+
+	size_t GetDataSize() const override
+	{
+		return sizeof(TData);
+	}
+
+	void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const void *data) override
+	{
+		ApplyData(playerIndex, properties, *static_cast<const TData*>(data));
+	}
+
+	void Serialize(Blam::Data::BitStream *stream, const void *data) override
+	{
+		Serialize(stream, *static_cast<const TData *>(data));
+	}
+
+	void Deserialize(Blam::Data::BitStream *stream, void *out) override
+	{
+		Deserialize(stream, static_cast<TData *>(out));
+	}
+};
+
+// Singleton object which lets the player-properties packet be extended with custom data
+// TODO: Make this more generic and not so specific to player-properties
+class PlayerPropertiesExtender : public Utils::Singleton<PlayerPropertiesExtender>
+{
+public:
+	// Adds an extension to the player-properties packet.
+	void Add(std::shared_ptr<PlayerPropertiesExtensionBase> extension)
+	{
+		extensions.push_back(extension);
+	}
+
+	// Gets the total size of the player-properties extension data.
+	size_t GetTotalSize()
+	{
+		size_t result = 0;
+		for (auto it = extensions.begin(); it != extensions.end(); ++it)
+			result += (*it)->GetDataSize();
+		return result;
+	}
+
+	// Writes all extension data out to a player-properties structure.
+	void BuildData(int playerIndex, void *out)
+	{
+		// Write all of the data structures in order
+		uint8_t *ptr = static_cast<uint8_t*>(out);
+		for (auto it = extensions.begin(); it != extensions.end(); ++it)
+		{
+			(*it)->BuildData(playerIndex, ptr);
+			ptr += (*it)->GetDataSize();
+		}
+	}
+
+	// Applies all extension data in a player-properties structure.
+	void ApplyData(int playerIndex, Blam::Game::PlayerProperties *properties, const void *data)
+	{
+		// Apply all of the data structures in order
+		const uint8_t *ptr = static_cast<const uint8_t*>(data);
+		for (auto it = extensions.begin(); it != extensions.end(); ++it)
+		{
+			(*it)->ApplyData(playerIndex, properties, ptr);
+			ptr += (*it)->GetDataSize();
+		}
+	}
+
+	// Serializes all extension data in a player-properties structure.
+	void SerializeData(Blam::Data::BitStream *stream, const void *data)
+	{
+		// Serialize all of the structures in order
+		const uint8_t *ptr = static_cast<const uint8_t*>(data);
+		for (auto it = extensions.begin(); it != extensions.end(); ++it)
+		{
+			(*it)->Serialize(stream, ptr);
+			ptr += (*it)->GetDataSize();
+		}
+	}
+
+	// Deserializes all extension data in a player-properties structure.
+	void DeserializeData(Blam::Data::BitStream *stream, void *out)
+	{
+		// Deserialize all of the structures in order
+		uint8_t *ptr = static_cast<uint8_t*>(out);
+		for (auto it = extensions.begin(); it != extensions.end(); ++it)
+		{
+			(*it)->Deserialize(stream, ptr);
+			ptr += (*it)->GetDataSize();
+		}
+	}
+
+private:
+	std::vector<std::shared_ptr<PlayerPropertiesExtensionBase>> extensions;
+};
+
+// Packet size constants
+const size_t PlayerPropertiesPacketHeaderSize = 0x18;
+const size_t PlayerPropertiesSize = 0x30;
+const size_t PlayerPropertiesPacketFooterSize = 0x4;
+
+size_t GetPlayerPropertiesPacketSize()
+{
+	static size_t size;
+	
+	if (size == 0)
+	{
+		size_t extensionSize = PlayerPropertiesExtender::Instance().GetTotalSize();
+		size = PlayerPropertiesPacketHeaderSize + PlayerPropertiesSize + extensionSize + PlayerPropertiesPacketFooterSize;
+	}
+
+	return size;
+}
+
+// ASCII chars that can't appear in names
+const wchar_t DisallowedNameChars[] = { '\'', '\"', '<', '>', '/', '\\' };
+
+void SanitizePlayerName(wchar_t *name)
+{
+	int i, dest = 0;
+	auto space = false;
+	for (i = 0; i < 15 && dest < 15 && name[i]; i++)
+	{
+		auto allowed = false;
+		if (name[i] > 32 && name[i] < 127)
+		{
+			// ASCII characters are allowed if they aren't in the disallowed list
+			allowed = true;
+			for (auto ch : DisallowedNameChars)
+			{
+				if (name[i] == ch)
+				{
+					allowed = false;
+					break;
+				}
+			}
+		}
+		else if (name[i] == ' ' && dest > 0)
+		{
+			// If this isn't at the beginning of the string, indicate that
+			// a space should be inserted before the next allowed character
+			space = true;
+		}
+		if (allowed)
+		{
+			if (space && dest < 14)
+			{
+				name[dest++] = ' ';
+				space = false;
+			}
+			name[dest++] = name[i];
+		}
+	}
+	memset(&name[dest], 0, (16 - dest) * sizeof(wchar_t));
+	if (dest == 0)
+		wcscpy_s(name, 16, L"Forgot");
+}
+
+const auto ApplyPlayerProperties = reinterpret_cast<void(__thiscall *)(void *, int32_t, uint32_t, uint32_t, void *, uint32_t)>(0x450890);
+
+// Applies player properties data including extended properties
+void __fastcall ApplyPlayerPropertiesExtendedHook(Blam::Network::SessionMembership *thisPtr, void *unused, int playerIndex, uint32_t arg4, uint32_t arg8, uint8_t *data, uint32_t arg10)
+{
+	auto properties = &thisPtr->PlayerSessions[playerIndex].Properties;
+
+	// If the player already has a name and isn't host, then use that instead of the one in the packet
+	// This prevents people from changing their name mid-game by forcing a player properties update
+	// The player name is stored at the beginning of the player-properties packet (TODO: Map it out properly!)
+	if (properties->DisplayName[0] && !thisPtr->Peers[thisPtr->HostPeerIndex].OwnsPlayer(playerIndex))
+		memcpy(reinterpret_cast<wchar_t*>(data), properties->DisplayName, sizeof(properties->DisplayName));
+	else
+		SanitizePlayerName(reinterpret_cast<wchar_t*>(data));
+
+	// Apply the base properties
+	ApplyPlayerProperties(thisPtr, playerIndex, arg4, arg8, data, arg10);
+
+	// Apply the extended properties
+	PlayerPropertiesExtender::Instance().ApplyData(playerIndex, properties, data + PlayerPropertiesSize);
+	//Server::Voting::PlayerJoinedVoteInProgress(playerIndex); //TODO find somewhere else to put this.
+}
+
+// This completely replaces c_network_session::peer_request_player_desired_properties_update
+// Editing the existing function doesn't allow for a lot of flexibility
+bool __fastcall PeerRequestPlayerDesiredPropertiesUpdateHook(Blam::Network::Session *thisPtr, void *unused, uint32_t arg0, uint32_t arg4, void *properties, uint32_t argC)
+{
+	if (thisPtr->Type == 3)
+		return false;
+
+	// Ensure that there is a player associated with the local peer
+	auto membership = &thisPtr->MembershipInfo;
+	auto playerIndex = thisPtr->MembershipInfo.GetPeerPlayer(membership->LocalPeerIndex);
+	if (playerIndex == -1)
+		return false;
+
+	// Copy the player properties to a new array and add the extension data
+	auto packetSize = GetPlayerPropertiesPacketSize();
+	auto extendedSize = packetSize - PlayerPropertiesPacketHeaderSize - PlayerPropertiesPacketFooterSize;
+	auto extendedProperties = std::make_unique<uint8_t[]>(extendedSize);
+	memcpy(&extendedProperties[0], properties, PlayerPropertiesSize);
+	PlayerPropertiesExtender::Instance().BuildData(playerIndex, &extendedProperties[PlayerPropertiesSize]);
+
+	if (thisPtr->Type == 6 || thisPtr->Type == 7)
+	{
+		// Apply player properties locally
+		ApplyPlayerPropertiesExtendedHook(membership, nullptr, playerIndex, arg0, arg4, &extendedProperties[0], argC);
+	}
+	else
+	{
+		// Send player properties across the network
+		auto hostPeer = membership->HostPeerIndex;
+		auto channelIndex = membership->PeerChannels[hostPeer].ChannelIndex;
+		if (channelIndex == -1)
+			return true;
+
+		// Allocate the packet
+		auto packet = std::make_unique<uint8_t[]>(packetSize);
+		memset(&packet[0], 0, packetSize);
+
+		// Initialize it
+		typedef void(*InitPacketPtr)(int id, void *packet);
+		InitPacketPtr InitPacket = reinterpret_cast<InitPacketPtr>(0x482040);
+		InitPacket(thisPtr->AddressIndex, &packet[0]);
+
+		// Set up the header and footer
+		*reinterpret_cast<int*>(&packet[0x10]) = arg0;
+		*reinterpret_cast<uint32_t*>(&packet[0x14]) = arg4;
+		*reinterpret_cast<uint32_t*>(&packet[packetSize - PlayerPropertiesPacketFooterSize]) = argC;
+
+		// Copy the player properties structure in
+		memcpy(&packet[PlayerPropertiesPacketHeaderSize], &extendedProperties[0], extendedSize);
+
+		// Send!
+		thisPtr->Observer->ObserverChannelSendMessage(thisPtr->Unknown10, channelIndex, 0, 0x1A, packetSize, &packet[0]);
+	}
+	return true;
+}
+
+const auto RegisterPacket = reinterpret_cast<void(__thiscall *)(void *, int32_t, const char *, int32_t, int32_t, int32_t, void *, void *, int32_t, int32_t)>(0x4801B0);
+
+// Changes the size of the player-properties packet to include extension data
+void __fastcall RegisterPlayerPropertiesPacketHook(void *thisPtr, void *unused, int packetId, const char *packetName, int arg8, int size1, int size2, void *serializeFunc, void *deserializeFunc, int arg1C, int arg20)
+{
+	size_t newSize = GetPlayerPropertiesPacketSize();
+	RegisterPacket(thisPtr, packetId, packetName, arg8, newSize, newSize, serializeFunc, deserializeFunc, arg1C, arg20);
+}
+
+const auto SerializePlayerProperties = reinterpret_cast<void(*)(Blam::Data::BitStream *, uint8_t *, bool)>(0x4433C0);
+
+// Serializes extended player-properties data
+void SerializePlayerPropertiesHook(Blam::Data::BitStream *stream, uint8_t *buffer, bool flag)
+{
+	// Serialize base data
+	SerializePlayerProperties(stream, buffer, flag);
+
+	// Serialize extended data
+	PlayerPropertiesExtender::Instance().SerializeData(stream, buffer + PlayerPropertiesSize);
+}
+
+const auto DeserializePlayerProperties = reinterpret_cast<bool(*)(Blam::Data::BitStream *, uint8_t *, bool)>(0x4432E0);
+
+// Deserializes extended player-properties data
+bool DeserializePlayerPropertiesHook(Blam::Data::BitStream *stream, uint8_t *buffer, bool flag)
+{
+	// Deserialize base data
+	bool succeeded = DeserializePlayerProperties(stream, buffer, flag);
+
+	// Deserialize extended data
+	if (succeeded)
+		PlayerPropertiesExtender::Instance().DeserializeData(stream, buffer + PlayerPropertiesSize);
+
+	return succeeded;
+}
+
 bool Engine::Init()
 {
 	//Disable Windows DPI scaling
@@ -563,6 +1013,28 @@ bool Engine::Init()
 	// Comparing the action tick count to 1 instead of using the "handled" flag does roughly the same thing and lets the menu UI read the key too
 	Util::PatchAddressInFile(0x19F17F, "\x75", 1);
 	Util::PatchAddressInFile(0x19F198, "\x90\x90\x90\x90", 4);
+
+	// Fix network debug strings having (null) instead of an IP address
+	Util::ApplyHook(0x3F6F0, GetIPStringFromInAddrHook);
+
+	// Fix for XnAddrToInAddr to try checking syslink-menu data for XnAddr->InAddr mapping before consulting XNet
+	Util::ApplyHook(0x30B6C, XnAddrToInAddrHook, HookFlags::IsCall);
+	Util::ApplyHook(0x30F51, InAddrToXnAddrHook, HookFlags::IsCall);
+
+	// Hook call to Network_managed_session_create_session_internal so we can detect when an online game is started
+	Util::ApplyHook(0x82AAC, ManagedSession_CreateSessionInternalHook, HookFlags::IsCall);
+
+	// Patch version subs to return version of this DLL, to make people with older DLLs incompatible
+	uint32_t verNum = 0xFFFFFFFF; // Utils::Version::GetVersionInt();
+	*reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x101421) = verNum;
+	*reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x10143A) = verNum;
+
+	// Player-properties packet hooks
+	Util::ApplyHook(0x5DD20, PeerRequestPlayerDesiredPropertiesUpdateHook);
+	Util::ApplyHook(0xDAF4F, ApplyPlayerPropertiesExtendedHook, HookFlags::IsCall);
+	Util::ApplyHook(0xDFF7E, RegisterPlayerPropertiesPacketHook, HookFlags::IsCall);
+	Util::ApplyHook(0xDFD53, SerializePlayerPropertiesHook, HookFlags::IsCall);
+	Util::ApplyHook(0xDE178, DeserializePlayerPropertiesHook, HookFlags::IsCall);
 
 	return true;
 }

@@ -23,6 +23,7 @@
     <ClInclude Include="Source\Globals.hpp" />
     <ClInclude Include="Source\Interfaces\IInitializable.hpp" />
     <ClInclude Include="Source\Utils\Logger.hpp" />
+    <ClInclude Include="Source\Utils\Singleton.hpp" />
     <ClInclude Include="Source\Utils\Util.hpp" />
   </ItemGroup>
   <ItemGroup>
