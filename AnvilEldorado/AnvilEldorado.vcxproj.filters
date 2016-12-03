@@ -106,5 +106,6 @@
     <ClInclude Include="Source\Blam\Tags\Items\Item.hpp" />
     <ClInclude Include="Source\Blam\Sounds\Noise.hpp" />
     <ClInclude Include="Source\Blam\Network\Network.hpp" />
+    <ClInclude Include="Source\Blam\Tags\Game\VFilesList.hpp" />
   </ItemGroup>
 </Project>

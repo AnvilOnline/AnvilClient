@@ -30,12 +30,12 @@ bool Util::HasCommandLine(std::string p_Command)
 	return false;
 }
 
-bool Util::PatchAddressInMemory(size_t p_Offset, std::string p_HexString, int32_t p_Length)
+bool Util::PatchAddressInMemory(const size_t p_Offset, const std::string &p_HexString, const size_t p_Length)
 {
-	return PatchAddressInMemory(reinterpret_cast<void*>(p_Offset), p_HexString, p_Length);
+	return PatchAddressInMemory(reinterpret_cast<void *>(p_Offset), p_HexString, p_Length);
 }
 
-bool Util::PatchAddressInMemory(void* p_Address, std::string p_HexString, int32_t p_Length)
+bool Util::PatchAddressInMemory(void *p_Address, const std::string &p_HexString, const size_t p_Length)
 {
 	// Get the length of our patch
 	auto s_Length = (p_Length == -1 ? p_HexString.length() : p_Length);
@@ -49,7 +49,7 @@ bool Util::PatchAddressInMemory(void* p_Address, std::string p_HexString, int32_
 	auto s_Protection = 0;
 
 	// Change the protection so we can write to the executable without crashing
-	auto s_Ret = VirtualProtect(reinterpret_cast<void*>(p_Address), s_Length, PAGE_EXECUTE_READWRITE, reinterpret_cast<PDWORD>(&s_Protection));
+	auto s_Ret = VirtualProtect(reinterpret_cast<void *>(p_Address), s_Length, PAGE_EXECUTE_READWRITE, reinterpret_cast<PDWORD>(&s_Protection));
 	if (!s_Ret)
 	{
 		WriteLog("could not change protection to patch address %p (%x).", p_Address, GetLastError());
@@ -78,24 +78,55 @@ bool Util::PatchAddressInMemory(void* p_Address, std::string p_HexString, int32_
 	return true;
 }
 
-bool Util::PatchAddressInFile(size_t p_Offset, std::string p_HexString, int32_t p_Length)
+bool Util::PatchAddressInFile(const size_t p_Offset, const std::string &p_HexString, const size_t p_Length)
 {
 	return PatchAddressInFile(reinterpret_cast<void*>(p_Offset), p_HexString, p_Length);
 }
 
-bool Util::PatchAddressInFile(void* p_OffsetInFile, std::string p_HexString, int32_t p_Length)
+bool Util::PatchAddressInFile(void *p_Address, const std::string &p_HexString, const size_t p_Length)
 {
 	// Ensure that the address is valid
-	if (!p_OffsetInFile)
+	if (!p_Address)
 	{
 		WriteLog("could not patch, invalid address passed.");
 		return false;
 	}
 
 	auto s_BaseAddress = reinterpret_cast<size_t>(GetModuleHandle(nullptr));
-	auto s_Address = s_BaseAddress + reinterpret_cast<uint8_t*>(p_OffsetInFile);
+	auto s_Address = s_BaseAddress + reinterpret_cast<uint8_t*>(p_Address);
 
 	return PatchAddressInMemory(s_Address, p_HexString, p_Length);
+}
+
+bool Util::PatchAddress(const size_t p_Offset, const std::string &p_HexString, const size_t p_Length, bool p_InMemory)
+{
+	if (p_InMemory)
+		return PatchAddressInMemory(p_Offset, p_HexString, p_Length);
+
+	return PatchAddressInFile(p_Offset, p_HexString, p_Length);
+}
+
+bool Util::PatchAddress(void *p_Address, const std::string &p_HexString, const size_t p_Length, bool p_InMemory)
+{
+	if (p_InMemory)
+		return PatchAddressInMemory(p_Address, p_HexString, p_Length);
+
+	return PatchAddressInFile(p_Address, p_HexString, p_Length);
+}
+
+bool Util::NopAddress(const size_t p_Offset, const size_t p_Length)
+{
+	return NopAddress(reinterpret_cast<void *>(p_Offset), p_Length);
+}
+
+bool Util::NopAddress(void *p_Address, const size_t p_Length)
+{
+	std::stringstream ss;
+
+	for (size_t i = 0; i < p_Length; i++)
+		ss << "\x90";
+
+	return PatchAddressInFile(p_Address, ss.str(), p_Length);
 }
 
 void Util::WriteCall(void *p_Address, void* p_NewFunction)

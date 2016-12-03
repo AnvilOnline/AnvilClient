@@ -4,6 +4,10 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <TlHelp32.h>
+#include <cstring>
+#include <iostream>
+#include <fstream>
+#include <map>
 #include <vector>
 #include "BuildInfo.hpp"
 #include "Globals.hpp"
@@ -15,6 +19,7 @@
 #include "Blam\Game\Players.hpp"
 #include "Blam\Network\Network.hpp"
 #include "Blam\Tags\TagInstance.hpp"
+#include "Blam\Tags\Game\VFilesList.hpp"
 #include "Blam\Tags\Items\Weapon.hpp"
 #include "Blam\Tags\Scenario\Scenario.hpp"
 #include "Engine.hpp"
@@ -147,9 +152,6 @@ __declspec(naked) void FmodSystemInitHook2()
 
 void TagsLoadedImpl()
 {
-	//
-	// TODO: Call TagsLoaded function here...
-	//
 }
 
 __declspec(naked) void TagsLoadedHook()
@@ -988,6 +990,9 @@ bool Engine::Init()
 		return false;
 	}
 
+	// English patch
+	Util::PatchAddress(0x2333FD, "\x00", 1);
+
 	// Game window creation callbacks
 	Util::ApplyHook(0x622057, CreateGameWindowHook, HookFlags::IsCall);
 
@@ -1002,23 +1007,23 @@ bool Engine::Init()
 	Util::ApplyHook(0x216487, AspectRatioHook, HookFlags::IsCall);
 
 	//Disable converting the game's resolution to 16:9
-	Util::PatchAddressInFile(0x62217D, "\x90\x90", 2);
-	Util::PatchAddressInFile(0x622183, "\x90\x90\x90\x90\x90\x90", 6);
+	Util::NopAddress(0x62217D, 2);
+	Util::NopAddress(0x622183, 6);
 
 	//Allow the user to select any resolution that Windows supports in the settings screen.
-	Util::PatchAddressInFile(0x10BF1B, "\x90\x90", 2);
-	Util::PatchAddressInFile(0x10BF21, "\x90\x90\x90\x90\x90\x90", 6);
+	Util::NopAddress(0x10BF1B, 2);
+	Util::NopAddress(0x10BF21, 6);
 
 	// Prevent FOV from being overridden when the game loads
-	Util::PatchAddressInFile(0x25FA79, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
-	Util::PatchAddressInFile(0x25FA86, "\x90\x90\x90\x90\x90", 5);
+	Util::NopAddress(0x25FA79, 10);
+	Util::NopAddress(0x25FA86, 5);
 	Util::ApplyHook(0x10CA02, FovHook);
 
 	// Force descoping for all weapons
-	Util::PatchAddressInFile(0x73F1E6, "\x00", 1);
+	Util::PatchAddress(0x73F1E6, "\x00", 1);
 
 	// Adds the FMOD WASAPI output fix from FMODEx 4.44.56, which stops weird popping sound at startup
-	Util::PatchAddressInFile(0x100DA75, "\x02", 1);
+	Util::PatchAddress(0x100DA75, "\x02", 1);
 
 	// Increase max virtual audio channels from 64 to 256
 	// http://www.fmod.org/docs/content/generated/FMOD_System_Init.html
@@ -1027,32 +1032,32 @@ bool Engine::Init()
 
 	// Increase software channels from 192 to 256
 	// http://www.fmod.org/docs/content/generated/FMOD_System_SetSoftwareChannels.html
-	Util::PatchAddressInFile(0x4DF9, "\x00\x00\x01\x00", 4);
+	Util::PatchAddress(0x4DF9, "\x00\x00\x01\x00", 4);
 
 	// Enable Tag Editing
-	Util::PatchAddressInFile(0x101A5B, "\xEB", 1);
-	Util::PatchAddressInFile(0x102874, "\x90\x90", 2);
-	Util::PatchAddressInFile(0x1030AA, "\x90\x90", 2);
+	Util::PatchAddress(0x101A5B, "\xEB", 1);
+	Util::NopAddress(0x102874, 2);
+	Util::NopAddress(0x1030AA, 2);
 
 	// No --account args patch
-	Util::PatchAddressInFile(0x43731A, "\xEB\x0E", 2);
-	Util::PatchAddressInFile(0x4373AD, "\xEB\x03", 2);
+	Util::PatchAddress(0x43731A, "\xEB\x0E", 2);
+	Util::PatchAddress(0x4373AD, "\xEB\x03", 2);
 
 	// Remove preferences.dat hash check
-	Util::PatchAddressInFile(0x10C99A, "\x90\x90\x90\x90\x90\x90", 6);
+	Util::NopAddress(0x10C99A, 6);
 
 	// Patch to allow spawning AI through effects
-	Util::PatchAddressInFile(0x1033321, "\x90\x90", 2);
+	Util::NopAddress(0x1033321, 2);
 
 	// Fix random colored lighting
-	Util::PatchAddressInFile(0x14F2FFC, "\x00\x00\x00\x00", 4);
+	Util::PatchAddress(0x14F2FFC, "\x00\x00\x00\x00", 4);
 
 	// Used to call Patches::ApplyAfterTagsLoaded when tags have loaded
 	Util::ApplyHook(0x1030EA, TagsLoadedHook);
 
 	// Prevent game variant weapons from being overridden
-	Util::PatchAddressInFile(0x1A315F, "\xEB", 1);
-	Util::PatchAddressInFile(0x1A31A4, "\xEB", 1);
+	Util::PatchAddress(0x1A315F, "\xEB", 1);
+	Util::PatchAddress(0x1A31A4, "\xEB", 1);
 	Util::ApplyHook(0x1A3267, GrenadeLoadoutHook);
 
 	// Hook game ticks
@@ -1073,22 +1078,22 @@ bool Engine::Init()
 
 	// Rewire $hq.MatchmakingLeaveQueue() to end the game
 	Util::ApplyHook(0x3B6826, EndGameHook, HookFlags::IsCall);
-	Util::PatchAddressInFile(0x3B682B, "\x90", 1);
+	Util::NopAddress(0x3B682B, 1);
 
 	// Rewire $hf2pEngine.PerformLogin() to show the pause menu
 	Util::ApplyHook(0x234756, &ShowHalo3PauseMenuHook, HookFlags::IsCall);
-	Util::PatchAddressInFile(0x23475B, "\x90", 1);
+	Util::NopAddress(0x23475B, 1);
 
 	// Allows you to press B to close the H3 pause menu
 	// TODO: find out what the byte that's being checked does, we're just patching out the check here but maybe it's important
-	Util::PatchAddressInFile(0x6E05F3, "\x90\x90", 2);
+	Util::NopAddress(0x6E05F3, 2);
 
 	// Fix "Network" setting in lobbies (change broken 0x100B7 menuID to 0x100B6)
-	Util::PatchAddressInFile(0x6C34B0, "\xB6", 1);
+	Util::PatchAddress(0x6C34B0, "\xB6", 1);
 
 	// Fix gamepad option in settings (todo: find out why it doesn't detect gamepads
 	// and find a way to at least enable pressing ESC when gamepad is enabled)
-	Util::PatchAddressInFile(0x20D7F2, "\x90\x90", 2);
+	Util::NopAddress(0x20D7F2, 2);
 
 	// Fix menu update code to include missing mainmenu code
 	Util::ApplyHook(0x6DFB73, MenuUpdateHook, HookFlags::IsCall);
@@ -1098,10 +1103,10 @@ bool Engine::Init()
 	Util::ApplyHook(0x721B8A, LobbyMenuButtonHandlerHook, HookFlags::IsJmpIfEqual);
 
 	// Remove Xbox Live from the network menu
-	Util::PatchAddressInFile(0x723D85, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 23);
+	Util::NopAddress(0x723D85, 23);
 	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x723DA1) = 0;
 	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x723DB8) = 1;
-	Util::PatchAddressInFile(0x723DFF, "\x90\x90\x90", 3);
+	Util::NopAddress(0x723DFF, 3);
 	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x723E07) = 0;
 	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x723E1C) = 0;
 
@@ -1110,19 +1115,19 @@ bool Engine::Init()
 
 	// Remove "BUILT IN" text when choosing map/game variants by feeding the UI_SetVisiblityOfElement func a nonexistant string ID for the element (0x202E8 instead of 0x102E8)
 	// TODO: find way to fix this text instead of removing it, since the 0x102E8 element (subitem_edit) is used for other things like editing/viewing map variant metadata
-	Util::PatchAddressInFile(0x705D6F, "\x02", 1);
+	Util::PatchAddress(0x705D6F, "\x02", 1);
 
 	// Hook the call to create a lobby from the main menu so that we
 	// can show the server browser if matchmaking is selected
 	Util::ApplyHook(0x6E79A7, MainMenuCreateLobbyHook, HookFlags::IsCall);
 
 	// Enable H3UI scaling
-	Util::PatchAddressInFile(0x61FAD1, "\x90\x90", 2);
+	Util::NopAddress(0x61FAD1, 2);
 
 	// Change the way that Forge handles dpad up so that it doesn't mess with key repeat
 	// Comparing the action tick count to 1 instead of using the "handled" flag does roughly the same thing and lets the menu UI read the key too
-	Util::PatchAddressInFile(0x19F17F, "\x75", 1);
-	Util::PatchAddressInFile(0x19F198, "\x90\x90\x90\x90", 4);
+	Util::PatchAddress(0x19F17F, "\x75", 1);
+	Util::NopAddress(0x19F198, 4);
 
 	// Fix network debug strings having (null) instead of an IP address
 	Util::ApplyHook(0x3F6F0, GetIPStringFromInAddrHook);

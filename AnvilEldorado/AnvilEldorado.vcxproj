@@ -70,6 +70,7 @@
     <ClInclude Include="Source\Blam\Sounds\Noise.hpp" />
     <ClInclude Include="Source\Blam\Tags\Game\Globals.hpp" />
     <ClInclude Include="Source\Blam\Tags\Game\MultiplayerGlobals.hpp" />
+    <ClInclude Include="Source\Blam\Tags\Game\VFilesList.hpp" />
     <ClInclude Include="Source\Blam\Tags\Items\Item.hpp" />
     <ClInclude Include="Source\Blam\Tags\Items\Weapon.hpp" />
     <ClInclude Include="Source\Blam\Tags\Objects\Object.hpp" />
