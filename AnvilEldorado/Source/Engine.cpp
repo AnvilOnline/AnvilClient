@@ -1282,15 +1282,15 @@ class ArmorExtension : public PlayerPropertiesExtension<Blam::Game::PlayerCustom
 protected:
 	void BuildData(int playerIndex, Blam::Game::PlayerCustomization *out) override
 	{
-
+		BuildPlayerCustomization(out);
 	}
 
 	void ApplyData(int playerIndex, Blam::Game::PlayerProperties *properties, const Blam::Game::PlayerCustomization &data) override
 	{
 		auto armorSessionData = &properties->Customization;
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Helmet] = ValidateArmorIndex(g_PlayerArmor_HelmetIndices, data.Armor[(int)Blam::Game::PlayerArmor::Helmet]);
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Chest] = ValidateArmorIndex(g_PlayerArmor_ChestIndices, data.Armor[(int)Blam::Game::PlayerArmor::Chest]);
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Shoulders] = ValidateArmorIndex(g_PlayerArmor_ShouldersIndices, data.Armor[(int)Blam::Game::PlayerArmor::Shoulders]);
+		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Helmet] = data.Armor[(int)Blam::Game::PlayerArmor::Helmet];
+		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Chest] = data.Armor[(int)Blam::Game::PlayerArmor::Chest];
+		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Shoulders] = data.Armor[(int)Blam::Game::PlayerArmor::Shoulders];
 		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Arms] = ValidateArmorIndex(g_PlayerArmor_ArmsIndices, data.Armor[(int)Blam::Game::PlayerArmor::Arms]);
 		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Legs] = ValidateArmorIndex(g_PlayerArmor_LegsIndices, data.Armor[(int)Blam::Game::PlayerArmor::Legs]);
 		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Acc] = ValidateArmorIndex(g_PlayerArmor_AccessoryIndices, data.Armor[(int)Blam::Game::PlayerArmor::Acc]);
