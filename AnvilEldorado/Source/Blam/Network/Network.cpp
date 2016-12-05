@@ -8,7 +8,7 @@ namespace Blam::Network
 {
 	Session *GetActiveSession()
 	{
-		return reinterpret_cast<Session *>((uint8_t *)GetModuleBase() + 0x15AB848);
+		return *reinterpret_cast<Session **>((uint8_t *)GetModuleBase() + 0x15AB848);
 	}
 
 	const auto SessionMembership_FindFirstPeer = reinterpret_cast<int(__thiscall *)(const SessionMembership *)>(0x44E690);
@@ -166,12 +166,12 @@ namespace Blam::Network
 
 	PacketTable *GetPacketTable()
 	{
-		return reinterpret_cast<PacketTable *>((uint8_t *)GetModuleBase() + 0x1E4A498);
+		return *reinterpret_cast<PacketTable **>((uint8_t *)GetModuleBase() + 0x1E4A498);
 	}
 
-	void SetPacketTable(const PacketTable *newTable)
+	void SetPacketTable(PacketTable *newTable)
 	{
-		*reinterpret_cast<PacketTable *>((uint8_t *)GetModuleBase() + 0x1E4A498) = *newTable;
+		*reinterpret_cast<PacketTable **>((uint8_t *)GetModuleBase() + 0x1E4A498) = newTable;
 	}
 
 	const auto PacketTable_RegisterPacket = reinterpret_cast<void(__thiscall *)(PacketTable *, int32_t, const char *, int32_t, int32_t, int32_t, SerializePacketFn, DeserializePacketFn, int32_t, int32_t)>(0x4801B0);

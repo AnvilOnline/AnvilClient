@@ -8,8 +8,10 @@ namespace Blam::Game
 		return *AnvilCommon::GetThreadStorage<Data::DataArray<PlayerDatum>>(0x40);
 	}
 
-	Data::DatumIndex GetLocalPlayer(const size_t p_Index)
+	Data::DatumIndex GetLocalPlayer(const int32_t p_Index)
 	{
-		return reinterpret_cast<uint32_t(*)(int)>(0x589C30)(p_Index);
+		typedef uint32_t(*GetLocalPlayerPtr)(int index);
+		auto GetLocalPlayer = reinterpret_cast<GetLocalPlayerPtr>(0x589C30);
+		return GetLocalPlayer(p_Index);
 	}
 }

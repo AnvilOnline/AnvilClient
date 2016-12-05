@@ -16,4 +16,9 @@ namespace Blam::Data
 	{
 		return reinterpret_cast<DatumBase *>(static_cast<uint8_t *>(Data) + p_Index.Index * DatumSize);
 	}
+
+	DatumBase *DataIteratorBase::Next()
+	{
+		return reinterpret_cast<DatumBase *(*)(DataIteratorBase *)>(0x55AE30)(this);
+	}
 }

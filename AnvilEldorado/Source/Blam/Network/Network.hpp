@@ -360,7 +360,7 @@ namespace Blam::Network
 
 	// Sets the active packet table.
 	// Only use this if you know what you're doing!
-	void SetPacketTable(const PacketTable *newTable);
+	void SetPacketTable(PacketTable *newTable);
 
 	// Kicks a player.
 	bool BootPlayer(int playerIndex, int reason);

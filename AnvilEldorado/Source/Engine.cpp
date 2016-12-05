@@ -19,6 +19,7 @@
 #include "Blam\Data\DatumIndex.hpp"
 #include "Blam\Game\Players.hpp"
 #include "Blam\Network\Network.hpp"
+#include "Blam\Objects\ObjectDatum.hpp"
 #include "Blam\Tags\TagInstance.hpp"
 #include "Blam\Tags\Game\Globals.hpp"
 #include "Blam\Tags\Game\MultiplayerGlobals.hpp"
@@ -296,11 +297,66 @@ __declspec(naked) void GrenadeLoadoutHook()
 	}
 }
 
+void ApplyMapNameFixes()
+{
+	auto levelsGlobalPtr = *reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x149E2E0);
+	if (!levelsGlobalPtr)
+		return;
+
+	// TODO: map out these global arrays, content items seems to use same format
+
+	uint32_t numLevels = *reinterpret_cast<uint32_t *>(levelsGlobalPtr + 0x34);
+
+	const wchar_t* search[12] = { L"guardian", L"riverworld", L"s3d_avalanche", L"s3d_edge", L"s3d_reactor", L"s3d_turf", L"cyberdyne", L"chill", L"deadlock", L"bunkerworld", L"shrine", L"zanzibar" };
+	const wchar_t* names[12] = { L"Guardian", L"Valhalla", L"Diamondback", L"Edge", L"Reactor", L"Icebox", L"The Pit", L"Narrows", L"High Ground", L"Standoff", L"Sandtrap", L"Last Resort" };
+	// TODO: Get names/descs using string ids? Seems the unic tags have descs for most of the maps
+	const wchar_t* descs[12] = {
+		L"Millennia of tending has produced trees as ancient as the Forerunner structures they have grown around. 2-6 players.",
+		L"The crew of V-398 barely survived their unplanned landing in this gorge...this curious gorge. 6-16 players.",
+		L"Hot winds blow over what should be a dead moon. A reminder of the power Forerunners once wielded. 6-16 players.",
+		L"The remote frontier world of Partition has provided this ancient databank with the safety of seclusion. 6-16 players.",
+		L"Being constructed just prior to the Invasion, its builders had to evacuate before it was completed. 6-16 players.",
+		L"Downtown Tyumen's Precinct 13 offers an ideal context for urban combat training. 4-10 players.",
+		L"Software simulations are held in contempt by the veteran instructors who run these training facilities. 4-10 players.",
+		L"Without cooling systems such as these, excess heat from the Ark's forges would render the construct uninhabitable. 2-8 players.",
+		L"A relic of older conflicts, this base was reactivated after the New Mombasa Slipspace Event. 4-12 players.",
+		L"Once, nearby telescopes listened for a message from the stars. Now, these silos contain our prepared response. 4-12 players.",
+		L"Although the Brute occupiers have been driven from this ancient structure, they left plenty to remember them by. 6-16 players",
+		L"Remote industrial sites like this one are routinely requisitioned and used as part of Spartan training exercises. 4-12 players."
+
+	};
+
+	for (uint32_t i = 0; i < numLevels; i++)
+	{
+		auto *levelNamePtr = reinterpret_cast<wchar_t *>(levelsGlobalPtr + 0x54 + (0x360 * i) + 0x8);
+		auto *levelDescPtr = reinterpret_cast<wchar_t *>(levelsGlobalPtr + 0x54 + (0x360 * i) + 0x8 + 0x40);
+
+		wchar_t levelName[0x21] = { 0 };
+		memcpy(levelName, levelNamePtr, 0x20);
+
+		for (uint32_t y = 0; y < sizeof(search) / sizeof(*search); y++)
+		{
+			if (wcscmp(search[y], levelName) == 0)
+			{
+				memset(levelNamePtr, 0, sizeof(wchar_t) * 0x20);
+				wcscpy_s(levelNamePtr, 0x20, names[y]);
+
+				memset(levelDescPtr, 0, sizeof(wchar_t) * 0x80);
+				wcscpy_s(levelDescPtr, 0x80, descs[y]);
+				break;
+			}
+		}
+	}
+}
+
 void GameTickHook()
 {
-	//
-	// TODO: Call per-tick updates here...
-	//
+	static bool appliedFirstTickPatches = false;
+	if (!appliedFirstTickPatches)
+	{
+		ApplyMapNameFixes();
+		appliedFirstTickPatches = true;
+	}
 
 	// Call replaced function
 	reinterpret_cast<void(*)()>(0x5547F0)();
@@ -1351,6 +1407,42 @@ void ScoreboardPlayerModelArmorHook()
 		CustomizeBiped(scoreboardBiped);
 }
 
+bool g_Forge_ShouldDelete = false;
+
+__declspec(naked) void Forge_UpdateInput_Hook()
+{
+	__asm
+	{
+		mov al, g_Forge_ShouldDelete
+		test al, al
+		jnz del
+
+		// Not deleting - just call the original function
+		push esi
+		mov eax, 0x59F0E0
+		call eax
+		retn 4
+
+	del:
+		mov g_Forge_ShouldDelete, 0
+
+		// Simulate a Y button press
+		mov eax, 0x244D1F0              // Controller data
+		mov byte ptr[eax + 0x9E], 1    // Ticks = 1
+		and byte ptr[eax + 0x9F], 0xFE // Clear the "handled" flag
+
+										// Call the original function
+		push esi
+		mov eax, 0x59F0E0
+		call eax
+
+		// Make sure nothing else gets the fake press
+		mov eax, 0x244D1F0          // Controller data
+		or byte ptr[eax + 0x9F], 1 // Set the "handled" flag
+		retn 4
+	}
+}
+
 bool Engine::Init()
 {
 	//Disable Windows DPI scaling
@@ -1453,7 +1545,8 @@ bool Engine::Init()
 
 	// Rewire $hq.MatchmakingLeaveQueue() to end the game
 	Util::ApplyHook(0x3B6826, EndGameHook, HookFlags::IsCall);
-	Util::PatchAddress(0x3B682B, "\x90", 1);
+	Util::NopAddress(0x3B682B, 1);
+
 
 	// Rewire $hf2pEngine.PerformLogin() to show the pause menu
 	Util::ApplyHook(0x234756, &ShowHalo3PauseMenuHook, HookFlags::IsCall);
@@ -1592,11 +1685,31 @@ bool Engine::Init()
 
 	// Fix rendering the scoreboard player model
 	// TODO: figure out why your biped doesn't show on the postgame screen...there's probably something missing here
-	Util::NopAddress(0x435DAB, 0x50);
+	{
+		std::stringstream ss;
+		for (auto i = 0; i < 0x50; i++)
+			ss << '\x90';
+		Util::PatchAddress(0x435DAB, ss.str(), 0x50);
+	}
 	Util::ApplyHook(0x4360D9, ScoreboardPlayerModelArmorHook, HookFlags::IsCall);
-	Util::NopAddress(0x4360DE, 0x1A9);
+	{
+		std::stringstream ss;
+		for (auto i = 0; i < 0x1A9; i++)
+			ss << '\x90';
+		Util::PatchAddress(0x4360DE, ss.str(), 0x1A9);
+	}
 	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x43628A) = 0x1C;
-	Util::NopAddress(0x43628B, 0x3);
+	Util::PatchAddress(0x43628B, "\x90\x90\x90", 0x3);
+
+	Util::ApplyHook(0x19D482, Forge_UpdateInput_Hook, HookFlags::IsCall);
+
+	// enable teleporter volume editing compliments of zedd
+	{
+		std::stringstream ss;
+		for (auto i = 0; i < 0x66; i++)
+			ss << '\x90';
+		Util::PatchAddress(0x6E4796, ss.str(), 0x66);
+	}
 
 	return true;
 }

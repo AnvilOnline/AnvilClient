@@ -75,5 +75,5 @@ namespace Blam::Game
 
 	Data::DataArray<PlayerDatum> &GetPlayers();
 
-	Data::DatumIndex GetLocalPlayer(const size_t p_Index);
+	Data::DatumIndex GetLocalPlayer(const int32_t p_Index);
 }

@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Blam\Data\DataArray.hpp" />
-    <ClInclude Include="Source\Blam\Data\DataIterator.hpp" />
     <ClInclude Include="Source\Blam\Data\DataPoolBase.hpp" />
     <ClInclude Include="Source\Blam\Data\LruvCacheBase.hpp" />
     <ClInclude Include="Source\Blam\Game\Damage.hpp" />
@@ -84,7 +83,6 @@
     <ClInclude Include="Source\Engine.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Blam\Data\DataIterator.cpp" />
     <ClCompile Include="Source\Blam\Data\DataPoolBase.cpp" />
     <ClCompile Include="Source\Blam\Data\LruvCacheBase.cpp" />
     <ClCompile Include="Source\Blam\Game\Players.cpp" />
