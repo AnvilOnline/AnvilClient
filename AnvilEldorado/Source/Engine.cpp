@@ -7,6 +7,7 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <map>
 #include <vector>
 #include "BuildInfo.hpp"
@@ -974,6 +975,131 @@ bool __fastcall Network_Session_HandleJoinRequest_Hook(Blam::Network::Session *p
 	return Network_session_handle_join_request(p_This, p_Address, p_Request);
 }
 
+const auto Network_State_EndGame_WriteStatsEnter = reinterpret_cast<char(__thiscall *)(void *, int32_t, int32_t, int32_t)>(0x492B50);
+
+char __fastcall Network_State_EndGame_WriteStatsEnter_Hook(void* thisPtr, int unused, int a2, int a3, int a4)
+{
+	// There used to be a stats upload here, which is why this hook does nothing
+	return Network_State_EndGame_WriteStatsEnter(thisPtr, a2, a3, a4);
+}
+
+const auto Network_State_LeavingEnter = reinterpret_cast<int8_t(__thiscall *)(void *, int32_t, int32_t, int32_t)>(0x4933E0);
+
+int8_t __fastcall Network_State_LeavingEnter_Hook(void* thisPtr, int32_t unused, int32_t a2, int32_t a3, int32_t a4)
+{
+	/* TODO:
+	Patches::Network::StopInfoServer();
+
+	StopTeamspeakClient();
+	StopTeamspeakServer();*/
+
+	return Network_State_LeavingEnter(thisPtr, a2, a3, a4);
+}
+
+int32_t Network_GetMaxPlayers_Hook()
+{
+	/* TODO:
+	int maxPlayers = Modules::ModuleServer::Instance().VarServerMaxPlayers->ValueInt;
+	return Utils::Clamp(maxPlayers, 1, 16);*/
+
+	return 16;
+}
+
+bool __fastcall Network_GetEndpoint_Hook(char *thisPtr, void *unused)
+{
+	char *socket = thisPtr + 12;
+	uint32_t port = 11775;/* TODO: Modules::ModuleServer::Instance().VarServerGamePort->ValueInt; */
+	bool success = false;
+
+	//bool __cdecl Network_c_network_link::create_endpoint(int a1, __int16 GamePort, char a3, _DWORD *a4)
+	typedef bool(__cdecl *Network_link_create_endpointFunc)(int a1, __int16 GamePort, char a3, void *a4);
+	Network_link_create_endpointFunc Network_link_create_endpoint = reinterpret_cast<Network_link_create_endpointFunc>(0x43B6F0);
+
+	//LPVOID __cdecl sub_43FED0(SOCKET socket)
+	typedef LPVOID(__cdecl *sub_43FED0Func)(SOCKET socket);
+	sub_43FED0Func sub_43FED0 = reinterpret_cast<sub_43FED0Func>(0x43FED0);
+
+	while (true)
+	{
+		*reinterpret_cast<uint32_t *>(0x1860454) = port;
+		success = Network_link_create_endpoint(0, (short)port, 1, socket);
+
+		if (success)
+			break;
+
+		if (*socket)
+		{
+			sub_43FED0(*socket);
+			*socket = 0;
+		}
+
+		if (++port - 11775 /* TODO: Modules::ModuleServer::Instance().VarServerGamePort->ValueInt */ >= 1000)
+		{
+			*reinterpret_cast<uint32_t *>(0x1860454) = 11775; /* TODO: Modules::ModuleServer::Instance().VarServerGamePort->ValueInt; */
+			return success;
+		}
+	}
+	return success;
+}
+
+char __fastcall Network_Session_JoinRemoteSession_Hook(void* thisPtr, int unused, char a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, void *a12, int a13, int a14)
+{
+	/* TODO:
+	rapidjson::StringBuffer jsonBuffer;
+	rapidjson::Writer<rapidjson::StringBuffer> jsonWriter(jsonBuffer);
+	jsonWriter.StartObject();
+	jsonWriter.Key("connecting");
+	jsonWriter.Bool(true);
+	jsonWriter.Key("success");
+	jsonWriter.Bool(false);
+	jsonWriter.EndObject();
+
+	Web::Ui::ScreenLayer::Notify("serverconnect", jsonBuffer.GetString(), true);*/
+
+	typedef char(__fastcall *Network_session_join_remote_sessionFunc)(void* thisPtr, int unused, char a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, void *a12, int a13, int a14);
+	const auto Network_Session_JoinRemoteSession = reinterpret_cast<Network_session_join_remote_sessionFunc>(0x45D1E0);
+	return Network_Session_JoinRemoteSession(thisPtr, unused, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);;
+}
+
+// This is only hooked on error states
+int __fastcall Network_Session_InitiateLeaveProtocol_Hook(void* thisPtr, int unused, char forceClose)
+{
+	/* TODO:
+	rapidjson::StringBuffer jsonBuffer;
+	rapidjson::Writer<rapidjson::StringBuffer> jsonWriter(jsonBuffer);
+	jsonWriter.StartObject();
+	jsonWriter.Key("connecting");
+	jsonWriter.Bool(false);
+	jsonWriter.Key("success");
+	jsonWriter.Bool(false);
+	jsonWriter.EndObject();
+
+	Web::Ui::ScreenLayer::Notify("serverconnect", jsonBuffer.GetString(), true);*/
+
+	typedef int(__fastcall *Network_session_initiate_leave_protocolFunc)(void* thisPtr, int unused, char forceClose);
+	const auto Network_Session_InitiateLeaveProtocol = reinterpret_cast<Network_session_initiate_leave_protocolFunc>(0x45CB80);
+	return Network_Session_InitiateLeaveProtocol(thisPtr, unused, forceClose);
+}
+
+// Hooked on the initial update that fires on server connect
+int __fastcall Network_Session_ParametersClear_Hook(void* thisPtr, int unused)
+{
+	/* TODO:
+	rapidjson::StringBuffer jsonBuffer;
+	rapidjson::Writer<rapidjson::StringBuffer> jsonWriter(jsonBuffer);
+	jsonWriter.StartObject();
+	jsonWriter.Key("connecting");
+	jsonWriter.Bool(false);
+	jsonWriter.Key("success");
+	jsonWriter.Bool(true);
+	jsonWriter.EndObject();
+
+	Web::Ui::ScreenLayer::Notify("serverconnect", jsonBuffer.GetString(), true);*/
+
+	typedef int(__fastcall *Network_session_parameters_clearFunc)(void* thisPtr, int unused);
+	const auto Network_Session_ParametersClear = reinterpret_cast<Network_session_parameters_clearFunc>(0x486580);
+	return Network_Session_ParametersClear(thisPtr, unused);
+}
 bool Engine::Init()
 {
 	//Disable Windows DPI scaling
@@ -1161,6 +1287,52 @@ bool Engine::Init()
 
 	// Hook the join request handler to check the user's IP address against the ban list
 	Util::ApplyHook(0x9D0F7, Network_Session_HandleJoinRequest_Hook, HookFlags::IsCall);
+
+	// Hook c_life_cycle_state_handler_end_game_write_stats's vftable ::entry method
+	DWORD s_Temp1;
+	DWORD s_Temp2;
+	auto s_Address = reinterpret_cast<uint32_t *>(0x16183A0);
+	if (!VirtualProtect(s_Address, 4, PAGE_READWRITE, &s_Temp1))
+	{
+		std::stringstream ss;
+		ss << "Failed to set protection on memory address " << std::hex << (void*)s_Address;
+		OutputDebugString(ss.str().c_str());
+	}
+	else
+	{
+		*s_Address = (uint32_t)&Network_State_EndGame_WriteStatsEnter_Hook;
+		VirtualProtect(s_Address, 4, s_Temp1, &s_Temp2);
+	}
+
+	// Hook c_life_cycle_state_handler_leaving's vftable ::entry method
+	s_Address = reinterpret_cast<uint32_t *>(0x16183BC);
+	if (!VirtualProtect(s_Address, 4, PAGE_READWRITE, &s_Temp1))
+	{
+		std::stringstream ss;
+		ss << "Failed to set protection on memory address " << std::hex << (void*)s_Address;
+		OutputDebugString(ss.str().c_str());
+	}
+	else
+	{
+		*s_Address = (uint32_t)&Network_State_LeavingEnter_Hook;
+		VirtualProtect(s_Address, 4, s_Temp1, &s_Temp2);
+	}
+
+	// Set the max player count to Server.MaxPlayers when hosting a lobby
+	Util::ApplyHook(0x67FA0D, Network_GetMaxPlayers_Hook, HookFlags::IsCall);
+
+	Util::ApplyHook(0x3BAFB, Network_GetEndpoint_Hook, HookFlags::IsCall);
+
+	Util::ApplyHook(0x7F5B9, Network_Session_JoinRemoteSession_Hook, HookFlags::IsCall);
+
+	// Hook Network_session_initiate_leave_protocol in Network_session_idle_peer_joining's error states
+	// "peer join timed out waiting for secure connection to become established"
+	Util::ApplyHook(0x9BFCA, Network_Session_InitiateLeaveProtocol_Hook, HookFlags::IsCall);
+	// "peer join timed out waiting for initial updates"
+	Util::ApplyHook(0x9C0BE, Network_Session_InitiateLeaveProtocol_Hook, HookFlags::IsCall);
+
+	// "received initial update, clearing"
+	Util::ApplyHook(0x899AF, Network_Session_ParametersClear_Hook, HookFlags::IsCall);
 
 	return true;
 }
