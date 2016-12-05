@@ -29,5 +29,19 @@ namespace AnvilCommon::Utils
 		static void ApplyHook(size_t p_Offset, void *p_DestFunc, int p_Flags = 0);
 
 		static bool ResumeAllThreads();
+
+		template<class T>
+		static int32_t CountBits(T p_Value)
+		{
+			int32_t result = 0;
+
+			while (p_Value != 0)
+			{
+				p_Value >>= 1;
+				result++;
+			}
+
+			return result;
+		}
 	};
 }
