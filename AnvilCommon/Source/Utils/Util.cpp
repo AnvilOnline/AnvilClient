@@ -30,12 +30,12 @@ bool Util::HasCommandLine(std::string p_Command)
 	return false;
 }
 
-bool Util::PatchAddressInMemory(const size_t p_Offset, const std::string &p_HexString, const size_t p_Length)
+bool Util::PatchAddressInMemory(const size_t p_Offset, const std::string &p_HexString, const int32_t p_Length)
 {
 	return PatchAddressInMemory(reinterpret_cast<void *>(p_Offset), p_HexString, p_Length);
 }
 
-bool Util::PatchAddressInMemory(void *p_Address, const std::string &p_HexString, const size_t p_Length)
+bool Util::PatchAddressInMemory(void *p_Address, const std::string &p_HexString, const int32_t p_Length)
 {
 	// Get the length of our patch
 	auto s_Length = (p_Length == -1 ? p_HexString.length() : p_Length);
@@ -78,12 +78,12 @@ bool Util::PatchAddressInMemory(void *p_Address, const std::string &p_HexString,
 	return true;
 }
 
-bool Util::PatchAddressInFile(const size_t p_Offset, const std::string &p_HexString, const size_t p_Length)
+bool Util::PatchAddressInFile(const size_t p_Offset, const std::string &p_HexString, const int32_t p_Length)
 {
 	return PatchAddressInFile(reinterpret_cast<void*>(p_Offset), p_HexString, p_Length);
 }
 
-bool Util::PatchAddressInFile(void *p_Address, const std::string &p_HexString, const size_t p_Length)
+bool Util::PatchAddressInFile(void *p_Address, const std::string &p_HexString, const int32_t p_Length)
 {
 	// Ensure that the address is valid
 	if (!p_Address)
@@ -98,7 +98,7 @@ bool Util::PatchAddressInFile(void *p_Address, const std::string &p_HexString, c
 	return PatchAddressInMemory(s_Address, p_HexString, p_Length);
 }
 
-bool Util::PatchAddress(const size_t p_Offset, const std::string &p_HexString, const size_t p_Length, bool p_InMemory)
+bool Util::PatchAddress(const size_t p_Offset, const std::string &p_HexString, const int32_t p_Length, bool p_InMemory)
 {
 	if (p_InMemory)
 		return PatchAddressInMemory(p_Offset, p_HexString, p_Length);
@@ -106,7 +106,7 @@ bool Util::PatchAddress(const size_t p_Offset, const std::string &p_HexString, c
 	return PatchAddressInFile(p_Offset, p_HexString, p_Length);
 }
 
-bool Util::PatchAddress(void *p_Address, const std::string &p_HexString, const size_t p_Length, bool p_InMemory)
+bool Util::PatchAddress(void *p_Address, const std::string &p_HexString, const int32_t p_Length, bool p_InMemory)
 {
 	if (p_InMemory)
 		return PatchAddressInMemory(p_Address, p_HexString, p_Length);
@@ -114,19 +114,19 @@ bool Util::PatchAddress(void *p_Address, const std::string &p_HexString, const s
 	return PatchAddressInFile(p_Address, p_HexString, p_Length);
 }
 
-bool Util::NopAddress(const size_t p_Offset, const size_t p_Length)
+bool Util::NopAddress(const size_t p_Offset, const int32_t p_Length, bool p_InMemory)
 {
-	return NopAddress(reinterpret_cast<void *>(p_Offset), p_Length);
+	return NopAddress(reinterpret_cast<void *>(p_Offset), p_Length, p_InMemory);
 }
 
-bool Util::NopAddress(void *p_Address, const size_t p_Length)
+bool Util::NopAddress(void *p_Address, const int32_t p_Length, bool p_InMemory)
 {
 	std::stringstream ss;
 
-	for (size_t i = 0; i < p_Length; i++)
+	for (auto i = 0; i < p_Length; i++)
 		ss << "\x90";
 
-	return PatchAddressInFile(p_Address, ss.str(), p_Length);
+	return PatchAddress(p_Address, ss.str(), p_Length, p_InMemory);
 }
 
 void Util::WriteCall(void *p_Address, void* p_NewFunction)

@@ -15,14 +15,14 @@ namespace AnvilCommon::Utils
 	public:
 		static bool HasCommandLine(std::string p_Command);
 
-		static bool PatchAddressInMemory(const size_t p_Offset, const std::string &p_HexString, const size_t p_Length);
-		static bool PatchAddressInMemory(void *p_Address, const std::string &p_HexString, const size_t p_Length);
-		static bool PatchAddressInFile(const size_t p_Offset, const std::string &p_HexString, const size_t p_Length);
-		static bool PatchAddressInFile(void *p_Address, const std::string &p_HexString, const size_t p_Length);
-		static bool PatchAddress(const size_t p_Offset, const std::string &p_HexString, const size_t p_Length, bool p_InMemory = false);
-		static bool PatchAddress(void *p_Address, const std::string &p_HexString, const size_t p_Length, bool p_InMemory = false);
-		static bool NopAddress(const size_t p_Offset, const size_t p_Length);
-		static bool NopAddress(void *p_Address, const size_t p_Length);
+		static bool PatchAddressInMemory(const size_t p_Offset, const std::string &p_HexString, const int32_t p_Length);
+		static bool PatchAddressInMemory(void *p_Address, const std::string &p_HexString, const int32_t p_Length);
+		static bool PatchAddressInFile(const size_t p_Offset, const std::string &p_HexString, const int32_t p_Length);
+		static bool PatchAddressInFile(void *p_Address, const std::string &p_HexString, const int32_t p_Length);
+		static bool PatchAddress(const size_t p_Offset, const std::string &p_HexString, const int32_t p_Length, bool p_InMemory = false);
+		static bool PatchAddress(void *p_Address, const std::string &p_HexString, const int32_t p_Length, bool p_InMemory = false);
+		static bool NopAddress(const size_t p_Offset, const int32_t p_Length, bool p_InMemory = false);
+		static bool NopAddress(void *p_Address, const int32_t p_Length, bool p_InMemory = false);
 		
 		static void WriteCall(void *p_Address, void *p_NewFunction);
 		static void WriteJump(void *p_Address, void *p_NewFunction, int p_Flags = 0);

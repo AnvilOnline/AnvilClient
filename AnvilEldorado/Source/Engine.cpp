@@ -85,10 +85,10 @@ HWND CreateGameWindowHook()
 	return hwnd;
 }
 
-void WindowTitleSprintfHook(char *destBuf, char *format, char *version)
+void WindowTitleSprintfHook(char *p_DestBuf, char *p_Format, char *p_Version)
 {
-	std::string windowTitle = AnvilCommon::g_BuildInfo;
-	strcpy_s(destBuf, 0x40, windowTitle.c_str());
+	auto s_WindowTitle = AnvilCommon::g_BuildInfo;
+	strcpy_s(p_DestBuf, 0x40, s_WindowTitle.c_str());
 }
 
 void ResolutionChangeHook()
@@ -365,14 +365,14 @@ bool LocalizedStringImpl(int tagIndex, int stringId, wchar_t *outputBuffer)
 {
 	switch (stringId)
 	{
-		case 0x1010A: // start_new_campaign
-		{
-			// Get the version string, convert it to uppercase UTF-16, and return it
-			auto s_BuildInfo = std::string("  ANVIL: ONLINE  ") + std::string("DEV BUILD ") + std::to_string(ANVIL_BUILD);
-			auto s_WideBuildInfo = std::wstring(s_BuildInfo.begin(), s_BuildInfo.end());
-			swprintf(outputBuffer, MaxStringLength, s_WideBuildInfo.c_str());
-			return true;
-		}
+	case 0x1010A: // start_new_campaign
+	{
+		// Get the version string, convert it to uppercase UTF-16, and return it
+		auto s_BuildInfo = std::string("  ANVIL: ONLINE  ") + std::string("DEV BUILD ") + std::to_string(ANVIL_BUILD);
+		auto s_WideBuildInfo = std::wstring(s_BuildInfo.begin(), s_BuildInfo.end());
+		swprintf(outputBuffer, MaxStringLength, s_WideBuildInfo.c_str());
+		return true;
+	}
 	}
 
 	return false;
@@ -889,7 +889,6 @@ bool __fastcall RequestBootMachineHook(void *thisPtr, void *unused, Blam::Networ
 	std::string playerName;
 	if (playerIndex >= 0)
 	playerName = Utils::String::ThinString(membership->PlayerSessions[playerIndex].Properties.DisplayName);
-
 	if (playerIndex >= 0)
 	kickTeamspeakClient(playerName);
 	*/
@@ -963,7 +962,6 @@ bool __fastcall Network_Session_HandleJoinRequest_Hook(Blam::Network::Session *p
 		typedef void(__thiscall *Network_session_acknowledge_join_requestFunc)(Blam::Network::Session *thisPtr, const Blam::Network::NetworkAddress &address, int reason);
 		auto Network_session_acknowledge_join_request = reinterpret_cast<Network_session_acknowledge_join_requestFunc>(0x45A230);
 		Network_session_acknowledge_join_request(thisPtr, address, 0); // TODO: Use a special code for bans and hook the join refusal handler so we can display a message to the player
-
 		Utils::Logger::Instance().Log(Utils::LogTypes::Network, Utils::LogLevel::Info, "Refused join request from banned IP %s", ipStr);
 		return true;
 		}
@@ -989,7 +987,7 @@ bool Engine::Init()
 		WriteLog("Failed to load 'maps\\string_ids.dat'!");
 		return false;
 	}
-
+	
 	// English patch
 	Util::PatchAddress(0x2333FD, "\x00", 1);
 
@@ -1007,16 +1005,16 @@ bool Engine::Init()
 	Util::ApplyHook(0x216487, AspectRatioHook, HookFlags::IsCall);
 
 	//Disable converting the game's resolution to 16:9
-	Util::NopAddress(0x62217D, 2);
-	Util::NopAddress(0x622183, 6);
+	Util::PatchAddress(0x62217D, "\x90\x90", 2);
+	Util::PatchAddress(0x622183, "\x90\x90\x90\x90\x90\x90", 6);
 
 	//Allow the user to select any resolution that Windows supports in the settings screen.
-	Util::NopAddress(0x10BF1B, 2);
-	Util::NopAddress(0x10BF21, 6);
+	Util::PatchAddress(0x10BF1B, "\x90\x90", 2);
+	Util::PatchAddress(0x10BF21, "\x90\x90\x90\x90\x90\x90", 6);
 
 	// Prevent FOV from being overridden when the game loads
-	Util::NopAddress(0x25FA79, 10);
-	Util::NopAddress(0x25FA86, 5);
+	Util::PatchAddress(0x25FA79, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
+	Util::PatchAddress(0x25FA86, "\x90\x90\x90\x90\x90", 5);
 	Util::ApplyHook(0x10CA02, FovHook);
 
 	// Force descoping for all weapons
@@ -1036,18 +1034,18 @@ bool Engine::Init()
 
 	// Enable Tag Editing
 	Util::PatchAddress(0x101A5B, "\xEB", 1);
-	Util::NopAddress(0x102874, 2);
-	Util::NopAddress(0x1030AA, 2);
+	Util::PatchAddress(0x102874, "\x90\x90", 2);
+	Util::PatchAddress(0x1030AA, "\x90\x90", 2);
 
 	// No --account args patch
 	Util::PatchAddress(0x43731A, "\xEB\x0E", 2);
 	Util::PatchAddress(0x4373AD, "\xEB\x03", 2);
 
 	// Remove preferences.dat hash check
-	Util::NopAddress(0x10C99A, 6);
+	Util::PatchAddress(0x10C99A, "\x90\x90\x90\x90\x90\x90", 6);
 
 	// Patch to allow spawning AI through effects
-	Util::NopAddress(0x1033321, 2);
+	Util::PatchAddress(0x1033321, "\x90\x90", 2);
 
 	// Fix random colored lighting
 	Util::PatchAddress(0x14F2FFC, "\x00\x00\x00\x00", 4);
@@ -1078,22 +1076,22 @@ bool Engine::Init()
 
 	// Rewire $hq.MatchmakingLeaveQueue() to end the game
 	Util::ApplyHook(0x3B6826, EndGameHook, HookFlags::IsCall);
-	Util::NopAddress(0x3B682B, 1);
+	Util::PatchAddress(0x3B682B, "\x90", 1);
 
 	// Rewire $hf2pEngine.PerformLogin() to show the pause menu
 	Util::ApplyHook(0x234756, &ShowHalo3PauseMenuHook, HookFlags::IsCall);
-	Util::NopAddress(0x23475B, 1);
+	Util::PatchAddress(0x23475B, "\x90", 1);
 
 	// Allows you to press B to close the H3 pause menu
 	// TODO: find out what the byte that's being checked does, we're just patching out the check here but maybe it's important
-	Util::NopAddress(0x6E05F3, 2);
+	Util::PatchAddress(0x6E05F3, "\x90\x90", 2);
 
 	// Fix "Network" setting in lobbies (change broken 0x100B7 menuID to 0x100B6)
 	Util::PatchAddress(0x6C34B0, "\xB6", 1);
 
 	// Fix gamepad option in settings (todo: find out why it doesn't detect gamepads
 	// and find a way to at least enable pressing ESC when gamepad is enabled)
-	Util::NopAddress(0x20D7F2, 2);
+	Util::PatchAddress(0x20D7F2, "\x90\x90", 2);
 
 	// Fix menu update code to include missing mainmenu code
 	Util::ApplyHook(0x6DFB73, MenuUpdateHook, HookFlags::IsCall);
@@ -1103,10 +1101,10 @@ bool Engine::Init()
 	Util::ApplyHook(0x721B8A, LobbyMenuButtonHandlerHook, HookFlags::IsJmpIfEqual);
 
 	// Remove Xbox Live from the network menu
-	Util::NopAddress(0x723D85, 23);
+	Util::PatchAddress(0x723D85, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 23);
 	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x723DA1) = 0;
 	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x723DB8) = 1;
-	Util::NopAddress(0x723DFF, 3);
+	Util::PatchAddress(0x723DFF, "\x90\x90\x90", 3);
 	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x723E07) = 0;
 	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x723E1C) = 0;
 
@@ -1122,12 +1120,12 @@ bool Engine::Init()
 	Util::ApplyHook(0x6E79A7, MainMenuCreateLobbyHook, HookFlags::IsCall);
 
 	// Enable H3UI scaling
-	Util::NopAddress(0x61FAD1, 2);
+	Util::PatchAddress(0x61FAD1, "\x90\x90", 2);
 
 	// Change the way that Forge handles dpad up so that it doesn't mess with key repeat
 	// Comparing the action tick count to 1 instead of using the "handled" flag does roughly the same thing and lets the menu UI read the key too
 	Util::PatchAddress(0x19F17F, "\x75", 1);
-	Util::NopAddress(0x19F198, 4);
+	Util::PatchAddress(0x19F198, "\x90\x90\x90\x90", 4);
 
 	// Fix network debug strings having (null) instead of an IP address
 	Util::ApplyHook(0x3F6F0, GetIPStringFromInAddrHook);
@@ -1140,7 +1138,7 @@ bool Engine::Init()
 	Util::ApplyHook(0x82AAC, ManagedSession_CreateSessionInternalHook, HookFlags::IsCall);
 
 	// Patch version subs to return version of this DLL, to make people with older DLLs incompatible
-	uint32_t verNum = 0xFFFFFFFF; // Utils::Version::GetVersionInt();
+	uint32_t verNum = ANVIL_BUILD;
 	*reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x101421) = verNum;
 	*reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x10143A) = verNum;
 
