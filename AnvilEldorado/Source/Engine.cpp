@@ -651,13 +651,87 @@ char InAddrToXnAddrHook(void *ina, void  *pxna, void  *pxnkid)
 	return InAddrToXnAddr(ina, pxna, pxnkid);
 }
 
-const auto ManagedSession_CreateSessionInternal = reinterpret_cast<DWORD(__cdecl *)(int32_t, int32_t)>(0x481550);
-DWORD __cdecl ManagedSession_CreateSessionInternalHook(int32_t a1, int32_t a2)
+SOCKET g_InfoSocket;
+bool g_InfoSocketOpen = false;
+
+uint32_t g_ServerPort = 11775;
+
+bool StartInfoServer()
+{
+	if (g_InfoSocketOpen)
+		return true;
+
+	/* TODO: Server::Voting::StartNewVote(); */
+
+	auto s_HWND = *reinterpret_cast<HWND *>((uint8_t *)GetModuleBase() + 0x159C014);
+
+	if (s_HWND == 0)
+		return false;
+
+	g_InfoSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+	SOCKADDR_IN bindAddr;
+	bindAddr.sin_family = AF_INET;
+	bindAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+	auto port = g_ServerPort;
+	if (port == *reinterpret_cast<uint32_t *>(0x1860454)) // make sure port isn't the same as game port
+		port++;
+	bindAddr.sin_port = htons((u_short)port);
+
+	// open our listener socket
+	while (bind(g_InfoSocket, (PSOCKADDR)&bindAddr, sizeof(bindAddr)) != 0)
+	{
+		port++;
+		if (port == *reinterpret_cast<uint32_t *>(0x1860454)) // make sure port isn't the same as game port
+			port++;
+		bindAddr.sin_port = htons((u_short)port);
+		if (port > (g_ServerPort + 10))
+			return false; // tried 10 ports, lets give up
+	}
+
+	g_ServerPort = port;
+
+	/* TODO: Setup UPnP
+	if (Modules::ModuleUPnP::Instance().VarUPnPEnabled->ValueInt)
+	{
+		Modules::ModuleUPnP::Instance().UPnPForwardPort(true, port, port, "ElDewrito InfoServer");
+		Modules::ModuleUPnP::Instance().UPnPForwardPort(false, Pointer(0x1860454).Read<uint32_t>(), Pointer(0x1860454).Read<uint32_t>(), "ElDewrito Game");
+		Modules::ModuleUPnP::Instance().UPnPForwardPort(false, 9987, 9987, "ElDewrito VoIP");
+	}*/
+
+	WSAAsyncSelect(g_InfoSocket, s_HWND, WM_USER + 1338, FD_ACCEPT | FD_CLOSE);
+	listen(g_InfoSocket, 5);
+	g_InfoSocketOpen = true;
+
+	return true;
+}
+
+bool StopInfoServer()
+{
+	if (!g_InfoSocketOpen)
+		return true;
+
+	closesocket(g_InfoSocket);
+
+	int truth = 1;
+	setsockopt(g_InfoSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&truth, sizeof(int));
+
+	// TODO: Modules::CommandMap::Instance().ExecuteCommand("Server.Unannounce");
+
+	g_InfoSocketOpen = false;
+	// TODO: lastAnnounce = 0;
+
+	return true;
+}
+
+const auto Network_ManagedSession_CreateSessionInternal = reinterpret_cast<DWORD(__cdecl *)(int32_t, int32_t)>(0x481550);
+DWORD __cdecl Network_ManagedSession_CreateSessionInternal_Hook(int32_t a1, int32_t a2)
 {
 	DWORD isOnline = *(DWORD*)a2;
 	bool isHost = (*(uint16_t *)(a2 + 284) & 1);
 
-	auto retval = ManagedSession_CreateSessionInternal(a1, a2);
+	auto retval = Network_ManagedSession_CreateSessionInternal(a1, a2);
 
 	if (!isHost)
 		return retval;
@@ -670,26 +744,25 @@ DWORD __cdecl ManagedSession_CreateSessionInternalHook(int32_t a1, int32_t a2)
 		//Start the Teamspeak VoIP Server since this is the host
 		CreateThread(0, 0, StartTeamspeakServer, 0, 0, 0);
 
-		if (voipvars.VarVoIPEnabled->ValueInt == 1)
-		{
-		//Make sure teamspeak is stopped before we try to start it.
-		StopTeamspeakClient();
-		//Join the Teamspeak VoIP Server so the host can talk
-		CreateThread(0, 0, StartTeamspeakClient, 0, 0, 0);
-		}
-		}
+			if (voipvars.VarVoIPEnabled->ValueInt == 1)
+			{
+			//Make sure teamspeak is stopped before we try to start it.
+			StopTeamspeakClient();
+			//Join the Teamspeak VoIP Server so the host can talk
+			CreateThread(0, 0, StartTeamspeakClient, 0, 0, 0);
+			}
+		}*/
+
 		// TODO: give output if StartInfoServer fails
-		Patches::Network::StartInfoServer();
-		*/
+		StartInfoServer();
 	}
 	else
 	{
-		/*
-		Patches::Network::StopInfoServer();
+		StopInfoServer();
+		/* TODO:
 		//Stop the VoIP Server and client
 		StopTeamspeakClient();
-		StopTeamspeakServer();
-		*/
+		StopTeamspeakServer();*/
 	}
 
 	return retval;
@@ -1144,7 +1217,7 @@ int32_t Network_GetMaxPlayers_Hook()
 bool __fastcall Network_GetEndpoint_Hook(char *thisPtr, void *unused)
 {
 	char *socket = thisPtr + 12;
-	uint32_t port = 11775;/* TODO: Modules::ModuleServer::Instance().VarServerGamePort->ValueInt; */
+	uint32_t port = g_ServerPort;/* TODO: Modules::ModuleServer::Instance().VarServerGamePort->ValueInt; */
 	bool success = false;
 
 	//bool __cdecl Network_c_network_link::create_endpoint(int a1, __int16 GamePort, char a3, _DWORD *a4)
@@ -1169,9 +1242,9 @@ bool __fastcall Network_GetEndpoint_Hook(char *thisPtr, void *unused)
 			*socket = 0;
 		}
 
-		if (++port - 11775 /* TODO: Modules::ModuleServer::Instance().VarServerGamePort->ValueInt */ >= 1000)
+		if (++port - g_ServerPort /* TODO: Modules::ModuleServer::Instance().VarServerGamePort->ValueInt */ >= 1000)
 		{
-			*reinterpret_cast<uint32_t *>(0x1860454) = 11775; /* TODO: Modules::ModuleServer::Instance().VarServerGamePort->ValueInt; */
+			*reinterpret_cast<uint32_t *>(0x1860454) = g_ServerPort; /* TODO: Modules::ModuleServer::Instance().VarServerGamePort->ValueInt; */
 			return success;
 		}
 	}
@@ -1605,7 +1678,7 @@ bool Engine::Init()
 	Util::ApplyHook(0x30F51, InAddrToXnAddrHook, HookFlags::IsCall);
 
 	// Hook call to Network_managed_session_create_session_internal so we can detect when an online game is started
-	Util::ApplyHook(0x82AAC, ManagedSession_CreateSessionInternalHook, HookFlags::IsCall);
+	Util::ApplyHook(0x82AAC, Network_ManagedSession_CreateSessionInternal_Hook, HookFlags::IsCall);
 
 	// Patch version subs to return version of this DLL, to make people with older DLLs incompatible
 	uint32_t verNum = ANVIL_BUILD;
