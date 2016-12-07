@@ -109,7 +109,7 @@ void ResolutionChangeHook()
 
 double AspectRatioHook()
 {
-	auto *gameResolution = reinterpret_cast<int *>(0x19106C0);
+	auto *gameResolution = reinterpret_cast<int32_t *>(0x19106C0);
 	return ((double)gameResolution[0] / (double)gameResolution[1]);
 }
 
@@ -167,8 +167,24 @@ std::map<std::string, uint8_t> g_PlayerArmor_ShouldersIndices;
 std::map<std::string, uint8_t> g_PlayerArmor_ArmsIndices;
 std::map<std::string, uint8_t> g_PlayerArmor_LegsIndices;
 std::map<std::string, uint8_t> g_PlayerArmor_AccessoryIndices;
-std::map<std::string, uint8_t> g_PlayerArmor_PelcisIndices;
+std::map<std::string, uint8_t> g_PlayerArmor_PelvisIndices;
 std::map<std::string, uint16_t> g_PlayerArmor_WeaponIndices;
+
+std::string g_Player_Helmet = "air_assault";
+std::string g_Player_Chest = "dutch";
+std::string g_Player_Shoulders = "dutch";
+std::string g_Player_Arms = "stealth";
+std::string g_Player_Legs = "stealth";
+std::string g_Player_Accessory = "";
+std::string g_Player_Pelvis = "";
+
+std::string g_Player_MannequinWeapon = "assault_rifle";
+
+uint32_t g_Player_PrimaryColor = 0x3D3D3D;
+uint32_t g_Player_SecondaryColor = 0x3D7777;
+uint32_t g_Player_VisorColor = 0x77663D;
+uint32_t g_Player_LightsColor = 0x000000;
+uint32_t g_Player_HoloColor = 0x000000;
 
 void AddArmorPermutations(const Blam::Tags::Game::MultiplayerGlobals::Universal::ArmorCustomization &element, std::map<std::string, uint8_t> &map)
 {
@@ -213,7 +229,7 @@ void LoadPlayerArmorAndWeapons()
 		else if (string == "acc")
 			AddArmorPermutations(element, g_PlayerArmor_AccessoryIndices);
 		else if (string == "pelvis")
-			AddArmorPermutations(element, g_PlayerArmor_PelcisIndices);
+			AddArmorPermutations(element, g_PlayerArmor_PelvisIndices);
 		else
 			throw std::exception("Invalid armor section");
 	}
@@ -243,56 +259,6 @@ __declspec(naked) void TagsLoadedHook()
 		call TagsLoadedImpl
 		push 0x6D617467
 		push 0x5030EF
-		ret
-	}
-}
-
-void GrenadeLoadoutImpl(uint8_t *unit)
-{
-	// Based off of 0x8227B48C in H3 non-TU
-
-	// TODO: Clean this up, hardcoded offsets are hacky
-	const size_t GrenadeCountOffset = 0x320;
-	const size_t ControllingPlayerOffset = 0x198;
-	auto grenadeCounts = unit + GrenadeCountOffset; // 0 = frag, 1 = plasma, 2 = spike, 3 = firebomb
-	auto playerIndex = *reinterpret_cast<int16_t*>(unit + ControllingPlayerOffset);
-	if (playerIndex < 0)
-	{
-		memset(grenadeCounts, 0, 4);
-		return;
-	}
-
-	// Get the player's grenade setting
-	auto &players = Blam::Game::GetPlayers();
-	auto grenadeSetting = players[playerIndex].SpawnGrenadeSetting;
-
-	// Get the current scenario tag
-	auto scenario = Blam::Tags::Scenario::GetCurrentScenario();
-
-	// If the setting is none (2) or the scenario has invalid starting
-	// profile data, set the grenade counts to 0 and return
-	if (grenadeSetting == 2 || !scenario->StartingProfile)
-	{
-		memset(grenadeCounts, 0, 4);
-		return;
-	}
-
-	// Load the grenade counts from the scenario tag
-	auto profile = &scenario->StartingProfile[0];
-	grenadeCounts[0] = profile->FragGrenades;
-	grenadeCounts[1] = profile->PlasmaGrenades;
-	grenadeCounts[2] = profile->SpikeGrenades;
-	grenadeCounts[3] = profile->FirebombGrenades;
-}
-
-__declspec(naked) void GrenadeLoadoutHook()
-{
-	__asm
-	{
-		push edi // Unit object data
-		call GrenadeLoadoutImpl
-		add esp, 4
-		push 0x5A32C7
 		ret
 	}
 }
@@ -402,11 +368,11 @@ __declspec(naked) void AimAssistHook()
 		mov edx, 0x58AA23
 		jmp edx
 
-		controller :
+	controller:
 		// Load magnetism angle normally
 		movss xmm0, dword ptr[ebx + 0x388]
-			mov edx, 0x58AA1F
-			jmp edx
+		mov edx, 0x58AA1F
+		jmp edx
 	}
 }
 
@@ -422,9 +388,11 @@ uint32_t DualAimAssistHook(uint32_t unitObject, short weaponIndex)
 
 void EndGameHook()
 {
-	auto session = Blam::Network::GetActiveSession();
+	auto *session = Blam::Network::GetActiveSession();
+
 	if (!session || !session->IsEstablished())
 		return;
+
 	if (session->IsHost())
 		Blam::Network::EndGame();
 	else
@@ -435,33 +403,33 @@ void EndGameHook()
 // TODO: Find a better place for the dialog variables below...
 //
 
-bool DialogShow;
-uint32_t DialogStringId;
-int32_t DialogArg1;
-int32_t DialogFlags;
-uint32_t DialogParentStringId;
-void *UIData = 0;
+bool g_DialogShow;
+uint32_t g_DialogStringId;
+int32_t g_DialogArg1;
+int32_t g_DialogFlags;
+uint32_t g_DialogParentStringId;
+void *g_UiData = 0;
 
-int ShowHalo3PauseMenuHook(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, uint32_t a5)
+int32_t ShowHalo3PauseMenuHook(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, uint32_t a5)
 {
-	UIData = nullptr;
-	DialogStringId = 0x10084;
-	DialogArg1 = 0;
-	DialogFlags = 4;
-	DialogParentStringId = 0x1000C;
-	DialogShow = true;
+	g_UiData = nullptr;
+	g_DialogStringId = 0x10084;
+	g_DialogArg1 = 0;
+	g_DialogFlags = 4;
+	g_DialogParentStringId = 0x1000C;
+	g_DialogShow = true;
 
 	return 1;
 }
 
-void __fastcall MenuUpdateHook(void *a1, int unused, int menuIdToLoad)
+void __fastcall MenuUpdateHook(void *a1, int32_t unused, int32_t menuIdToLoad)
 {
 	/*auto& dorito = ElDorito::Instance();
 	if (menuIdToLoad == 0x10083)
 	dorito.OnMainMenuShown();*/
 
 	bool shouldUpdate = *(DWORD*)((uint8_t*)a1 + 0x10) >= 0x1E;
-	int uiData0x18Value = 1;
+	int32_t uiData0x18Value = 1;
 	//if (menuIdToLoad == 0x100A8) // TODO1: find what 0x100A8(H3E) stringid is in HO
 	//	uiData0x18Value = 5;
 
@@ -498,7 +466,7 @@ __declspec(naked) void LobbyMenuButtonHandlerHook()
 
 const size_t MaxStringLength = 0x400;
 
-bool LocalizedStringImpl(int tagIndex, int stringId, wchar_t *outputBuffer)
+bool LocalizedStringImpl(int32_t tagIndex, int32_t stringId, wchar_t *outputBuffer)
 {
 	switch (stringId)
 	{
@@ -544,7 +512,7 @@ __declspec(naked) void LocalizedStringHook()
 }
 
 const auto UI_CreateLobby = reinterpret_cast<bool(*)(int32_t)>(0xA7EE70);
-bool MainMenuCreateLobbyHook(int lobbyType)
+bool MainMenuCreateLobbyHook(int32_t lobbyType)
 {
 	// If matchmaking is selected, show the server browser instead
 	// TODO: Really need to map out the ui_game_mode enum...
@@ -714,7 +682,7 @@ bool StopInfoServer()
 
 	closesocket(g_InfoSocket);
 
-	int truth = 1;
+	int32_t truth = 1;
 	setsockopt(g_InfoSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&truth, sizeof(int));
 
 	// TODO: Modules::CommandMap::Instance().ExecuteCommand("Server.Unannounce");
@@ -775,13 +743,13 @@ public:
 	virtual ~PlayerPropertiesExtensionBase() { }
 
 	// Builds extension data for a player.
-	virtual void BuildData(int playerIndex, void *out) = 0;
+	virtual void BuildData(int32_t playerIndex, void *out) = 0;
 
 	// Gets the size of the extension data.
 	virtual size_t GetDataSize() const = 0;
 
 	// Applies extension data to a player.
-	virtual void ApplyData(int playerIndex, Blam::Game::PlayerProperties *properties, const void *data) = 0;
+	virtual void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const void *data) = 0;
 
 	// Serializes the extension data to be sent across the network.
 	virtual void Serialize(Blam::Data::BitStream *stream, const void *data) = 0;
@@ -796,10 +764,10 @@ class PlayerPropertiesExtension : public PlayerPropertiesExtensionBase
 {
 protected:
 	// Builds extension data for a player.
-	virtual void BuildData(int playerIndex, TData *out) = 0;
+	virtual void BuildData(int32_t playerIndex, TData *out) = 0;
 
 	// Applies extension data to a player.
-	virtual void ApplyData(int playerIndex, Blam::Game::PlayerProperties *properties, const TData &data) = 0;
+	virtual void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const TData &data) = 0;
 
 	// Serializes the extension data to be sent across the network.
 	virtual void Serialize(Blam::Data::BitStream *stream, const TData &data) = 0;
@@ -808,7 +776,7 @@ protected:
 	virtual void Deserialize(Blam::Data::BitStream *stream, TData *out) = 0;
 
 public:
-	void BuildData(int playerIndex, void *out) override
+	void BuildData(int32_t playerIndex, void *out) override
 	{
 		BuildData(playerIndex, static_cast<TData*>(out));
 	}
@@ -855,7 +823,7 @@ public:
 	}
 
 	// Writes all extension data out to a player-properties structure.
-	void BuildData(int playerIndex, void *out)
+	void BuildData(int32_t playerIndex, void *out)
 	{
 		// Write all of the data structures in order
 		uint8_t *ptr = static_cast<uint8_t*>(out);
@@ -867,7 +835,7 @@ public:
 	}
 
 	// Applies all extension data in a player-properties structure.
-	void ApplyData(int playerIndex, Blam::Game::PlayerProperties *properties, const void *data)
+	void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const void *data)
 	{
 		// Apply all of the data structures in order
 		const uint8_t *ptr = static_cast<const uint8_t*>(data);
@@ -929,7 +897,7 @@ const wchar_t DisallowedNameChars[] = { '\'', '\"', '<', '>', '/', '\\' };
 
 void SanitizePlayerName(wchar_t *name)
 {
-	int i, dest = 0;
+	int32_t i, dest = 0;
 	auto space = false;
 	for (i = 0; i < 15 && dest < 15 && name[i]; i++)
 	{
@@ -971,7 +939,7 @@ void SanitizePlayerName(wchar_t *name)
 const auto ApplyPlayerProperties = reinterpret_cast<void(__thiscall *)(void *, int32_t, uint32_t, uint32_t, void *, uint32_t)>(0x450890);
 
 // Applies player properties data including extended properties
-void __fastcall ApplyPlayerPropertiesExtendedHook(Blam::Network::SessionMembership *thisPtr, void *unused, int playerIndex, uint32_t arg4, uint32_t arg8, uint8_t *data, uint32_t arg10)
+void __fastcall ApplyPlayerPropertiesExtendedHook(Blam::Network::SessionMembership *thisPtr, void *unused, int32_t playerIndex, uint32_t arg4, uint32_t arg8, uint8_t *data, uint32_t arg10)
 {
 	auto properties = &thisPtr->PlayerSessions[playerIndex].Properties;
 
@@ -1029,7 +997,7 @@ bool __fastcall PeerRequestPlayerDesiredPropertiesUpdateHook(Blam::Network::Sess
 		memset(&packet[0], 0, packetSize);
 
 		// Initialize it
-		typedef void(*InitPacketPtr)(int id, void *packet);
+		typedef void(*InitPacketPtr)(int32_t id, void *packet);
 		InitPacketPtr InitPacket = reinterpret_cast<InitPacketPtr>(0x482040);
 		InitPacket(thisPtr->AddressIndex, &packet[0]);
 
@@ -1050,7 +1018,7 @@ bool __fastcall PeerRequestPlayerDesiredPropertiesUpdateHook(Blam::Network::Sess
 const auto RegisterPacket = reinterpret_cast<void(__thiscall *)(void *, int32_t, const char *, int32_t, int32_t, int32_t, void *, void *, int32_t, int32_t)>(0x4801B0);
 
 // Changes the size of the player-properties packet to include extension data
-void __fastcall RegisterPlayerPropertiesPacketHook(void *thisPtr, void *unused, int packetId, const char *packetName, int arg8, int size1, int size2, void *serializeFunc, void *deserializeFunc, int arg1C, int arg20)
+void __fastcall RegisterPlayerPropertiesPacketHook(void *thisPtr, void *unused, int32_t packetId, const char *packetName, int32_t arg8, int32_t size1, int32_t size2, void *serializeFunc, void *deserializeFunc, int32_t arg1C, int32_t arg20)
 {
 	size_t newSize = GetPlayerPropertiesPacketSize();
 	RegisterPacket(thisPtr, packetId, packetName, arg8, newSize, newSize, serializeFunc, deserializeFunc, arg1C, arg20);
@@ -1085,7 +1053,7 @@ bool DeserializePlayerPropertiesHook(Blam::Data::BitStream *stream, uint8_t *buf
 
 const auto Network_Leader_RequestBootMachine = reinterpret_cast<bool(__thiscall *)(void *, void *, int32_t)>(0x45D4A0);
 
-bool __fastcall RequestBootMachineHook(void *thisPtr, void *unused, Blam::Network::PeerInfo *peer, int reason)
+bool __fastcall RequestBootMachineHook(void *thisPtr, void *unused, Blam::Network::PeerInfo *peer, int32_t reason)
 {
 	auto session = Blam::Network::GetActiveSession();
 	auto membership = &session->MembershipInfo;
@@ -1169,7 +1137,7 @@ bool __fastcall Network_Session_HandleJoinRequest_Hook(Blam::Network::Session *p
 		if (banList.ContainsIp(ipStr))
 		{
 		// Send a join refusal
-		typedef void(__thiscall *Network_session_acknowledge_join_requestFunc)(Blam::Network::Session *thisPtr, const Blam::Network::NetworkAddress &address, int reason);
+		typedef void(__thiscall *Network_session_acknowledge_join_requestFunc)(Blam::Network::Session *thisPtr, const Blam::Network::NetworkAddress &address, int32_t reason);
 		auto Network_session_acknowledge_join_request = reinterpret_cast<Network_session_acknowledge_join_requestFunc>(0x45A230);
 		Network_session_acknowledge_join_request(thisPtr, address, 0); // TODO: Use a special code for bans and hook the join refusal handler so we can display a message to the player
 		Utils::Logger::Instance().Log(Utils::LogTypes::Network, Utils::LogLevel::Info, "Refused join request from banned IP %s", ipStr);
@@ -1186,7 +1154,7 @@ bool __fastcall Network_Session_HandleJoinRequest_Hook(Blam::Network::Session *p
 
 const auto Network_State_EndGame_WriteStatsEnter = reinterpret_cast<char(__thiscall *)(void *, int32_t, int32_t, int32_t)>(0x492B50);
 
-char __fastcall Network_State_EndGame_WriteStatsEnter_Hook(void* thisPtr, int unused, int a2, int a3, int a4)
+char __fastcall Network_State_EndGame_WriteStatsEnter_Hook(void *thisPtr, int32_t unused, int32_t a2, int32_t a3, int32_t a4)
 {
 	// There used to be a stats upload here, which is why this hook does nothing
 	return Network_State_EndGame_WriteStatsEnter(thisPtr, a2, a3, a4);
@@ -1194,7 +1162,7 @@ char __fastcall Network_State_EndGame_WriteStatsEnter_Hook(void* thisPtr, int un
 
 const auto Network_State_LeavingEnter = reinterpret_cast<int8_t(__thiscall *)(void *, int32_t, int32_t, int32_t)>(0x4933E0);
 
-int8_t __fastcall Network_State_LeavingEnter_Hook(void* thisPtr, int32_t unused, int32_t a2, int32_t a3, int32_t a4)
+int8_t __fastcall Network_State_LeavingEnter_Hook(void *thisPtr, int32_t unused, int32_t a2, int32_t a3, int32_t a4)
 {
 	/* TODO:
 	Patches::Network::StopInfoServer();
@@ -1208,50 +1176,47 @@ int8_t __fastcall Network_State_LeavingEnter_Hook(void* thisPtr, int32_t unused,
 int32_t Network_GetMaxPlayers_Hook()
 {
 	/* TODO:
-	int maxPlayers = Modules::ModuleServer::Instance().VarServerMaxPlayers->ValueInt;
+	int32_t maxPlayers = Modules::ModuleServer::Instance().VarServerMaxPlayers->ValueInt;
 	return Utils::Clamp(maxPlayers, 1, 16);*/
 
 	return 16;
 }
 
+const auto Network_Link_CreateEndpoint = reinterpret_cast<bool(__cdecl *)(int32_t, int16_t, int8_t, void *)>(0x43B6F0);
+const auto Network_Sub43FED0 = reinterpret_cast<void *(__cdecl *)(SOCKET)>(0x43FED0);
+
 bool __fastcall Network_GetEndpoint_Hook(char *thisPtr, void *unused)
 {
 	char *socket = thisPtr + 12;
-	uint32_t port = g_ServerPort;/* TODO: Modules::ModuleServer::Instance().VarServerGamePort->ValueInt; */
+	uint32_t port = g_ServerPort;
 	bool success = false;
-
-	//bool __cdecl Network_c_network_link::create_endpoint(int a1, __int16 GamePort, char a3, _DWORD *a4)
-	typedef bool(__cdecl *Network_link_create_endpointFunc)(int a1, __int16 GamePort, char a3, void *a4);
-	Network_link_create_endpointFunc Network_link_create_endpoint = reinterpret_cast<Network_link_create_endpointFunc>(0x43B6F0);
-
-	//LPVOID __cdecl sub_43FED0(SOCKET socket)
-	typedef LPVOID(__cdecl *sub_43FED0Func)(SOCKET socket);
-	sub_43FED0Func sub_43FED0 = reinterpret_cast<sub_43FED0Func>(0x43FED0);
 
 	while (true)
 	{
 		*reinterpret_cast<uint32_t *>(0x1860454) = port;
-		success = Network_link_create_endpoint(0, (short)port, 1, socket);
+		success = Network_Link_CreateEndpoint(0, (short)port, 1, socket);
 
 		if (success)
 			break;
 
 		if (*socket)
 		{
-			sub_43FED0(*socket);
+			Network_Sub43FED0(*socket);
 			*socket = 0;
 		}
 
-		if (++port - g_ServerPort /* TODO: Modules::ModuleServer::Instance().VarServerGamePort->ValueInt */ >= 1000)
+		if (++port - g_ServerPort >= 1000)
 		{
-			*reinterpret_cast<uint32_t *>(0x1860454) = g_ServerPort; /* TODO: Modules::ModuleServer::Instance().VarServerGamePort->ValueInt; */
+			*reinterpret_cast<uint32_t *>(0x1860454) = g_ServerPort;
 			return success;
 		}
 	}
 	return success;
 }
 
-char __fastcall Network_Session_JoinRemoteSession_Hook(void* thisPtr, int unused, char a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, void *a12, int a13, int a14)
+const auto Network_Session_JoinRemoteSession = reinterpret_cast<char(__fastcall *)(void *, int32_t, int8_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, void *, int32_t, int32_t)>(0x45D1E0);
+
+int8_t __fastcall Network_Session_JoinRemoteSession_Hook(void *thisPtr, int32_t unused, int8_t a2, int32_t a3, int32_t a4, int32_t a5, int32_t a6, int32_t a7, int32_t a8, int32_t a9, int32_t a10, int32_t a11, void *a12, int32_t a13, int32_t a14)
 {
 	/* TODO:
 	rapidjson::StringBuffer jsonBuffer;
@@ -1265,13 +1230,12 @@ char __fastcall Network_Session_JoinRemoteSession_Hook(void* thisPtr, int unused
 
 	Web::Ui::ScreenLayer::Notify("serverconnect", jsonBuffer.GetString(), true);*/
 
-	typedef char(__fastcall *Network_session_join_remote_sessionFunc)(void* thisPtr, int unused, char a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, void *a12, int a13, int a14);
-	const auto Network_Session_JoinRemoteSession = reinterpret_cast<Network_session_join_remote_sessionFunc>(0x45D1E0);
 	return Network_Session_JoinRemoteSession(thisPtr, unused, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);;
 }
 
-// This is only hooked on error states
-int __fastcall Network_Session_InitiateLeaveProtocol_Hook(void* thisPtr, int unused, char forceClose)
+const auto Network_Session_InitiateLeaveProtocol = reinterpret_cast<int(__fastcall *)(void *, int32_t, int8_t)>(0x45CB80);
+
+int32_t __fastcall Network_Session_InitiateLeaveProtocol_Hook(void *thisPtr, int32_t unused, int8_t forceClose)
 {
 	/* TODO:
 	rapidjson::StringBuffer jsonBuffer;
@@ -1285,13 +1249,12 @@ int __fastcall Network_Session_InitiateLeaveProtocol_Hook(void* thisPtr, int unu
 
 	Web::Ui::ScreenLayer::Notify("serverconnect", jsonBuffer.GetString(), true);*/
 
-	typedef int(__fastcall *Network_session_initiate_leave_protocolFunc)(void* thisPtr, int unused, char forceClose);
-	const auto Network_Session_InitiateLeaveProtocol = reinterpret_cast<Network_session_initiate_leave_protocolFunc>(0x45CB80);
 	return Network_Session_InitiateLeaveProtocol(thisPtr, unused, forceClose);
 }
 
-// Hooked on the initial update that fires on server connect
-int __fastcall Network_Session_ParametersClear_Hook(void* thisPtr, int unused)
+const auto Network_Session_ParametersClear = reinterpret_cast<int(__fastcall *)(void *, int32_t)>(0x486580);
+
+int32_t __fastcall Network_Session_ParametersClear_Hook(void *thisPtr, int32_t unused)
 {
 	/* TODO:
 	rapidjson::StringBuffer jsonBuffer;
@@ -1305,8 +1268,6 @@ int __fastcall Network_Session_ParametersClear_Hook(void* thisPtr, int unused)
 
 	Web::Ui::ScreenLayer::Notify("serverconnect", jsonBuffer.GetString(), true);*/
 
-	typedef int(__fastcall *Network_session_parameters_clearFunc)(void* thisPtr, int unused);
-	const auto Network_Session_ParametersClear = reinterpret_cast<Network_session_parameters_clearFunc>(0x486580);
 	return Network_Session_ParametersClear(thisPtr, unused);
 }
 
@@ -1347,18 +1308,18 @@ void BuildPlayerCustomization(Blam::Game::PlayerCustomization *p_Customization)
 	p_Customization->Armor[(int)Blam::Game::PlayerArmor::Arms] = GetArmorIndex("stealth", g_PlayerArmor_ArmsIndices);
 	p_Customization->Armor[(int)Blam::Game::PlayerArmor::Legs] = GetArmorIndex("stealth", g_PlayerArmor_LegsIndices);
 	p_Customization->Armor[(int)Blam::Game::PlayerArmor::Acc] = GetArmorIndex("", g_PlayerArmor_AccessoryIndices);
-	p_Customization->Armor[(int)Blam::Game::PlayerArmor::Pelvis] = GetArmorIndex("", g_PlayerArmor_PelcisIndices);
+	p_Customization->Armor[(int)Blam::Game::PlayerArmor::Pelvis] = GetArmorIndex("", g_PlayerArmor_PelvisIndices);
 }
 
 class ArmorExtension : public PlayerPropertiesExtension<Blam::Game::PlayerCustomization>
 {
 protected:
-	void BuildData(int playerIndex, Blam::Game::PlayerCustomization *out) override
+	void BuildData(int32_t playerIndex, Blam::Game::PlayerCustomization *out) override
 	{
 		BuildPlayerCustomization(out);
 	}
 
-	void ApplyData(int playerIndex, Blam::Game::PlayerProperties *properties, const Blam::Game::PlayerCustomization &data) override
+	void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const Blam::Game::PlayerCustomization &data) override
 	{
 		auto armorSessionData = &properties->Customization;
 		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Helmet] = data.Armor[(int)Blam::Game::PlayerArmor::Helmet];
@@ -1367,18 +1328,18 @@ protected:
 		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Arms] = ValidateArmorIndex(g_PlayerArmor_ArmsIndices, data.Armor[(int)Blam::Game::PlayerArmor::Arms]);
 		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Legs] = ValidateArmorIndex(g_PlayerArmor_LegsIndices, data.Armor[(int)Blam::Game::PlayerArmor::Legs]);
 		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Acc] = ValidateArmorIndex(g_PlayerArmor_AccessoryIndices, data.Armor[(int)Blam::Game::PlayerArmor::Acc]);
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Pelvis] = ValidateArmorIndex(g_PlayerArmor_PelcisIndices, data.Armor[(int)Blam::Game::PlayerArmor::Pelvis]);
+		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Pelvis] = ValidateArmorIndex(g_PlayerArmor_PelvisIndices, data.Armor[(int)Blam::Game::PlayerArmor::Pelvis]);
 		memcpy(armorSessionData->Colors, data.Colors, sizeof(data.Colors));
 	}
 
 	void Serialize(Blam::Data::BitStream *stream, const Blam::Game::PlayerCustomization &data) override
 	{
 		// Colors
-		for (int i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
+		for (int32_t i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
 			stream->WriteUnsigned<uint32_t>(data.Colors[i], 24);
 
 		// Armor
-		for (int i = 0; i < (int)Blam::Game::PlayerArmor::Count; i++)
+		for (int32_t i = 0; i < (int)Blam::Game::PlayerArmor::Count; i++)
 			stream->WriteUnsigned<uint8_t>(data.Armor[i], 0, UINT8_MAX);
 	}
 
@@ -1387,11 +1348,11 @@ protected:
 		memset(out, 0, sizeof(Blam::Game::PlayerCustomization));
 
 		// Colors
-		for (int i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
+		for (int32_t i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
 			out->Colors[i] = stream->ReadUnsigned<uint32_t>(24);
 
 		// Armor
-		for (int i = 0; i < (int)Blam::Game::PlayerArmor::Count; i++)
+		for (int32_t i = 0; i < (int)Blam::Game::PlayerArmor::Count; i++)
 			out->Armor[i] = stream->ReadUnsigned<uint8_t>(0, UINT8_MAX);
 	}
 };
@@ -1415,6 +1376,10 @@ __declspec(naked) void PoseWithWeapon(uint32_t p_Unit, uint32_t p_Weapon)
 	}
 }
 
+const auto Biped_ApplyArmor = reinterpret_cast<void(*)(Blam::Game::PlayerCustomization *, uint32_t)>(0x5A4430);
+const auto Biped_ApplyArmorColor = reinterpret_cast<void(*)(uint32_t, int32_t, float *)>(0xB328F0);
+const auto Biped_UpdateArmorColors = reinterpret_cast<void(*)(uint32_t)>(0x5A2FA0);
+
 void CustomizeBiped(uint32_t bipedObject)
 {
 	// Generate customization data
@@ -1422,12 +1387,10 @@ void CustomizeBiped(uint32_t bipedObject)
 	BuildPlayerCustomization(&customization);
 
 	// Apply armor to the biped
-	typedef void(*ApplyArmorPtr)(Blam::Game::PlayerCustomization *customization, uint32_t objectDatum);
-	ApplyArmorPtr ApplyArmor = reinterpret_cast<ApplyArmorPtr>(0x5A4430);
-	ApplyArmor(&customization, bipedObject);
+	Biped_ApplyArmor(&customization, bipedObject);
 
 	// Apply each color
-	for (int i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
+	for (int32_t i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
 	{
 		// Convert the color data from RGB to float3
 		float colorData[3];
@@ -1436,23 +1399,24 @@ void CustomizeBiped(uint32_t bipedObject)
 		RgbToFloatColor(customization.Colors[i], colorData);
 
 		// Apply the color
-		typedef void(*ApplyArmorColorPtr)(uint32_t objectDatum, int colorIndex, float *colorData);
-		ApplyArmorColorPtr ApplyArmorColor = reinterpret_cast<ApplyArmorColorPtr>(0xB328F0);
-		ApplyArmorColor(bipedObject, i, colorData);
+		Biped_ApplyArmorColor(bipedObject, i, colorData);
 	}
 
 	// Need to call this or else colors don't actually show up
-	typedef void(*UpdateArmorColorsPtr)(uint32_t objectDatum);
-	UpdateArmorColorsPtr UpdateArmorColors = reinterpret_cast<UpdateArmorColorsPtr>(0x5A2FA0);
-	UpdateArmorColors(bipedObject);
+	Biped_UpdateArmorColors(bipedObject);
 
 	// Give the biped a weapon (0x151E = tag index for Assault Rifle)
-	auto weaponName = "assault_rifle";
+	auto s_WeaponName = g_Player_MannequinWeapon;
 
-	if (g_PlayerArmor_WeaponIndices.find(weaponName) == g_PlayerArmor_WeaponIndices.end())
-		weaponName = "assault_rifle";
+	if (g_PlayerArmor_WeaponIndices.find(s_WeaponName) == g_PlayerArmor_WeaponIndices.end())
+		s_WeaponName = (g_Player_MannequinWeapon = "assault_rifle");
 
-	PoseWithWeapon(bipedObject, g_PlayerArmor_WeaponIndices.find(weaponName)->second);
+	PoseWithWeapon(bipedObject, g_PlayerArmor_WeaponIndices.find(s_WeaponName)->second);
+}
+
+uint32_t GetUiPlayerBiped()
+{
+	return *reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x4BE67A0);
 }
 
 void UiPlayerModelArmorHook()
@@ -1462,7 +1426,7 @@ void UiPlayerModelArmorHook()
 		return;
 
 	// Try to get the UI player biped
-	auto uiPlayerBiped = *reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x4BE67A0);
+	auto uiPlayerBiped = GetUiPlayerBiped();
 	if (uiPlayerBiped == 0xFFFFFFFF)
 		return;
 
@@ -1473,15 +1437,86 @@ void UiPlayerModelArmorHook()
 	// so it's not necessary to call here
 }
 
+uint32_t GetScoreboardPlayerBiped()
+{
+	return *reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x4C4C698);
+}
+
 void ScoreboardPlayerModelArmorHook()
 {
-	auto scoreboardBiped = *reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x4C4C698);
+	auto scoreboardBiped = GetScoreboardPlayerBiped();
+
 	if (scoreboardBiped != 0xFFFFFFFF)
 		CustomizeBiped(scoreboardBiped);
 }
 
 bool g_Forge_ShouldDelete = false;
 
+bool g_Forge_BarriersEnabledValid = false;
+bool g_Forge_KillBarriersEnabled = true;
+bool g_Forge_PushBarriersEnabled = true;
+
+void UpdateBarriersEnabled()
+{
+	if (g_Forge_BarriersEnabledValid)
+		return; // Don't scan multiple times per tick
+
+				// Scan the object table to check if the barrier disablers are spawned
+	auto objectHeaders = *reinterpret_cast<const Blam::Data::DataArray<Blam::Objects::ObjectDatum> **>((uint8_t *)AnvilCommon::Internal_GetThreadStorage() + 0x448);
+	if (!objectHeaders)
+		return;
+	g_Forge_KillBarriersEnabled = true;
+	g_Forge_PushBarriersEnabled = true;
+	for (auto &&header : *objectHeaders)
+	{
+		// The objects are identified by tag index.
+		// scen 0x5728 disables kill barriers
+		// scen 0x5729 disables push barriers
+		if (header.Type != Blam::Objects::ObjectType::Scenery)
+			continue;
+		auto tagIndex = header.GetTagIndex().Index;
+		if (tagIndex == 0x5728)
+			g_Forge_KillBarriersEnabled = false;
+		else if (tagIndex == 0x5729)
+			g_Forge_PushBarriersEnabled = false;
+		if (!g_Forge_KillBarriersEnabled && !g_Forge_PushBarriersEnabled)
+			break;
+	}
+	g_Forge_BarriersEnabledValid = true;
+}
+
+bool CheckKillTriggersHook(int32_t a0, void *a1)
+{
+	UpdateBarriersEnabled();
+	if (!g_Forge_KillBarriersEnabled)
+		return false;
+
+	typedef bool(*CheckKillTriggersPtr)(int32_t a0, void *a1);
+	auto CheckKillTriggers = reinterpret_cast<CheckKillTriggersPtr>(0x68C410);
+	return CheckKillTriggers(a0, a1);
+}
+
+bool ObjectSafeZoneHook(void *a0)
+{
+	UpdateBarriersEnabled();
+	if (!g_Forge_KillBarriersEnabled)
+		return true;
+
+	typedef bool(*CheckSafeZonesPtr)(void *a0);
+	auto CheckSafeZones = reinterpret_cast<CheckSafeZonesPtr>(0x4EB130);
+	return CheckSafeZones(a0);
+}
+
+void *PushBarriersGetStructureDesignHook(int32_t index)
+{
+	UpdateBarriersEnabled();
+	if (!g_Forge_PushBarriersEnabled)
+		return nullptr; // Return a null sddt if push barriers are disabled
+
+	typedef void*(*GetStructureDesignPtr)(int32_t index);
+	auto GetStructureDesign = reinterpret_cast<GetStructureDesignPtr>(0x4E97D0);
+	return GetStructureDesign(index);
+}
 __declspec(naked) void Forge_UpdateInput_Hook()
 {
 	__asm
@@ -1516,6 +1551,163 @@ __declspec(naked) void Forge_UpdateInput_Hook()
 	}
 }
 
+uint32_t GetObjectDataAddress(uint32_t p_ObjectDatum)
+{
+	return *(uint32_t *)((*((uint32_t *)((uint8_t *)(*(uint32_t *)((uint8_t *)AnvilCommon::Internal_GetThreadStorage() + 0x448)) + 0x44))) + 0xC + (p_ObjectDatum & UINT16_MAX) * 0x10);
+}
+
+bool UnitIsDualWielding(Blam::Data::DatumIndex unitIndex)
+{
+	if (!unitIndex)
+		return false;
+
+	auto *unitDatumPtr = (uint8_t *)GetObjectDataAddress(unitIndex.Index);
+
+	if (!unitDatumPtr)
+		return false;
+
+	auto dualWieldWeaponIndex = *(unitDatumPtr + 0x2CB);
+
+	if (dualWieldWeaponIndex < 0 || dualWieldWeaponIndex >= 4)
+		return false;
+
+	typedef uint32_t(*UnitGetWeaponPtr)(uint32_t unitObject, short weaponIndex);
+	auto UnitGetWeapon = reinterpret_cast<UnitGetWeaponPtr>(0xB454D0);
+
+	return UnitGetWeapon(unitIndex.Value, dualWieldWeaponIndex) != 0xFFFFFFFF;
+}
+
+bool PlayerIsDualWielding(Blam::Data::DatumIndex playerIndex)
+{
+	auto &players = Blam::Game::GetPlayers();
+	return UnitIsDualWielding(players[playerIndex].SlaveUnit);
+}
+
+bool LocalPlayerIsDualWielding()
+{
+	auto localPlayer = Blam::Game::GetLocalPlayer(0);
+
+	if (localPlayer == Blam::Data::DatumIndex::Null)
+		return false;
+
+	return PlayerIsDualWielding(localPlayer);
+}
+
+int32_t __cdecl DualWieldHook(uint16_t objectIndex)
+{
+	using Blam::Tags::TagInstance;
+	using Blam::Tags::Items::Weapon;
+
+	/* TODO:
+	if (!Modules::ModuleServer::Instance().VarServerDualWieldEnabledClient->ValueInt)
+		return 0;*/
+
+	auto index = *(uint32_t *)GetObjectDataAddress(objectIndex);
+	auto *weapon = TagInstance(index).GetDefinition<Weapon>();
+
+	return ((int32_t)weapon->WeaponFlags1 & (int32_t)Weapon::Flags1::CanBeDualWielded) != 0;
+}
+
+__declspec(naked) void SprintInputHook()
+{
+	__asm
+	{
+		push	eax
+		call	LocalPlayerIsDualWielding
+		test	al, al
+		pop		eax
+		jz		enable; leave sprint32_t enabled(for now) if not dual wielding
+		and		ax, 0FEFFh; disable by removing the 8th bit indicating no sprint32_t input press
+	enable:
+		mov		dword ptr ds : [esi + 8], eax
+		mov		ecx, edi
+		push	046DFC0h
+		ret
+	}
+}
+
+// scope level is an int16 with -1 indicating no scope, 0 indicating first level, 1 indicating second level etc.
+__declspec(naked) void ScopeLevelHook()
+{
+	__asm
+	{
+		mov		word ptr ds : [edi + esi + 32Ah], 0FFFFh; no scope by default
+		push	eax
+		push	ecx
+		call	LocalPlayerIsDualWielding
+		test	al, al
+		pop		ecx
+		pop		eax
+		jnz		noscope; prevent scoping when dual wielding
+		mov		word ptr ds : [edi + esi + 32Ah], ax; otherwise use intended scope level
+	noscope:
+		push	05D50D3h
+		ret
+	}
+}
+
+int32_t GetEquipmentCountHook(uint32_t unitIndex, int16_t equipmentIndex)
+{
+	// Disable equipment use if dual wielding
+	if (UnitIsDualWielding(unitIndex))
+		return 0;
+
+	// Call the original function if not dual wielding
+	typedef int(__cdecl* GetEquipmentCountFunc)(uint32_t unitIndex, short equipmentIndex);
+	GetEquipmentCountFunc GetEquipmentCount = reinterpret_cast<GetEquipmentCountFunc>(0xB440F0);
+	return GetEquipmentCount(unitIndex, equipmentIndex);
+}
+
+void GrenadeLoadoutImpl(uint8_t *unit)
+{
+	// Based off of 0x8227B48C in H3 non-TU
+
+	// TODO: Clean this up, hardcoded offsets are hacky
+	const size_t GrenadeCountOffset = 0x320;
+	const size_t ControllingPlayerOffset = 0x198;
+	auto grenadeCounts = unit + GrenadeCountOffset; // 0 = frag, 1 = plasma, 2 = spike, 3 = firebomb
+	auto playerIndex = *reinterpret_cast<int16_t*>(unit + ControllingPlayerOffset);
+	if (playerIndex < 0)
+	{
+		memset(grenadeCounts, 0, 4);
+		return;
+	}
+
+	// Get the player's grenade setting
+	auto &players = Blam::Game::GetPlayers();
+	auto grenadeSetting = players[playerIndex].SpawnGrenadeSetting;
+
+	// Get the current scenario tag
+	auto scenario = Blam::Tags::Scenario::GetCurrentScenario();
+
+	// If the setting is none (2) or the scenario has invalid starting
+	// profile data, set the grenade counts to 0 and return
+	if (grenadeSetting == 2 || !scenario->StartingProfile)
+	{
+		memset(grenadeCounts, 0, 4);
+		return;
+	}
+
+	// Load the grenade counts from the scenario tag
+	auto profile = &scenario->StartingProfile[0];
+	grenadeCounts[0] = profile->FragGrenades;
+	grenadeCounts[1] = profile->PlasmaGrenades;
+	grenadeCounts[2] = profile->SpikeGrenades;
+	grenadeCounts[3] = profile->FirebombGrenades;
+}
+
+__declspec(naked) void GrenadeLoadoutHook()
+{
+	__asm
+	{
+		push edi // Unit object data
+		call GrenadeLoadoutImpl
+		add esp, 4
+		push 0x5A32C7
+		ret
+	}
+}
+
 bool Engine::Init()
 {
 	//Disable Windows DPI scaling
@@ -1529,7 +1721,7 @@ bool Engine::Init()
 		WriteLog("Failed to load 'maps\\string_ids.dat'!");
 		return false;
 	}
-	
+
 	// English patch
 	Util::PatchAddress(0x2333FD, "\x00", 1);
 
@@ -1594,11 +1786,6 @@ bool Engine::Init()
 
 	// Used to call Patches::ApplyAfterTagsLoaded when tags have loaded
 	Util::ApplyHook(0x1030EA, TagsLoadedHook);
-
-	// Prevent game variant weapons from being overridden
-	Util::PatchAddress(0x1A315F, "\xEB", 1);
-	Util::PatchAddress(0x1A31A4, "\xEB", 1);
-	Util::ApplyHook(0x1A3267, GrenadeLoadoutHook);
 
 	// Hook game ticks
 	Util::ApplyHook(0x105ABA, GameTickHook, HookFlags::IsCall);
@@ -1776,6 +1963,19 @@ bool Engine::Init()
 
 	Util::ApplyHook(0x19D482, Forge_UpdateInput_Hook, HookFlags::IsCall);
 
+	Util::ApplyHook(0x771C7D, CheckKillTriggersHook, HookFlags::IsCall);
+	Util::ApplyHook(0x7B4C32, CheckKillTriggersHook, HookFlags::IsCall);
+
+	Util::ApplyHook(0x19EBA1, ObjectSafeZoneHook, HookFlags::IsCall);
+	Util::ApplyHook(0x19FDBE, ObjectSafeZoneHook, HookFlags::IsCall);
+	Util::ApplyHook(0x19FEEC, ObjectSafeZoneHook, HookFlags::IsCall);
+	Util::ApplyHook(0x32663D, ObjectSafeZoneHook, HookFlags::IsCall);
+
+	Util::ApplyHook(0x2749D1, PushBarriersGetStructureDesignHook, HookFlags::IsCall);
+	Util::ApplyHook(0x274DBA, PushBarriersGetStructureDesignHook, HookFlags::IsCall);
+	Util::ApplyHook(0x2750F8, PushBarriersGetStructureDesignHook, HookFlags::IsCall);
+	Util::ApplyHook(0x275655, PushBarriersGetStructureDesignHook, HookFlags::IsCall);
+
 	// enable teleporter volume editing compliments of zedd
 	{
 		std::stringstream ss;
@@ -1783,6 +1983,28 @@ bool Engine::Init()
 			ss << '\x90';
 		Util::PatchAddress(0x6E4796, ss.str(), 0x66);
 	}
+
+	// Enable dual-wielding
+	Util::ApplyHook(0x761550, DualWieldHook);
+
+	// Hook sprint32_t input for dual-wielding
+	Util::ApplyHook(0x6DFBB, SprintInputHook);
+
+	// Hook scope level for dual-wielding
+	Util::ApplyHook(0x1D50CB, ScopeLevelHook);
+
+	// Equipment patches
+	Util::PatchAddress(0x786CFF, "\x90\x90\x90\x90\x90\x90", 6);
+	Util::PatchAddress(0x786CF7, "\x90\x90\x90\x90\x90\x90", 6);
+
+	Util::ApplyHook(0x7A21D4, GetEquipmentCountHook, HookFlags::IsCall);
+	/*Hook(0x139888, EquipmentHook, HookFlags::IsJmpIfNotEqual);
+ Util::ApplyHook(0x786CF2, EquipmentTestHook);*/
+
+ // Prevent game variant weapons from being overridden
+	*((uint8_t *)GetModuleBase() + 0x1A315F) = 0xEB;
+	*((uint8_t *)GetModuleBase() + 0x1A31A4) = 0xEB;
+	Util::ApplyHook(0x1A3267, GrenadeLoadoutHook);
 
 	return true;
 }

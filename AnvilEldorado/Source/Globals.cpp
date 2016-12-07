@@ -6,17 +6,12 @@ void* AnvilCommon::g_ThreadStorage = AnvilCommon::Internal_GetThreadStorage();
 
 void *AnvilCommon::Internal_GetThreadStorage(const size_t p_Offset)
 {
-	static void * s_ThreadStorage = nullptr;
-
-	if (s_ThreadStorage == nullptr)
+	_asm
 	{
-		_asm
-		{
-			mov     eax, dword ptr fs : [2Ch]
-			mov     eax, dword ptr ds : [eax]
-			mov		s_ThreadStorage, eax
-		}
+		mov     eax, dword ptr fs : [2Ch]
+		mov     eax, dword ptr ds : [eax]
+		mov		g_ThreadStorage, eax
 	}
 
-	return (uint8_t *)s_ThreadStorage + p_Offset;
+	return (uint8_t *)g_ThreadStorage + p_Offset;
 }
