@@ -1426,11 +1426,11 @@ void UiPlayerModelArmorHook()
 		return;
 
 	// Try to get the UI player biped
-	auto uiPlayerBiped = GetUiPlayerBiped();
-	if (uiPlayerBiped == 0xFFFFFFFF)
+	auto s_UiPlayerBiped = GetUiPlayerBiped();
+	if (s_UiPlayerBiped == 0xFFFFFFFF)
 		return;
 
-	CustomizeBiped(uiPlayerBiped);
+	CustomizeBiped(s_UiPlayerBiped);
 	g_PlayerArmor_Update = false;
 
 	// Note: the call that this hook replaces is for setting up armor based on the server data,
@@ -1458,16 +1458,20 @@ bool g_Forge_PushBarriersEnabled = true;
 
 void UpdateBarriersEnabled()
 {
+	// Don't scan multiple times per tick
 	if (g_Forge_BarriersEnabledValid)
-		return; // Don't scan multiple times per tick
-
-				// Scan the object table to check if the barrier disablers are spawned
-	auto objectHeaders = *reinterpret_cast<const Blam::Data::DataArray<Blam::Objects::ObjectDatum> **>((uint8_t *)AnvilCommon::Internal_GetThreadStorage() + 0x448);
-	if (!objectHeaders)
 		return;
+
+	// Scan the object table to check if the barrier disablers are spawned
+	auto *s_ObjectArray = Blam::Objects::ObjectDatum::GetDataArray();
+
+	if (!s_ObjectArray)
+		return;
+
 	g_Forge_KillBarriersEnabled = true;
 	g_Forge_PushBarriersEnabled = true;
-	for (auto &&header : *objectHeaders)
+
+	for (auto &&header : *s_ObjectArray)
 	{
 		// The objects are identified by tag index.
 		// scen 0x5728 disables kill barriers
@@ -1551,49 +1555,49 @@ __declspec(naked) void Forge_UpdateInput_Hook()
 	}
 }
 
-uint32_t GetObjectDataAddress(uint32_t p_ObjectDatum)
+void *GetObjectDataAddress(const Blam::Data::DatumIndex &p_ObjectDatum)
 {
-	return *(uint32_t *)((*((uint32_t *)((uint8_t *)(*(uint32_t *)((uint8_t *)AnvilCommon::Internal_GetThreadStorage() + 0x448)) + 0x44))) + 0xC + (p_ObjectDatum & UINT16_MAX) * 0x10);
+	return (*Blam::Objects::ObjectDatum::GetDataArray())[p_ObjectDatum].Data;
 }
 
-bool UnitIsDualWielding(Blam::Data::DatumIndex unitIndex)
+const auto UnitGetWeapon = reinterpret_cast<uint32_t(*)(uint32_t, int16_t)>(0xB454D0);
+
+bool UnitIsDualWielding(const Blam::Data::DatumIndex &p_UnitIndex)
 {
-	if (!unitIndex)
+	if (!p_UnitIndex)
 		return false;
 
-	auto *unitDatumPtr = (uint8_t *)GetObjectDataAddress(unitIndex.Index);
+	auto *s_UnitDataAddress = (uint8_t *)GetObjectDataAddress(p_UnitIndex);
 
-	if (!unitDatumPtr)
+	if (!s_UnitDataAddress)
 		return false;
 
-	auto dualWieldWeaponIndex = *(unitDatumPtr + 0x2CB);
+	auto s_DualWieldWeaponIndex = *(uint8_t *)(s_UnitDataAddress + 0x2CB);
 
-	if (dualWieldWeaponIndex < 0 || dualWieldWeaponIndex >= 4)
+	if (s_DualWieldWeaponIndex < 0 || s_DualWieldWeaponIndex >= 4)
 		return false;
-
-	typedef uint32_t(*UnitGetWeaponPtr)(uint32_t unitObject, short weaponIndex);
-	auto UnitGetWeapon = reinterpret_cast<UnitGetWeaponPtr>(0xB454D0);
-
-	return UnitGetWeapon(unitIndex.Value, dualWieldWeaponIndex) != 0xFFFFFFFF;
+	
+	return UnitGetWeapon(p_UnitIndex.Value, s_DualWieldWeaponIndex) != 0xFFFFFFFF;
 }
 
-bool PlayerIsDualWielding(Blam::Data::DatumIndex playerIndex)
+bool PlayerIsDualWielding(const Blam::Data::DatumIndex &p_PlayerIndex)
 {
-	auto &players = Blam::Game::GetPlayers();
-	return UnitIsDualWielding(players[playerIndex].SlaveUnit);
+	auto &p_Players = Blam::Game::GetPlayers();
+
+	return UnitIsDualWielding(p_Players[p_PlayerIndex].SlaveUnit);
 }
 
 bool LocalPlayerIsDualWielding()
 {
-	auto localPlayer = Blam::Game::GetLocalPlayer(0);
+	auto p_LocalPlayer = Blam::Game::GetLocalPlayer(0);
 
-	if (localPlayer == Blam::Data::DatumIndex::Null)
+	if (p_LocalPlayer == Blam::Data::DatumIndex::Null)
 		return false;
 
-	return PlayerIsDualWielding(localPlayer);
+	return PlayerIsDualWielding(p_LocalPlayer);
 }
 
-int32_t __cdecl DualWieldHook(uint16_t objectIndex)
+int32_t __cdecl DualWieldHook(uint16_t p_ObjectIndex)
 {
 	using Blam::Tags::TagInstance;
 	using Blam::Tags::Items::Weapon;
@@ -1602,7 +1606,7 @@ int32_t __cdecl DualWieldHook(uint16_t objectIndex)
 	if (!Modules::ModuleServer::Instance().VarServerDualWieldEnabledClient->ValueInt)
 		return 0;*/
 
-	auto index = *(uint32_t *)GetObjectDataAddress(objectIndex);
+	auto index = *(uint32_t *)GetObjectDataAddress(Blam::Data::DatumIndex(0, p_ObjectIndex));
 	auto *weapon = TagInstance(index).GetDefinition<Weapon>();
 
 	return ((int32_t)weapon->WeaponFlags1 & (int32_t)Weapon::Flags1::CanBeDualWielded) != 0;
@@ -1722,6 +1726,8 @@ bool Engine::Init()
 		return false;
 	}
 
+	auto *s_ModuleBase = GetModuleBase();
+
 	// English patch
 	Util::PatchAddress(0x2333FD, "\x00", 1);
 
@@ -1832,11 +1838,11 @@ bool Engine::Init()
 
 	// Remove Xbox Live from the network menu
 	Util::PatchAddress(0x723D85, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 23);
-	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x723DA1) = 0;
-	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x723DB8) = 1;
+	*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x723DA1) = 0;
+	*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x723DB8) = 1;
 	Util::PatchAddress(0x723DFF, "\x90\x90\x90", 3);
-	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x723E07) = 0;
-	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x723E1C) = 0;
+	*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x723E07) = 0;
+	*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x723E1C) = 0;
 
 	// Localized string override hook
 	Util::ApplyHook(0x11E040, LocalizedStringHook);
@@ -1869,8 +1875,8 @@ bool Engine::Init()
 
 	// Patch version subs to return version of this DLL, to make people with older DLLs incompatible
 	uint32_t verNum = ANVIL_BUILD;
-	*reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x101421) = verNum;
-	*reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x10143A) = verNum;
+	*reinterpret_cast<uint32_t *>((uint8_t *)s_ModuleBase + 0x101421) = verNum;
+	*reinterpret_cast<uint32_t *>((uint8_t *)s_ModuleBase + 0x10143A) = verNum;
 
 	// Player-properties packet hooks
 	Util::ApplyHook(0x5DD20, PeerRequestPlayerDesiredPropertiesUpdateHook);
@@ -1958,7 +1964,7 @@ bool Engine::Init()
 			ss << '\x90';
 		Util::PatchAddress(0x4360DE, ss.str(), 0x1A9);
 	}
-	*reinterpret_cast<uint8_t *>((uint8_t *)GetModuleBase() + 0x43628A) = 0x1C;
+	*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x43628A) = 0x1C;
 	Util::PatchAddress(0x43628B, "\x90\x90\x90", 0x3);
 
 	Util::ApplyHook(0x19D482, Forge_UpdateInput_Hook, HookFlags::IsCall);
@@ -1999,11 +2005,11 @@ bool Engine::Init()
 
 	Util::ApplyHook(0x7A21D4, GetEquipmentCountHook, HookFlags::IsCall);
 	/*Hook(0x139888, EquipmentHook, HookFlags::IsJmpIfNotEqual);
- Util::ApplyHook(0x786CF2, EquipmentTestHook);*/
+	Util::ApplyHook(0x786CF2, EquipmentTestHook);*/
 
  // Prevent game variant weapons from being overridden
-	*((uint8_t *)GetModuleBase() + 0x1A315F) = 0xEB;
-	*((uint8_t *)GetModuleBase() + 0x1A31A4) = 0xEB;
+	*((uint8_t *)s_ModuleBase + 0x1A315F) = 0xEB;
+	*((uint8_t *)s_ModuleBase + 0x1A31A4) = 0xEB;
 	Util::ApplyHook(0x1A3267, GrenadeLoadoutHook);
 
 	return true;

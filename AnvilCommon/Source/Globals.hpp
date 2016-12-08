@@ -4,18 +4,12 @@
 namespace AnvilCommon
 {
 	extern std::string g_BuildInfo;
-	extern void* g_ThreadStorage;
 
 	extern void *Internal_GetThreadStorage(const size_t p_Offset = 0);
 
 	template<typename T>
-	T* GetThreadStorage(size_t p_Offset)
+	T *GetThreadStorage(const size_t p_Offset = 0)
 	{
-		if (!g_ThreadStorage)
-			return nullptr;
-
-		auto s_Storage = *reinterpret_cast<T**>((char *)g_ThreadStorage + p_Offset);
-
-		return s_Storage;
+		return *reinterpret_cast<T **>(Internal_GetThreadStorage(p_Offset));
 	}
 }

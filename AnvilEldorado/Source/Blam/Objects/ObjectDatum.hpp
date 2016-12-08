@@ -36,6 +36,8 @@ namespace Blam::Objects
 
 		ObjectDatum();
 
+		static const Blam::Data::DataArray<ObjectDatum> *GetDataArray();
+
 		Data::DatumIndex GetTagIndex() const;
 	};
 	static_assert(sizeof(ObjectDatum) == 0x10, "Blam::Objects::ObjectDatum");
