@@ -25,21 +25,16 @@
     <ClCompile Include="Source\Blam\Math\RealVector3D.cpp" />
     <ClCompile Include="Source\Blam\Math\Rectangle2D.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumIndex.cpp" />
-    <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
     <ClCompile Include="Source\Blam\Data\DataPoolBase.cpp" />
     <ClCompile Include="Source\Blam\Data\LruvCacheBase.cpp" />
-    <ClCompile Include="Source\Blam\Objects\ObjectDatum.cpp" />
     <ClCompile Include="Source\Blam\Memory\GlobalMemoryMap.cpp" />
     <ClCompile Include="Source\Blam\Math\Point2D.cpp" />
-    <ClCompile Include="Source\Blam\Input\Bindings.cpp" />
-    <ClCompile Include="Source\Blam\Input\Actions.cpp" />
-    <ClCompile Include="Source\Blam\Input\Keyboard.cpp" />
-    <ClCompile Include="Source\Blam\Input\Input.cpp" />
     <ClCompile Include="Source\Blam\Data\BitStream.cpp" />
     <ClCompile Include="Source\Blam\Game\Stats.cpp" />
     <ClCompile Include="Source\Blam\Data\DataArray.cpp" />
     <ClCompile Include="Source\Blam\Game\Players.cpp" />
     <ClCompile Include="Source\Blam\Network\Network.cpp" />
+    <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -72,17 +67,9 @@
     <ClInclude Include="Source\Blam\Data\DataPoolBase.hpp" />
     <ClInclude Include="Source\Blam\Data\LruvCacheBase.hpp" />
     <ClInclude Include="Source\Blam\Data\DataArray.hpp" />
-    <ClInclude Include="Source\Blam\Objects\ObjectDatum.hpp" />
     <ClInclude Include="Source\Blam\Memory\GlobalMemoryMap.hpp" />
     <ClInclude Include="Source\Blam\Math\BasePoint2D.hpp" />
     <ClInclude Include="Source\Blam\Math\Point2D.hpp" />
-    <ClInclude Include="Source\Blam\Input\Bindings.hpp" />
-    <ClInclude Include="Source\Blam\Input\Keyboard.hpp" />
-    <ClInclude Include="Source\Blam\Input\Actions.hpp" />
-    <ClInclude Include="Source\Blam\Input\Mouse.hpp" />
-    <ClInclude Include="Source\Blam\Input\UI.hpp" />
-    <ClInclude Include="Source\Blam\Input\Controller.hpp" />
-    <ClInclude Include="Source\Blam\Input\Input.hpp" />
     <ClInclude Include="Source\Blam\Data\BitStream.hpp" />
     <ClInclude Include="Source\Blam\Game\Stats.hpp" />
     <ClInclude Include="Source\Blam\Game\Medals.hpp" />
@@ -105,5 +92,7 @@
     <ClInclude Include="Source\Blam\Sounds\Noise.hpp" />
     <ClInclude Include="Source\Blam\Network\Network.hpp" />
     <ClInclude Include="Source\Blam\Tags\Game\VFilesList.hpp" />
+    <ClInclude Include="Source\Blam\Objects\ObjectType.hpp" />
+    <ClInclude Include="Source\Blam\Objects\ObjectDatum.hpp" />
   </ItemGroup>
 </Project>

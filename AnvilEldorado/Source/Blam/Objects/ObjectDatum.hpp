@@ -1,32 +1,14 @@
 #pragma once
 #include <cstdint>
-#include "..\Data\DatumIndex.hpp"
-#include "..\Data\DatumBase.hpp"
+#include "Globals.hpp"
+#include "Blam\Data\DataArray.hpp"
+#include "Blam\Data\DatumBase.hpp"
+#include "Blam\Data\DatumIndex.hpp"
+#include "ObjectType.hpp"
 
 namespace Blam::Objects
 {
-	enum class ObjectType : int8_t
-	{
-		None = -1,
-		Biped,
-		Vehicle,
-		Weapon,
-		Equipment,
-		ArgDevice,
-		Terminal,
-		Projectile,
-		Scenery,
-		Machine,
-		Control,
-		SoundScenery,
-		Crate,
-		Creature,
-		Giant,
-		EffectScenery
-	};
-	static_assert(sizeof(ObjectType) == 0x1, "Blam::Objects::ObjectType");
-
-	struct ObjectDatum : Data::DatumBase
+	struct ObjectDatumBase : Data::DatumBase
 	{
 		uint8_t Flags;
 		ObjectType Type : 8;
@@ -34,11 +16,23 @@ namespace Blam::Objects
 		uint32_t PoolOffset;
 		void *Data;
 
-		ObjectDatum();
+		ObjectDatumBase()
+			: Type(ObjectType::None), Data(nullptr)
+		{
+		}
 
-		static const Blam::Data::DataArray<ObjectDatum> *GetDataArray();
+		static const Data::DataArray<ObjectDatumBase> *GetDataArray()
+		{
+			return AnvilCommon::GetThreadStorage<const Blam::Data::DataArray<ObjectDatumBase>>(0x448);
+		}
 
-		Data::DatumIndex GetTagIndex() const;
+		Data::DatumIndex GetTagIndex() const
+		{
+			if (!Data)
+				return Data::DatumIndex::Null;
+
+			return *static_cast<Data::DatumIndex *>(Data);
+		}
 	};
-	static_assert(sizeof(ObjectDatum) == 0x10, "Blam::Objects::ObjectDatum");
+	static_assert(sizeof(ObjectDatumBase) == 0x10, "Blam::Objects::ObjectDatumBase");
 }

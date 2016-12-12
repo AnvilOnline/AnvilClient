@@ -4,17 +4,24 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <TlHelp32.h>
+
 #include <cstring>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <memory>
+#include <stack>
 #include <vector>
+
 #include "BuildInfo.hpp"
+
 #include "Globals.hpp"
+
 #include "Utils\Logger.hpp"
 #include "Utils\Singleton.hpp"
 #include "Utils\Util.hpp"
+
 #include "Blam\Cache\StringIDCache.hpp"
 #include "Blam\Data\DatumIndex.hpp"
 #include "Blam\Game\Players.hpp"
@@ -26,6 +33,7 @@
 #include "Blam\Tags\Game\VFilesList.hpp"
 #include "Blam\Tags\Items\Weapon.hpp"
 #include "Blam\Tags\Scenario\Scenario.hpp"
+
 #include "Engine.hpp"
 
 using namespace AnvilEldorado;
@@ -57,49 +65,48 @@ void *GetModuleBase()
 
 void UnprotectMemory()
 {
-	size_t Offset = 0, Total = 0;
+	size_t s_Offset = 0, s_Total = 0;
 
-	MEMORY_BASIC_INFORMATION MemInfo;
+	MEMORY_BASIC_INFORMATION s_MemInfo;
 
-	while (VirtualQuery((uint8_t *)GetModuleBase() + Offset, &MemInfo, sizeof(MEMORY_BASIC_INFORMATION)))
+	while (VirtualQuery((uint8_t *)GetModuleBase() + s_Offset, &s_MemInfo, sizeof(MEMORY_BASIC_INFORMATION)))
 	{
-		Offset += MemInfo.RegionSize;
+		s_Offset += s_MemInfo.RegionSize;
 
-		if (MemInfo.Protect == PAGE_EXECUTE_READ)
+		if (s_MemInfo.Protect == PAGE_EXECUTE_READ)
 		{
-			Total += MemInfo.RegionSize;
-			VirtualProtect(MemInfo.BaseAddress, MemInfo.RegionSize, PAGE_EXECUTE_READWRITE, &MemInfo.Protect);
+			s_Total += s_MemInfo.RegionSize;
+			VirtualProtect(s_MemInfo.BaseAddress, s_MemInfo.RegionSize, PAGE_EXECUTE_READWRITE, &s_MemInfo.Protect);
 		}
 	}
 }
 
 typedef std::function<void(HWND window)> CreateWindowCallback;
-std::vector<CreateWindowCallback> CreateWindowCallbacks;
+std::vector<CreateWindowCallback> g_CreateWindowCallbacks;
 
 const auto UI_CreateGameWindow = reinterpret_cast<HWND(*)()>(0xA223F0);
 HWND CreateGameWindowHook()
 {
-	auto hwnd = UI_CreateGameWindow();
-	if (!hwnd)
+	auto s_HWND = UI_CreateGameWindow();
+	if (!s_HWND)
 		return nullptr;
 
-	for (auto &&callback : CreateWindowCallbacks)
-		callback(hwnd);
+	for (auto &s_Callback : g_CreateWindowCallbacks)
+		s_Callback(s_HWND);
 
-	return hwnd;
+	return s_HWND;
 }
 
 void WindowTitleSprintfHook(char *p_DestBuf, char *p_Format, char *p_Version)
 {
-	auto s_WindowTitle = AnvilCommon::g_BuildInfo;
-	strcpy_s(p_DestBuf, 0x40, s_WindowTitle.c_str());
+	strcpy_s(p_DestBuf, 0x40, AnvilCommon::g_BuildInfo.c_str());
 }
+
+const auto ApplyResolutionChange = reinterpret_cast<void(__thiscall *)()>(0xA226D0);
 
 void ResolutionChangeHook()
 {
 	// Update the ingame UI's resolution
-	typedef void(__thiscall *ApplyResolutionChangeFunc)();
-	ApplyResolutionChangeFunc ApplyResolutionChange = reinterpret_cast<ApplyResolutionChangeFunc>(0xA226D0);
 	ApplyResolutionChange();
 
 	//
@@ -109,8 +116,9 @@ void ResolutionChangeHook()
 
 double AspectRatioHook()
 {
-	auto *gameResolution = reinterpret_cast<int32_t *>(0x19106C0);
-	return ((double)gameResolution[0] / (double)gameResolution[1]);
+	auto *s_GameResolution = reinterpret_cast<int32_t *>(0x19106C0);
+
+	return ((double)s_GameResolution[0] / (double)s_GameResolution[1]);
 }
 
 __declspec(naked) void FovHook()
@@ -186,70 +194,75 @@ uint32_t g_Player_VisorColor = 0x77663D;
 uint32_t g_Player_LightsColor = 0x000000;
 uint32_t g_Player_HoloColor = 0x000000;
 
-void AddArmorPermutations(const Blam::Tags::Game::MultiplayerGlobals::Universal::ArmorCustomization &element, std::map<std::string, uint8_t> &map)
+void AddArmorPermutations(const Blam::Tags::Game::MultiplayerGlobals::Universal::ArmorCustomization &p_Element, std::map<std::string, uint8_t> &p_Map)
 {
-	for (auto i = 0; i < element.Permutations.Count; i++)
+	for (auto i = 0; i < p_Element.Permutations.Count; i++)
 	{
-		auto &perm = element.Permutations[i];
+		auto &s_Permutation = p_Element.Permutations[i];
 
-		if (!perm.FirstPersonArmorModel && !perm.ThirdPersonArmorObject)
+		if (!s_Permutation.FirstPersonArmorModel && !s_Permutation.ThirdPersonArmorObject)
 		{
 			continue;
 		}
 
-		auto permName = std::string(Blam::Cache::StringIDCache::Instance.GetString(perm.Name));
+		auto s_PermutationName = std::string(Blam::Cache::StringIDCache::Instance.GetString(s_Permutation.Name));
 
-		map.emplace(permName, i);
+		p_Map.emplace(s_PermutationName, i);
 	}
 }
 
-void LoadPlayerArmorAndWeapons()
+void LoadPlayerArmor(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGlobals)
 {
-	using Blam::Tags::TagInstance;
-	using Blam::Tags::Game::Globals;
-	using Blam::Tags::Game::MultiplayerGlobals;
-
-	auto *matg = TagInstance(0x0016).GetDefinition<Globals>();
-	auto *mulg = TagInstance(matg->MultiplayerGlobals.TagIndex).GetDefinition<MultiplayerGlobals>();
-
-	for (auto &element : mulg->Universal->SpartanArmorCustomization)
+	for (auto &s_Customization : p_MultiplayerGlobals->Universal->SpartanArmorCustomization)
 	{
-		auto string = std::string(Blam::Cache::StringIDCache::Instance.GetString(element.PieceRegion));
+		auto s_PieceRegion = std::string(Blam::Cache::StringIDCache::Instance.GetString(s_Customization.PieceRegion));
 
-		if (string == "helmet")
-			AddArmorPermutations(element, g_PlayerArmor_HelmetIndices);
-		else if (string == "chest")
-			AddArmorPermutations(element, g_PlayerArmor_ChestIndices);
-		else if (string == "shoulders")
-			AddArmorPermutations(element, g_PlayerArmor_ShouldersIndices);
-		else if (string == "arms")
-			AddArmorPermutations(element, g_PlayerArmor_ArmsIndices);
-		else if (string == "legs")
-			AddArmorPermutations(element, g_PlayerArmor_LegsIndices);
-		else if (string == "acc")
-			AddArmorPermutations(element, g_PlayerArmor_AccessoryIndices);
-		else if (string == "pelvis")
-			AddArmorPermutations(element, g_PlayerArmor_PelvisIndices);
+		if (s_PieceRegion == "helmet")
+			AddArmorPermutations(s_Customization, g_PlayerArmor_HelmetIndices);
+		else if (s_PieceRegion == "chest")
+			AddArmorPermutations(s_Customization, g_PlayerArmor_ChestIndices);
+		else if (s_PieceRegion == "shoulders")
+			AddArmorPermutations(s_Customization, g_PlayerArmor_ShouldersIndices);
+		else if (s_PieceRegion == "arms")
+			AddArmorPermutations(s_Customization, g_PlayerArmor_ArmsIndices);
+		else if (s_PieceRegion == "legs")
+			AddArmorPermutations(s_Customization, g_PlayerArmor_LegsIndices);
+		else if (s_PieceRegion == "acc")
+			AddArmorPermutations(s_Customization, g_PlayerArmor_AccessoryIndices);
+		else if (s_PieceRegion == "pelvis")
+			AddArmorPermutations(s_Customization, g_PlayerArmor_PelvisIndices);
 		else
-			throw std::exception("Invalid armor section");
+			throw std::exception(("Invalid armor piece region: " + s_PieceRegion).c_str());
 	}
 
-	for (auto &element : mulg->Universal->GameVariantWeapons)
-	{
-		auto string = std::string(Blam::Cache::StringIDCache::Instance.GetString(element.Name));
-		auto index = (uint16_t)element.Weapon.TagIndex;
+	g_PlayerArmor_Update = true;
+}
 
-		if (index != 0xFFFF)
+void LoadPlayerWeapons(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGlobals)
+{
+	for (auto &s_Variant : p_MultiplayerGlobals->Universal->GameVariantWeapons)
+	{
+		auto s_Name = std::string(Blam::Cache::StringIDCache::Instance.GetString(s_Variant.Name));
+		auto s_Index = (uint16_t)s_Variant.Weapon.TagIndex;
+
+		if (s_Index != 0xFFFF)
 		{
-			g_PlayerArmor_WeaponIndices.emplace(string, index);
+			g_PlayerArmor_WeaponIndices.emplace(s_Name, s_Index);
 		}
 	}
 }
 
 void TagsLoadedImpl()
 {
-	LoadPlayerArmorAndWeapons();
-	g_PlayerArmor_Update = true;
+	using Blam::Tags::TagInstance;
+	using Blam::Tags::Game::Globals;
+	using Blam::Tags::Game::MultiplayerGlobals;
+
+	auto *s_Globals = TagInstance(0x0016).GetDefinition<Globals>();
+	auto *s_MultiplayerGlobals = TagInstance(s_Globals->MultiplayerGlobals.TagIndex).GetDefinition<MultiplayerGlobals>();
+
+	LoadPlayerArmor(s_MultiplayerGlobals);
+	LoadPlayerWeapons(s_MultiplayerGlobals);
 }
 
 __declspec(naked) void TagsLoadedHook()
@@ -265,18 +278,18 @@ __declspec(naked) void TagsLoadedHook()
 
 void ApplyMapNameFixes()
 {
-	auto levelsGlobalPtr = *reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x149E2E0);
-	if (!levelsGlobalPtr)
+	auto s_MapNamesAddress = *reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x149E2E0);
+	if (!s_MapNamesAddress)
 		return;
 
 	// TODO: map out these global arrays, content items seems to use same format
 
-	uint32_t numLevels = *reinterpret_cast<uint32_t *>(levelsGlobalPtr + 0x34);
+	uint32_t s_MapNameCount = *reinterpret_cast<uint32_t *>(s_MapNamesAddress + 0x34);
 
-	const wchar_t* search[12] = { L"guardian", L"riverworld", L"s3d_avalanche", L"s3d_edge", L"s3d_reactor", L"s3d_turf", L"cyberdyne", L"chill", L"deadlock", L"bunkerworld", L"shrine", L"zanzibar" };
-	const wchar_t* names[12] = { L"Guardian", L"Valhalla", L"Diamondback", L"Edge", L"Reactor", L"Icebox", L"The Pit", L"Narrows", L"High Ground", L"Standoff", L"Sandtrap", L"Last Resort" };
+	const wchar_t* s_Search[12] = { L"guardian", L"riverworld", L"s3d_avalanche", L"s3d_edge", L"s3d_reactor", L"s3d_turf", L"cyberdyne", L"chill", L"deadlock", L"bunkerworld", L"shrine", L"zanzibar" };
+	const wchar_t* s_Names[12] = { L"Guardian", L"Valhalla", L"Diamondback", L"Edge", L"Reactor", L"Icebox", L"The Pit", L"Narrows", L"High Ground", L"Standoff", L"Sandtrap", L"Last Resort" };
 	// TODO: Get names/descs using string ids? Seems the unic tags have descs for most of the maps
-	const wchar_t* descs[12] = {
+	const wchar_t* s_Descriptions[12] = {
 		L"Millennia of tending has produced trees as ancient as the Forerunner structures they have grown around. 2-6 players.",
 		L"The crew of V-398 barely survived their unplanned landing in this gorge...this curious gorge. 6-16 players.",
 		L"Hot winds blow over what should be a dead moon. A reminder of the power Forerunners once wielded. 6-16 players.",
@@ -292,23 +305,24 @@ void ApplyMapNameFixes()
 
 	};
 
-	for (uint32_t i = 0; i < numLevels; i++)
+	for (uint32_t i = 0; i < s_MapNameCount; i++)
 	{
-		auto *levelNamePtr = reinterpret_cast<wchar_t *>(levelsGlobalPtr + 0x54 + (0x360 * i) + 0x8);
-		auto *levelDescPtr = reinterpret_cast<wchar_t *>(levelsGlobalPtr + 0x54 + (0x360 * i) + 0x8 + 0x40);
+		auto *s_MapNameAddress = reinterpret_cast<wchar_t *>(s_MapNamesAddress + 0x54 + (0x360 * i) + 0x8);
+		auto *s_MapDescriptionAddress = reinterpret_cast<wchar_t *>(s_MapNamesAddress + 0x54 + (0x360 * i) + 0x8 + 0x40);
 
-		wchar_t levelName[0x21] = { 0 };
-		memcpy(levelName, levelNamePtr, 0x20);
+		wchar_t s_MapName[0x21] = { 0 };
+		memcpy(s_MapName, s_MapNameAddress, 0x20);
 
-		for (uint32_t y = 0; y < sizeof(search) / sizeof(*search); y++)
+		for (uint32_t y = 0; y < sizeof(s_Search) / sizeof(*s_Search); y++)
 		{
-			if (wcscmp(search[y], levelName) == 0)
+			if (wcscmp(s_Search[y], s_MapName) == 0)
 			{
-				memset(levelNamePtr, 0, sizeof(wchar_t) * 0x20);
-				wcscpy_s(levelNamePtr, 0x20, names[y]);
+				memset(s_MapNameAddress, 0, sizeof(wchar_t) * 0x20);
+				wcscpy_s(s_MapNameAddress, 0x20, s_Names[y]);
 
-				memset(levelDescPtr, 0, sizeof(wchar_t) * 0x80);
-				wcscpy_s(levelDescPtr, 0x80, descs[y]);
+				memset(s_MapDescriptionAddress, 0, sizeof(wchar_t) * 0x80);
+				wcscpy_s(s_MapDescriptionAddress, 0x80, s_Descriptions[y]);
+
 				break;
 			}
 		}
@@ -317,11 +331,12 @@ void ApplyMapNameFixes()
 
 void GameTickHook()
 {
-	static bool appliedFirstTickPatches = false;
-	if (!appliedFirstTickPatches)
+	static bool s_AppliedFirstTickPatches = false;
+
+	if (!s_AppliedFirstTickPatches)
 	{
 		ApplyMapNameFixes();
-		appliedFirstTickPatches = true;
+		s_AppliedFirstTickPatches = true;
 	}
 
 	// Call replaced function
@@ -338,14 +353,18 @@ void ShutdownHook()
 	reinterpret_cast<void(*)()>(0x42E410)();
 }
 
-bool LoadMapHook(void *data)
+typedef std::function<void(const char *p_MapPath)> MapLoadedCallback;
+std::vector<MapLoadedCallback> g_MapLoadedCallbacks;
+
+const auto LoadMap = reinterpret_cast<bool(*)(void *p_Data)>(0x566EF0);
+
+bool LoadMapHook(void *p_Data)
 {
-	if (!reinterpret_cast<bool(*)(void *)>(0x566EF0)(data))
+	if (!LoadMap(p_Data))
 		return false;
 
-	//
-	// TODO: Call map-loading callbacks...
-	//
+	for (auto &s_Callback : g_MapLoadedCallbacks)
+		s_Callback(static_cast<const char *>(p_Data) + 0x24); // hax
 
 	return true;
 }
@@ -1079,7 +1098,7 @@ std::vector<PongCallback> g_PongCallbacks;
 
 void PongReceivedImpl(const Blam::Network::NetworkAddress &from, const Blam::Network::PongPacket &pong, uint32_t latency)
 {
-	for (auto &&callback : g_PongCallbacks)
+	for (auto &callback : g_PongCallbacks)
 		callback(from, pong.Timestamp, pong.ID, latency);
 }
 
@@ -1102,7 +1121,7 @@ std::vector<LifeCycleStateChangedCallback> g_LifeCycleStateChangedCallbacks;
 
 void LifeCycleStateChangedImpl(Blam::Network::LifeCycleState p_NewState)
 {
-	for (auto &&s_Callback : g_LifeCycleStateChangedCallbacks)
+	for (auto &s_Callback : g_LifeCycleStateChangedCallbacks)
 		s_Callback(p_NewState);
 }
 
@@ -1444,10 +1463,10 @@ uint32_t GetScoreboardPlayerBiped()
 
 void ScoreboardPlayerModelArmorHook()
 {
-	auto scoreboardBiped = GetScoreboardPlayerBiped();
+	auto s_ScoreboardBiped = GetScoreboardPlayerBiped();
 
-	if (scoreboardBiped != 0xFFFFFFFF)
-		CustomizeBiped(scoreboardBiped);
+	if (s_ScoreboardBiped != 0xFFFFFFFF)
+		CustomizeBiped(s_ScoreboardBiped);
 }
 
 bool g_Forge_ShouldDelete = false;
@@ -1463,7 +1482,7 @@ void UpdateBarriersEnabled()
 		return;
 
 	// Scan the object table to check if the barrier disablers are spawned
-	auto *s_ObjectArray = Blam::Objects::ObjectDatum::GetDataArray();
+	auto *s_ObjectArray = Blam::Objects::ObjectDatumBase::GetDataArray();
 
 	if (!s_ObjectArray)
 		return;
@@ -1471,21 +1490,25 @@ void UpdateBarriersEnabled()
 	g_Forge_KillBarriersEnabled = true;
 	g_Forge_PushBarriersEnabled = true;
 
-	for (auto &&header : *s_ObjectArray)
+	for (auto &s_Object : *s_ObjectArray)
 	{
 		// The objects are identified by tag index.
 		// scen 0x5728 disables kill barriers
 		// scen 0x5729 disables push barriers
-		if (header.Type != Blam::Objects::ObjectType::Scenery)
+		if (s_Object.Type != Blam::Objects::ObjectType::Scenery)
 			continue;
-		auto tagIndex = header.GetTagIndex().Index;
-		if (tagIndex == 0x5728)
+		
+		auto s_TagIndex = s_Object.GetTagIndex().Index;
+
+		if (s_TagIndex == 0x5728)
 			g_Forge_KillBarriersEnabled = false;
-		else if (tagIndex == 0x5729)
+		else if (s_TagIndex == 0x5729)
 			g_Forge_PushBarriersEnabled = false;
+
 		if (!g_Forge_KillBarriersEnabled && !g_Forge_PushBarriersEnabled)
 			break;
 	}
+
 	g_Forge_BarriersEnabledValid = true;
 }
 
@@ -1557,7 +1580,7 @@ __declspec(naked) void Forge_UpdateInput_Hook()
 
 void *GetObjectDataAddress(const Blam::Data::DatumIndex &p_ObjectDatum)
 {
-	return (*Blam::Objects::ObjectDatum::GetDataArray())[p_ObjectDatum].Data;
+	return (*Blam::Objects::ObjectDatumBase::GetDataArray())[p_ObjectDatum].Data;
 }
 
 const auto UnitGetWeapon = reinterpret_cast<uint32_t(*)(uint32_t, int16_t)>(0xB454D0);
@@ -1813,7 +1836,6 @@ bool Engine::Init()
 	Util::ApplyHook(0x3B6826, EndGameHook, HookFlags::IsCall);
 	Util::NopAddress(0x3B682B, 1);
 
-
 	// Rewire $hf2pEngine.PerformLogin() to show the pause menu
 	Util::ApplyHook(0x234756, &ShowHalo3PauseMenuHook, HookFlags::IsCall);
 	Util::PatchAddress(0x23475B, "\x90", 1);
@@ -2006,8 +2028,8 @@ bool Engine::Init()
 	Util::ApplyHook(0x7A21D4, GetEquipmentCountHook, HookFlags::IsCall);
 	/*Hook(0x139888, EquipmentHook, HookFlags::IsJmpIfNotEqual);
 	Util::ApplyHook(0x786CF2, EquipmentTestHook);*/
-
- // Prevent game variant weapons from being overridden
+	
+	// Prevent game variant weapons from being overridden
 	*((uint8_t *)s_ModuleBase + 0x1A315F) = 0xEB;
 	*((uint8_t *)s_ModuleBase + 0x1A31A4) = 0xEB;
 	Util::ApplyHook(0x1A3267, GrenadeLoadoutHook);
