@@ -8,7 +8,7 @@
 
 namespace Blam::Objects
 {
-	struct ObjectDatumBase : Data::DatumBase
+	struct ObjectData : Data::DatumBase
 	{
 		uint8_t Flags;
 		ObjectType Type : 8;
@@ -16,23 +16,25 @@ namespace Blam::Objects
 		uint32_t PoolOffset;
 		void *Data;
 
-		ObjectDatumBase()
+		ObjectData()
 			: Type(ObjectType::None), Data(nullptr)
 		{
 		}
 
-		static const Data::DataArray<ObjectDatumBase> *GetDataArray()
+		static const Data::DataArray<ObjectData> *GetDataArray()
 		{
-			return AnvilCommon::GetThreadStorage<const Blam::Data::DataArray<ObjectDatumBase>>(0x448);
+			return AnvilCommon::GetThreadStorage<const Blam::Data::DataArray<ObjectData>>(0x448);
 		}
 
 		Data::DatumIndex GetTagIndex() const
 		{
-			if (!Data)
-				return Data::DatumIndex::Null;
+			using Blam::Data::DatumIndex;
 
-			return *static_cast<Data::DatumIndex *>(Data);
+			if (!Data)
+				return DatumIndex::Null;
+
+			return *static_cast<DatumIndex *>(Data);
 		}
 	};
-	static_assert(sizeof(ObjectDatumBase) == 0x10, "Blam::Objects::ObjectDatumBase");
+	static_assert(sizeof(ObjectData) == 0x10, "Blam::Objects::ObjectData");
 }

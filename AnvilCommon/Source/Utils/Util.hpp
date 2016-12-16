@@ -24,9 +24,9 @@ namespace AnvilCommon::Utils
 		static bool NopAddress(const size_t p_Offset, const int32_t p_Length, bool p_InMemory = false);
 		static bool NopAddress(void *p_Address, const int32_t p_Length, bool p_InMemory = false);
 		
-		static void WriteCall(void *p_Address, void *p_NewFunction);
-		static void WriteJump(void *p_Address, void *p_NewFunction, int p_Flags = 0);
-		static void ApplyHook(size_t p_Offset, void *p_DestFunc, int p_Flags = 0);
+		static bool WriteCall(void *p_Address, void *p_NewFunction);
+		static bool WriteJump(void *p_Address, void *p_NewFunction, int p_Flags = 0);
+		static bool ApplyHook(size_t p_Offset, void *p_DestFunc, int p_Flags = 0);
 
 		static bool ResumeAllThreads();
 

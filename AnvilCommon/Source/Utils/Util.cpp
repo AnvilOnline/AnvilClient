@@ -129,7 +129,7 @@ bool Util::NopAddress(void *p_Address, const int32_t p_Length, bool p_InMemory)
 	return PatchAddress(p_Address, ss.str(), p_Length, p_InMemory);
 }
 
-void Util::WriteCall(void *p_Address, void* p_NewFunction)
+bool Util::WriteCall(void *p_Address, void* p_NewFunction)
 {
 	DWORD temp;
 	DWORD temp2;
@@ -140,14 +140,15 @@ void Util::WriteCall(void *p_Address, void* p_NewFunction)
 		std::stringstream ss;
 		ss << "Failed to set protection on memory address " << std::hex << p_Address;
 		OutputDebugString(ss.str().c_str());
-		return;
+		return false;
 	}
 	memcpy(&tempJMP[1], &JMPSize, 4);
 	memcpy(p_Address, tempJMP, 5);
 	VirtualProtect(p_Address, 5, temp, &temp2);
+	return true;
 }
 
-void Util::WriteJump(void *p_Address, void* p_NewFunction, int p_Flags)
+bool Util::WriteJump(void *p_Address, void* p_NewFunction, int p_Flags)
 {
 	DWORD temp;
 	DWORD temp2;
@@ -160,7 +161,7 @@ void Util::WriteJump(void *p_Address, void* p_NewFunction, int p_Flags)
 		std::stringstream ss;
 		ss << "Failed to set protection on memory address " << std::hex << p_Address;
 		OutputDebugString(ss.str().c_str());
-		return;
+		return false;
 	}
 	if (p_Flags & HookFlags::IsJmpIfEqual)
 	{
@@ -173,17 +174,18 @@ void Util::WriteJump(void *p_Address, void* p_NewFunction, int p_Flags)
 		memcpy(p_Address, tempJMP, 5);
 	}
 	VirtualProtect(p_Address, patchSize, temp, &temp2);
+	return true;
 }
 
-void Util::ApplyHook(size_t p_Offset, void *p_DestFunc, int p_Flags)
+bool Util::ApplyHook(size_t p_Offset, void *p_DestFunc, int p_Flags)
 {
 	auto s_BaseAddress = reinterpret_cast<size_t>(GetModuleHandle(nullptr));
 	auto s_Address = s_BaseAddress + reinterpret_cast<uint8_t *>(p_Offset);
 
 	if (p_Flags & HookFlags::IsCall)
-		WriteCall(s_Address, p_DestFunc);
+		return WriteCall(s_Address, p_DestFunc);
 	else
-		WriteJump(s_Address, p_DestFunc, p_Flags);
+		return WriteJump(s_Address, p_DestFunc, p_Flags);
 }
 
 bool Util::ResumeAllThreads()

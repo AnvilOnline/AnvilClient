@@ -31,8 +31,8 @@
     <ClInclude Include="Source\Blam\Math\Point2D.hpp" />
     <ClInclude Include="Source\Blam\Memory\GlobalMemoryMap.hpp" />
     <ClInclude Include="Source\Blam\Data\BitStream.hpp" />
-    <ClInclude Include="Source\Blam\Network\Network.hpp" />
-    <ClInclude Include="Source\Blam\Objects\ObjectDatum.hpp" />
+    <ClInclude Include="Source\Blam\Network\Session.hpp" />
+    <ClInclude Include="Source\Blam\Objects\ObjectData.hpp" />
     <ClInclude Include="Source\Blam\Cache\StringIDCache.hpp" />
     <ClInclude Include="Source\Blam\Data\DatumBase.hpp" />
     <ClInclude Include="Source\Blam\Data\DatumIndex.hpp" />
@@ -77,6 +77,7 @@
     <ClInclude Include="Source\Engine.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Armor.cpp" />
     <ClCompile Include="Source\Blam\Data\DataPoolBase.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
     <ClCompile Include="Source\Blam\Data\LruvCacheBase.cpp" />
@@ -108,9 +109,20 @@
     <ClCompile Include="Source\Blam\Math\RealVector2D.cpp" />
     <ClCompile Include="Source\Blam\Math\RealVector3D.cpp" />
     <ClCompile Include="Source\Blam\Math\Rectangle2D.cpp" />
-    <ClCompile Include="Source\Blam\Network\Network.cpp" />
-    <ClCompile Include="Source\Engine.cpp" />
+    <ClCompile Include="Source\Blam\Network\Session.cpp" />
+    <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\Content.cpp" />
+    <ClCompile Include="Source\Core.cpp" />
+    <ClCompile Include="Source\Forge.cpp" />
+    <ClCompile Include="Source\GameRules.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
+    <ClCompile Include="Source\Graphics.cpp" />
+    <ClCompile Include="Source\Input.cpp" />
+    <ClCompile Include="Source\Network.cpp" />
+    <ClCompile Include="Source\Player.cpp" />
+    <ClCompile Include="Source\Scoreboard.cpp" />
+    <ClCompile Include="Source\UserInterface.cpp" />
+    <ClCompile Include="Source\VirtualKeyboard.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F7267A5F-7009-40A3-B523-424279DEF2C7}</ProjectGuid>
