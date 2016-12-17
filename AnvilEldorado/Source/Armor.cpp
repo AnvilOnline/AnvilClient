@@ -307,8 +307,6 @@ namespace AnvilEldorado
 			&& Util::NopAddress(0x4360DE, 0x1A9)
 			&& ((*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x43628A) = 0x1C) != 0)
 			&& Util::NopAddress(0x43628B, 0x3);
-
-		return true;
 	}
 
 	bool Engine::OnTagsLoaded_Armor()
