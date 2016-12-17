@@ -2,7 +2,7 @@
 
 namespace AnvilEldorado
 {
-	bool Engine::ApplyPlayerPatches()
+	bool Engine::ApplyPatches_Player()
 	{
 		return true;
 	}

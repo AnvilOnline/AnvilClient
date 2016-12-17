@@ -1,7 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <string>
-#include "..\Text\StringID.hpp"
+#include "Utils\Singleton.hpp"
+#include "Blam\Text\StringID.hpp"
 
 namespace Blam::Cache
 {
@@ -11,7 +12,7 @@ namespace Blam::Cache
 		int32_t StringDataSize;
 	};
 
-	struct StringIDCache
+	struct StringIDCache : public AnvilCommon::Utils::Singleton<StringIDCache>
 	{
 		StringIDCacheHeader Header;
 		char *Data;
@@ -19,8 +20,6 @@ namespace Blam::Cache
 
 		StringIDCache();
 		~StringIDCache();
-
-		static StringIDCache Instance;
 
 		bool Load(const std::string &path);
 		char *GetString(const Text::StringID &stringID);

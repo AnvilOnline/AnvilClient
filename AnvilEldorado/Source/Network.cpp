@@ -2,7 +2,7 @@
 
 namespace AnvilEldorado
 {
-	bool Engine::ApplyNetworkPatches()
+	bool Engine::ApplyPatches_Network()
 	{
 		return true;
 	}

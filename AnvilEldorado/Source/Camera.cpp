@@ -2,7 +2,7 @@
 
 namespace AnvilEldorado
 {
-	bool Engine::ApplyCameraPatches()
+	bool Engine::ApplyPatches_Camera()
 	{
 		return true;
 	}

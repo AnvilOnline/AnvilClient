@@ -2,7 +2,7 @@
 
 namespace AnvilEldorado
 {
-	bool Engine::ApplyVirtualKeyboardPatches()
+	bool Engine::ApplyPatches_VirtualKeyboard()
 	{
 		return true;
 	}

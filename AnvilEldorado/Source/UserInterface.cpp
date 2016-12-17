@@ -2,7 +2,7 @@
 
 namespace AnvilEldorado
 {
-	bool Engine::ApplyUserInterfacePatches()
+	bool Engine::ApplyPatches_UserInterface()
 	{
 		return true;
 	}

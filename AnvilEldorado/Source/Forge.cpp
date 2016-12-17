@@ -2,7 +2,7 @@
 
 namespace AnvilEldorado
 {
-	bool Engine::ApplyForgePatches()
+	bool Engine::ApplyPatches_Forge()
 	{
 		return true;
 	}

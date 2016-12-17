@@ -2,7 +2,7 @@
 
 namespace AnvilEldorado
 {
-	bool Engine::ApplyGameRulesPatches()
+	bool Engine::ApplyPatches_GameRules()
 	{
 		return true;
 	}

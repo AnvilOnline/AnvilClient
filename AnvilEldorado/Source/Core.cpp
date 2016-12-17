@@ -162,107 +162,15 @@ __declspec(naked) void FmodSystemInitHook2()
 	}
 }
 
-bool g_PlayerArmor_Update = false;
-
-void RefreshUiPlayer()
-{
-	g_PlayerArmor_Update = true;
-}
-
-std::map<std::string, uint8_t> g_PlayerArmor_HelmetIndices;
-std::map<std::string, uint8_t> g_PlayerArmor_ChestIndices;
-std::map<std::string, uint8_t> g_PlayerArmor_ShouldersIndices;
-std::map<std::string, uint8_t> g_PlayerArmor_ArmsIndices;
-std::map<std::string, uint8_t> g_PlayerArmor_LegsIndices;
-std::map<std::string, uint8_t> g_PlayerArmor_AccessoryIndices;
-std::map<std::string, uint8_t> g_PlayerArmor_PelvisIndices;
-std::map<std::string, uint16_t> g_PlayerArmor_WeaponIndices;
-
-std::string g_Player_Helmet = "air_assault";
-std::string g_Player_Chest = "dutch";
-std::string g_Player_Shoulders = "dutch";
-std::string g_Player_Arms = "stealth";
-std::string g_Player_Legs = "stealth";
-std::string g_Player_Accessory = "";
-std::string g_Player_Pelvis = "";
-
-std::string g_Player_MannequinWeapon = "assault_rifle";
-
-uint32_t g_Player_PrimaryColor = 0x3D3D3D;
-uint32_t g_Player_SecondaryColor = 0x3D7777;
-uint32_t g_Player_VisorColor = 0x77663D;
-uint32_t g_Player_LightsColor = 0x000000;
-uint32_t g_Player_HoloColor = 0x000000;
-
-void AddArmorPermutations(const Blam::Tags::Game::MultiplayerGlobals::Universal::ArmorCustomization &p_Element, std::map<std::string, uint8_t> &p_Map)
-{
-	for (auto i = 0; i < p_Element.Permutations.Count; i++)
-	{
-		auto &s_Permutation = p_Element.Permutations[i];
-
-		if (!s_Permutation.FirstPersonArmorModel && !s_Permutation.ThirdPersonArmorObject)
-		{
-			continue;
-		}
-
-		auto s_PermutationName = std::string(Blam::Cache::StringIDCache::Instance.GetString(s_Permutation.Name));
-
-		p_Map.emplace(s_PermutationName, i);
-	}
-}
-
-void LoadPlayerArmor(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGlobals)
-{
-	for (auto &s_Customization : p_MultiplayerGlobals->Universal->SpartanArmorCustomization)
-	{
-		auto s_PieceRegion = std::string(Blam::Cache::StringIDCache::Instance.GetString(s_Customization.PieceRegion));
-
-		if (s_PieceRegion == "helmet")
-			AddArmorPermutations(s_Customization, g_PlayerArmor_HelmetIndices);
-		else if (s_PieceRegion == "chest")
-			AddArmorPermutations(s_Customization, g_PlayerArmor_ChestIndices);
-		else if (s_PieceRegion == "shoulders")
-			AddArmorPermutations(s_Customization, g_PlayerArmor_ShouldersIndices);
-		else if (s_PieceRegion == "arms")
-			AddArmorPermutations(s_Customization, g_PlayerArmor_ArmsIndices);
-		else if (s_PieceRegion == "legs")
-			AddArmorPermutations(s_Customization, g_PlayerArmor_LegsIndices);
-		else if (s_PieceRegion == "acc")
-			AddArmorPermutations(s_Customization, g_PlayerArmor_AccessoryIndices);
-		else if (s_PieceRegion == "pelvis")
-			AddArmorPermutations(s_Customization, g_PlayerArmor_PelvisIndices);
-		else
-			throw std::exception(("Invalid armor piece region: " + s_PieceRegion).c_str());
-	}
-
-	g_PlayerArmor_Update = true;
-}
-
-void LoadPlayerWeapons(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGlobals)
-{
-	for (auto &s_Variant : p_MultiplayerGlobals->Universal->GameVariantWeapons)
-	{
-		auto s_Name = std::string(Blam::Cache::StringIDCache::Instance.GetString(s_Variant.Name));
-		auto s_Index = (uint16_t)s_Variant.Weapon.TagIndex;
-
-		if (s_Index != 0xFFFF)
-		{
-			g_PlayerArmor_WeaponIndices.emplace(s_Name, s_Index);
-		}
-	}
-}
-
 void TagsLoadedImpl()
 {
-	using Blam::Tags::TagInstance;
-	using Blam::Tags::Game::Globals;
-	using Blam::Tags::Game::MultiplayerGlobals;
+	WriteLog("Tags loaded successfully.");
 
-	auto *s_Globals = TagInstance(0x0016).GetDefinition<Globals>();
-	auto *s_MultiplayerGlobals = TagInstance(s_Globals->MultiplayerGlobals.TagIndex).GetDefinition<MultiplayerGlobals>();
-
-	LoadPlayerArmor(s_MultiplayerGlobals);
-	LoadPlayerWeapons(s_MultiplayerGlobals);
+	if (!Engine::Instance()->OnTagsLoaded())
+	{
+		WriteLog("ERROR: Failed to apply patches after tags were loaded!");
+		// TODO: Exit game?
+	}
 }
 
 __declspec(naked) void TagsLoadedHook()
@@ -755,162 +663,6 @@ DWORD __cdecl Network_ManagedSession_CreateSessionInternal_Hook(int32_t a1, int3
 	return retval;
 }
 
-// Base class for a class which adds data to player properties.
-class PlayerPropertiesExtensionBase
-{
-public:
-	virtual ~PlayerPropertiesExtensionBase() { }
-
-	// Builds extension data for a player.
-	virtual void BuildData(int32_t playerIndex, void *out) = 0;
-
-	// Gets the size of the extension data.
-	virtual size_t GetDataSize() const = 0;
-
-	// Applies extension data to a player.
-	virtual void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const void *data) = 0;
-
-	// Serializes the extension data to be sent across the network.
-	virtual void Serialize(Blam::Data::BitStream *stream, const void *data) = 0;
-
-	// Deserializes extension data that was received from the network.
-	virtual void Deserialize(Blam::Data::BitStream *stream, void *out) = 0;
-};
-
-// Helper class which adds type safety to PlayerPropertiesExtensionBase.
-template <class TData>
-class PlayerPropertiesExtension : public PlayerPropertiesExtensionBase
-{
-protected:
-	// Builds extension data for a player.
-	virtual void BuildData(int32_t playerIndex, TData *out) = 0;
-
-	// Applies extension data to a player.
-	virtual void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const TData &data) = 0;
-
-	// Serializes the extension data to be sent across the network.
-	virtual void Serialize(Blam::Data::BitStream *stream, const TData &data) = 0;
-
-	// Deserializes extension data that was received from the network.
-	virtual void Deserialize(Blam::Data::BitStream *stream, TData *out) = 0;
-
-public:
-	void BuildData(int32_t playerIndex, void *out) override
-	{
-		BuildData(playerIndex, static_cast<TData*>(out));
-	}
-
-	size_t GetDataSize() const override
-	{
-		return sizeof(TData);
-	}
-
-	void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const void *data) override
-	{
-		ApplyData(playerIndex, properties, *static_cast<const TData*>(data));
-	}
-
-	void Serialize(Blam::Data::BitStream *stream, const void *data) override
-	{
-		Serialize(stream, *static_cast<const TData *>(data));
-	}
-
-	void Deserialize(Blam::Data::BitStream *stream, void *out) override
-	{
-		Deserialize(stream, static_cast<TData *>(out));
-	}
-};
-
-// Singleton object which lets the player-properties packet be extended with custom data
-// TODO: Make this more generic and not so specific to player-properties
-class PlayerPropertiesExtender : public AnvilCommon::Utils::Singleton<PlayerPropertiesExtender>
-{
-public:
-	// Adds an extension to the player-properties packet.
-	void Add(std::shared_ptr<PlayerPropertiesExtensionBase> extension)
-	{
-		extensions.push_back(extension);
-	}
-
-	// Gets the total size of the player-properties extension data.
-	size_t GetTotalSize()
-	{
-		size_t result = 0;
-		for (auto it = extensions.begin(); it != extensions.end(); ++it)
-			result += (*it)->GetDataSize();
-		return result;
-	}
-
-	// Writes all extension data out to a player-properties structure.
-	void BuildData(int32_t playerIndex, void *out)
-	{
-		// Write all of the data structures in order
-		uint8_t *ptr = static_cast<uint8_t*>(out);
-		for (auto it = extensions.begin(); it != extensions.end(); ++it)
-		{
-			(*it)->BuildData(playerIndex, ptr);
-			ptr += (*it)->GetDataSize();
-		}
-	}
-
-	// Applies all extension data in a player-properties structure.
-	void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const void *data)
-	{
-		// Apply all of the data structures in order
-		const uint8_t *ptr = static_cast<const uint8_t*>(data);
-		for (auto it = extensions.begin(); it != extensions.end(); ++it)
-		{
-			(*it)->ApplyData(playerIndex, properties, ptr);
-			ptr += (*it)->GetDataSize();
-		}
-	}
-
-	// Serializes all extension data in a player-properties structure.
-	void SerializeData(Blam::Data::BitStream *stream, const void *data)
-	{
-		// Serialize all of the structures in order
-		const uint8_t *ptr = static_cast<const uint8_t*>(data);
-		for (auto it = extensions.begin(); it != extensions.end(); ++it)
-		{
-			(*it)->Serialize(stream, ptr);
-			ptr += (*it)->GetDataSize();
-		}
-	}
-
-	// Deserializes all extension data in a player-properties structure.
-	void DeserializeData(Blam::Data::BitStream *stream, void *out)
-	{
-		// Deserialize all of the structures in order
-		uint8_t *ptr = static_cast<uint8_t*>(out);
-		for (auto it = extensions.begin(); it != extensions.end(); ++it)
-		{
-			(*it)->Deserialize(stream, ptr);
-			ptr += (*it)->GetDataSize();
-		}
-	}
-
-private:
-	std::vector<std::shared_ptr<PlayerPropertiesExtensionBase>> extensions;
-};
-
-// Packet size constants
-const size_t PlayerPropertiesPacketHeaderSize = 0x18;
-const size_t PlayerPropertiesSize = 0x30;
-const size_t PlayerPropertiesPacketFooterSize = 0x4;
-
-size_t GetPlayerPropertiesPacketSize()
-{
-	static size_t size;
-
-	if (size == 0)
-	{
-		size_t extensionSize = PlayerPropertiesExtender::Instance()->GetTotalSize();
-		size = PlayerPropertiesPacketHeaderSize + PlayerPropertiesSize + extensionSize + PlayerPropertiesPacketFooterSize;
-	}
-
-	return size;
-}
-
 // ASCII chars that can't appear in names
 const wchar_t DisallowedNameChars[] = { '\'', '\"', '<', '>', '/', '\\' };
 
@@ -974,7 +726,7 @@ void __fastcall ApplyPlayerPropertiesExtendedHook(Blam::Network::SessionMembersh
 	ApplyPlayerProperties(thisPtr, playerIndex, arg4, arg8, data, arg10);
 
 	// Apply the extended properties
-	PlayerPropertiesExtender::Instance()->ApplyData(playerIndex, properties, data + PlayerPropertiesSize);
+	Blam::Game::PlayerPropertiesExtender::Instance()->ApplyData(playerIndex, properties, data + Blam::Game::PlayerPropertiesSize);
 	//Server::Voting::PlayerJoinedVoteInProgress(playerIndex); //TODO find somewhere else to put this.
 }
 
@@ -992,11 +744,11 @@ bool __fastcall PeerRequestPlayerDesiredPropertiesUpdateHook(Blam::Network::Sess
 		return false;
 
 	// Copy the player properties to a new array and add the extension data
-	auto packetSize = GetPlayerPropertiesPacketSize();
-	auto extendedSize = packetSize - PlayerPropertiesPacketHeaderSize - PlayerPropertiesPacketFooterSize;
+	auto packetSize = Blam::Game::GetPlayerPropertiesPacketSize();
+	auto extendedSize = packetSize - Blam::Game::PlayerPropertiesPacketHeaderSize - Blam::Game::PlayerPropertiesPacketFooterSize;
 	auto extendedProperties = std::make_unique<uint8_t[]>(extendedSize);
-	memcpy(&extendedProperties[0], properties, PlayerPropertiesSize);
-	PlayerPropertiesExtender::Instance()->BuildData(playerIndex, &extendedProperties[PlayerPropertiesSize]);
+	memcpy(&extendedProperties[0], properties, Blam::Game::PlayerPropertiesSize);
+	Blam::Game::PlayerPropertiesExtender::Instance()->BuildData(playerIndex, &extendedProperties[Blam::Game::PlayerPropertiesSize]);
 
 	if (thisPtr->Type == 6 || thisPtr->Type == 7)
 	{
@@ -1023,10 +775,10 @@ bool __fastcall PeerRequestPlayerDesiredPropertiesUpdateHook(Blam::Network::Sess
 		// Set up the header and footer
 		*reinterpret_cast<int*>(&packet[0x10]) = arg0;
 		*reinterpret_cast<uint32_t*>(&packet[0x14]) = arg4;
-		*reinterpret_cast<uint32_t*>(&packet[packetSize - PlayerPropertiesPacketFooterSize]) = argC;
+		*reinterpret_cast<uint32_t*>(&packet[packetSize - Blam::Game::PlayerPropertiesPacketFooterSize]) = argC;
 
 		// Copy the player properties structure in
-		memcpy(&packet[PlayerPropertiesPacketHeaderSize], &extendedProperties[0], extendedSize);
+		memcpy(&packet[Blam::Game::PlayerPropertiesPacketHeaderSize], &extendedProperties[0], extendedSize);
 
 		// Send!
 		thisPtr->Observer->ObserverChannelSendMessage(thisPtr->Unknown10, channelIndex, 0, 0x1A, packetSize, &packet[0]);
@@ -1039,7 +791,7 @@ const auto RegisterPacket = reinterpret_cast<void(__thiscall *)(void *, int32_t,
 // Changes the size of the player-properties packet to include extension data
 void __fastcall RegisterPlayerPropertiesPacketHook(void *thisPtr, void *unused, int32_t packetId, const char *packetName, int32_t arg8, int32_t size1, int32_t size2, void *serializeFunc, void *deserializeFunc, int32_t arg1C, int32_t arg20)
 {
-	size_t newSize = GetPlayerPropertiesPacketSize();
+	size_t newSize = Blam::Game::GetPlayerPropertiesPacketSize();
 	RegisterPacket(thisPtr, packetId, packetName, arg8, newSize, newSize, serializeFunc, deserializeFunc, arg1C, arg20);
 }
 
@@ -1052,7 +804,7 @@ void SerializePlayerPropertiesHook(Blam::Data::BitStream *stream, uint8_t *buffe
 	SerializePlayerProperties(stream, buffer, flag);
 
 	// Serialize extended data
-	PlayerPropertiesExtender::Instance()->SerializeData(stream, buffer + PlayerPropertiesSize);
+	Blam::Game::PlayerPropertiesExtender::Instance()->SerializeData(stream, buffer + Blam::Game::PlayerPropertiesSize);
 }
 
 const auto DeserializePlayerProperties = reinterpret_cast<bool(*)(Blam::Data::BitStream *, uint8_t *, bool)>(0x4432E0);
@@ -1065,7 +817,7 @@ bool DeserializePlayerPropertiesHook(Blam::Data::BitStream *stream, uint8_t *buf
 
 	// Deserialize extended data
 	if (succeeded)
-		PlayerPropertiesExtender::Instance()->DeserializeData(stream, buffer + PlayerPropertiesSize);
+		Blam::Game::PlayerPropertiesExtender::Instance()->DeserializeData(stream, buffer + Blam::Game::PlayerPropertiesSize);
 
 	return succeeded;
 }
@@ -1288,185 +1040,6 @@ int32_t __fastcall Network_Session_ParametersClear_Hook(void *thisPtr, int32_t u
 	Web::Ui::ScreenLayer::Notify("serverconnect", jsonBuffer.GetString(), true);*/
 
 	return Network_Session_ParametersClear(thisPtr, unused);
-}
-
-uint8_t GetArmorIndex(const std::string &name, const std::map<std::string, uint8_t> &Indices)
-{
-	auto it = Indices.find(name);
-	return (it != Indices.end()) ? it->second : 0;
-}
-
-uint8_t ValidateArmorIndex(std::map<std::string, uint8_t> indices, uint8_t index)
-{
-	// Just do a quick check to see if the index has a key associated with it,
-	// and force it to 0 if not
-	for (auto pair : indices)
-	{
-		if (pair.second == index)
-			return index;
-	}
-
-	return 0;
-}
-
-void BuildPlayerCustomization(Blam::Game::PlayerCustomization *p_Customization)
-{
-	memset(p_Customization, 0, sizeof(Blam::Game::PlayerCustomization));
-
-	memset(p_Customization->Colors, 0, 5 * sizeof(uint32_t));
-
-	p_Customization->Colors[(int)Blam::Game::PlayerColor::Primary] = 0x3D3D3D;
-	p_Customization->Colors[(int)Blam::Game::PlayerColor::Secondary] = 0x3D7777;
-	p_Customization->Colors[(int)Blam::Game::PlayerColor::Visor] = 0x77663D;
-	p_Customization->Colors[(int)Blam::Game::PlayerColor::Lights] = 0x000000;
-	p_Customization->Colors[(int)Blam::Game::PlayerColor::Holo] = 0x000000;
-
-	p_Customization->Armor[(int)Blam::Game::PlayerArmor::Helmet] = GetArmorIndex("air_assault", g_PlayerArmor_HelmetIndices);
-	p_Customization->Armor[(int)Blam::Game::PlayerArmor::Chest] = GetArmorIndex("dutch", g_PlayerArmor_ChestIndices);
-	p_Customization->Armor[(int)Blam::Game::PlayerArmor::Shoulders] = GetArmorIndex("dutch", g_PlayerArmor_ShouldersIndices);
-	p_Customization->Armor[(int)Blam::Game::PlayerArmor::Arms] = GetArmorIndex("stealth", g_PlayerArmor_ArmsIndices);
-	p_Customization->Armor[(int)Blam::Game::PlayerArmor::Legs] = GetArmorIndex("stealth", g_PlayerArmor_LegsIndices);
-	p_Customization->Armor[(int)Blam::Game::PlayerArmor::Acc] = GetArmorIndex("", g_PlayerArmor_AccessoryIndices);
-	p_Customization->Armor[(int)Blam::Game::PlayerArmor::Pelvis] = GetArmorIndex("", g_PlayerArmor_PelvisIndices);
-}
-
-class ArmorExtension : public PlayerPropertiesExtension<Blam::Game::PlayerCustomization>
-{
-protected:
-	void BuildData(int32_t playerIndex, Blam::Game::PlayerCustomization *out) override
-	{
-		BuildPlayerCustomization(out);
-	}
-
-	void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const Blam::Game::PlayerCustomization &data) override
-	{
-		auto armorSessionData = &properties->Customization;
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Helmet] = data.Armor[(int)Blam::Game::PlayerArmor::Helmet];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Chest] = data.Armor[(int)Blam::Game::PlayerArmor::Chest];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Shoulders] = data.Armor[(int)Blam::Game::PlayerArmor::Shoulders];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Arms] = ValidateArmorIndex(g_PlayerArmor_ArmsIndices, data.Armor[(int)Blam::Game::PlayerArmor::Arms]);
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Legs] = ValidateArmorIndex(g_PlayerArmor_LegsIndices, data.Armor[(int)Blam::Game::PlayerArmor::Legs]);
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Acc] = ValidateArmorIndex(g_PlayerArmor_AccessoryIndices, data.Armor[(int)Blam::Game::PlayerArmor::Acc]);
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Pelvis] = ValidateArmorIndex(g_PlayerArmor_PelvisIndices, data.Armor[(int)Blam::Game::PlayerArmor::Pelvis]);
-		memcpy(armorSessionData->Colors, data.Colors, sizeof(data.Colors));
-	}
-
-	void Serialize(Blam::Data::BitStream *stream, const Blam::Game::PlayerCustomization &data) override
-	{
-		// Colors
-		for (int32_t i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
-			stream->WriteUnsigned<uint32_t>(data.Colors[i], 24);
-
-		// Armor
-		for (int32_t i = 0; i < (int)Blam::Game::PlayerArmor::Count; i++)
-			stream->WriteUnsigned<uint8_t>(data.Armor[i], 0, UINT8_MAX);
-	}
-
-	void Deserialize(Blam::Data::BitStream *stream, Blam::Game::PlayerCustomization *out) override
-	{
-		memset(out, 0, sizeof(Blam::Game::PlayerCustomization));
-
-		// Colors
-		for (int32_t i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
-			out->Colors[i] = stream->ReadUnsigned<uint32_t>(24);
-
-		// Armor
-		for (int32_t i = 0; i < (int)Blam::Game::PlayerArmor::Count; i++)
-			out->Armor[i] = stream->ReadUnsigned<uint8_t>(0, UINT8_MAX);
-	}
-};
-
-__declspec(naked) void PoseWithWeapon(uint32_t p_Unit, uint32_t p_Weapon)
-{
-	// This is a pretty big hack, basically I don't know where the function pulls the weapon index from
-	// so this lets us skip over the beginning of the function and set the weapon tag to whatever we want
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		sub esp, 0x18C
-		push esi
-		push edi
-		sub esp, 0x8
-		mov esi, p_Unit
-		mov edi, p_Weapon
-		push 0x7B77DA
-		ret
-	}
-}
-
-const auto Biped_ApplyArmor = reinterpret_cast<void(*)(Blam::Game::PlayerCustomization *, uint32_t)>(0x5A4430);
-const auto Biped_ApplyArmorColor = reinterpret_cast<void(*)(uint32_t, int32_t, float *)>(0xB328F0);
-const auto Biped_UpdateArmorColors = reinterpret_cast<void(*)(uint32_t)>(0x5A2FA0);
-
-void CustomizeBiped(uint32_t bipedObject)
-{
-	// Generate customization data
-	Blam::Game::PlayerCustomization customization;
-	BuildPlayerCustomization(&customization);
-
-	// Apply armor to the biped
-	Biped_ApplyArmor(&customization, bipedObject);
-
-	// Apply each color
-	for (int32_t i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
-	{
-		// Convert the color data from RGB to float3
-		float colorData[3];
-		typedef void(*RgbToFloatColorPtr)(uint32_t rgbColor, float *result);
-		RgbToFloatColorPtr RgbToFloatColor = reinterpret_cast<RgbToFloatColorPtr>(0x521300);
-		RgbToFloatColor(customization.Colors[i], colorData);
-
-		// Apply the color
-		Biped_ApplyArmorColor(bipedObject, i, colorData);
-	}
-
-	// Need to call this or else colors don't actually show up
-	Biped_UpdateArmorColors(bipedObject);
-
-	// Give the biped a weapon (0x151E = tag index for Assault Rifle)
-	auto s_WeaponName = g_Player_MannequinWeapon;
-
-	if (g_PlayerArmor_WeaponIndices.find(s_WeaponName) == g_PlayerArmor_WeaponIndices.end())
-		s_WeaponName = (g_Player_MannequinWeapon = "assault_rifle");
-
-	PoseWithWeapon(bipedObject, g_PlayerArmor_WeaponIndices.find(s_WeaponName)->second);
-}
-
-uint32_t GetUiPlayerBiped()
-{
-	return *reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x4BE67A0);
-}
-
-void UiPlayerModelArmorHook()
-{
-	// This function runs every tick, so only update if necessary
-	if (!g_PlayerArmor_Update)
-		return;
-
-	// Try to get the UI player biped
-	auto s_UiPlayerBiped = GetUiPlayerBiped();
-	if (s_UiPlayerBiped == 0xFFFFFFFF)
-		return;
-
-	CustomizeBiped(s_UiPlayerBiped);
-	g_PlayerArmor_Update = false;
-
-	// Note: the call that this hook replaces is for setting up armor based on the server data,
-	// so it's not necessary to call here
-}
-
-uint32_t GetScoreboardPlayerBiped()
-{
-	return *reinterpret_cast<uint32_t *>((uint8_t *)GetModuleBase() + 0x4C4C698);
-}
-
-void ScoreboardPlayerModelArmorHook()
-{
-	auto s_ScoreboardBiped = GetScoreboardPlayerBiped();
-
-	if (s_ScoreboardBiped != 0xFFFFFFFF)
-		CustomizeBiped(s_ScoreboardBiped);
 }
 
 bool g_Forge_ShouldDelete = false;
@@ -1735,7 +1308,7 @@ __declspec(naked) void GrenadeLoadoutHook()
 	}
 }
 
-bool Engine::ApplyCorePatches()
+bool Engine::ApplyPatches_Core()
 {
 	//Disable Windows DPI scaling
 	SetProcessDPIAware();
@@ -1743,7 +1316,7 @@ bool Engine::ApplyCorePatches()
 	// Enable write to all executable memory
 	UnprotectMemory();
 
-	if (!Blam::Cache::StringIDCache::Instance.Load("maps\\string_ids.dat"))
+	if (!Blam::Cache::StringIDCache::Instance()->Load("maps\\string_ids.dat"))
 	{
 		WriteLog("Failed to load 'maps\\string_ids.dat'!");
 		return false;
@@ -1813,7 +1386,7 @@ bool Engine::ApplyCorePatches()
 	// Fix random colored lighting
 	Util::PatchAddress(0x14F2FFC, "\x00\x00\x00\x00", 4);
 
-	// Used to call Patches::ApplyAfterTagsLoaded when tags have loaded
+	// Used to call Engine::OnTagsLoaded when tags have loaded
 	Util::ApplyHook(0x1030EA, TagsLoadedHook);
 
 	// Hook game ticks
@@ -1965,29 +1538,6 @@ bool Engine::ApplyCorePatches()
 
 	// "received initial update, clearing"
 	Util::ApplyHook(0x899AF, Network_Session_ParametersClear_Hook, HookFlags::IsCall);
-
-	PlayerPropertiesExtender::Instance()->Add(std::make_shared<ArmorExtension>());
-
-	// Fix the player model on the main menu
-	Util::ApplyHook(0x20086D, UiPlayerModelArmorHook, HookFlags::IsCall);
-
-	// Fix rendering the scoreboard player model
-	// TODO: figure out why your biped doesn't show on the postgame screen...there's probably something missing here
-	{
-		std::stringstream ss;
-		for (auto i = 0; i < 0x50; i++)
-			ss << '\x90';
-		Util::PatchAddress(0x435DAB, ss.str(), 0x50);
-	}
-	Util::ApplyHook(0x4360D9, ScoreboardPlayerModelArmorHook, HookFlags::IsCall);
-	{
-		std::stringstream ss;
-		for (auto i = 0; i < 0x1A9; i++)
-			ss << '\x90';
-		Util::PatchAddress(0x4360DE, ss.str(), 0x1A9);
-	}
-	*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x43628A) = 0x1C;
-	Util::PatchAddress(0x43628B, "\x90\x90\x90", 0x3);
 
 	Util::ApplyHook(0x19D482, Forge_UpdateInput_Hook, HookFlags::IsCall);
 

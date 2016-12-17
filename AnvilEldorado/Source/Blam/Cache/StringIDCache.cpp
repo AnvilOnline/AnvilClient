@@ -3,8 +3,6 @@
 
 namespace Blam::Cache
 {
-	StringIDCache StringIDCache::Instance;
-
 	StringIDCache::StringIDCache()
 		: Header(), Data(nullptr), Strings(nullptr)
 	{

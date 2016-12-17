@@ -2,7 +2,7 @@
 
 namespace AnvilEldorado
 {
-	bool Engine::ApplyScoreboardPatches()
+	bool Engine::ApplyPatches_Scoreboard()
 	{
 		return true;
 	}

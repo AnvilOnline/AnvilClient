@@ -2,7 +2,7 @@
 
 namespace AnvilEldorado
 {
-	bool Engine::ApplyGraphicsPatches()
+	bool Engine::ApplyPatches_Graphics()
 	{
 		return true;
 	}

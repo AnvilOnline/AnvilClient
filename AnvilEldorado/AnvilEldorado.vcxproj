@@ -61,6 +61,7 @@
     <ClInclude Include="Source\Blam\Objects\ObjectType.hpp" />
     <ClInclude Include="Source\Blam\Padding.hpp" />
     <ClInclude Include="Source\Blam\Sounds\Noise.hpp" />
+    <ClInclude Include="Source\Blam\Tags\Game\CacheFileGlobalTags.hpp" />
     <ClInclude Include="Source\Blam\Tags\Game\Globals.hpp" />
     <ClInclude Include="Source\Blam\Tags\Game\MultiplayerGlobals.hpp" />
     <ClInclude Include="Source\Blam\Tags\Game\VFilesList.hpp" />
@@ -110,6 +111,7 @@
     <ClCompile Include="Source\Blam\Math\RealVector3D.cpp" />
     <ClCompile Include="Source\Blam\Math\Rectangle2D.cpp" />
     <ClCompile Include="Source\Blam\Network\Session.cpp" />
+    <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Content.cpp" />
     <ClCompile Include="Source\Core.cpp" />

@@ -1,8 +1,11 @@
 #pragma once
 #include <cstdint>
-#include "..\Data\DatumBase.hpp"
-#include "..\Data\DatumIndex.hpp"
-#include "..\Data\DataArray.hpp"
+#include <vector>
+#include "Utils\Singleton.hpp"
+#include "Blam\Data\BitStream.hpp"
+#include "Blam\Data\DatumBase.hpp"
+#include "Blam\Data\DatumIndex.hpp"
+#include "Blam\Data\DataArray.hpp"
 
 namespace Blam::Game
 {
@@ -76,4 +79,105 @@ namespace Blam::Game
 	Data::DataArray<PlayerDatum> &GetPlayers();
 
 	Data::DatumIndex GetLocalPlayer(const int32_t p_Index);
+
+	// Base class for a class which adds data to player properties.
+	class PlayerPropertiesExtensionBase
+	{
+	public:
+		virtual ~PlayerPropertiesExtensionBase() { }
+
+		// Builds extension data for a player.
+		virtual void BuildData(int32_t playerIndex, void *out) = 0;
+
+		// Gets the size of the extension data.
+		virtual size_t GetDataSize() const = 0;
+
+		// Applies extension data to a player.
+		virtual void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const void *data) = 0;
+
+		// Serializes the extension data to be sent across the network.
+		virtual void Serialize(Blam::Data::BitStream *stream, const void *data) = 0;
+
+		// Deserializes extension data that was received from the network.
+		virtual void Deserialize(Blam::Data::BitStream *stream, void *out) = 0;
+	};
+
+	// Helper class which adds type safety to PlayerPropertiesExtensionBase.
+	template <class TData>
+	class PlayerPropertiesExtension : public PlayerPropertiesExtensionBase
+	{
+	protected:
+		// Builds extension data for a player.
+		virtual void BuildData(int32_t playerIndex, TData *out) = 0;
+
+		// Applies extension data to a player.
+		virtual void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const TData &data) = 0;
+
+		// Serializes the extension data to be sent across the network.
+		virtual void Serialize(Blam::Data::BitStream *stream, const TData &data) = 0;
+
+		// Deserializes extension data that was received from the network.
+		virtual void Deserialize(Blam::Data::BitStream *stream, TData *out) = 0;
+
+	public:
+
+		void BuildData(int32_t playerIndex, void *out) override
+		{
+			BuildData(playerIndex, static_cast<TData*>(out));
+		}
+
+		size_t GetDataSize() const override
+		{
+			return sizeof(TData);
+		}
+
+		void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const void *data) override
+		{
+			ApplyData(playerIndex, properties, *static_cast<const TData*>(data));
+		}
+
+		void Serialize(Blam::Data::BitStream *stream, const void *data) override
+		{
+			Serialize(stream, *static_cast<const TData *>(data));
+		}
+
+		void Deserialize(Blam::Data::BitStream *stream, void *out) override
+		{
+			Deserialize(stream, static_cast<TData *>(out));
+		}
+	};
+
+	// Singleton object which lets the player-properties packet be extended with custom data
+	// TODO: Make this more generic and not so specific to player-properties
+	class PlayerPropertiesExtender : public AnvilCommon::Utils::Singleton<PlayerPropertiesExtender>
+	{
+	public:
+		// Adds an extension to the player-properties packet.
+		void Add(std::shared_ptr<PlayerPropertiesExtensionBase> extension);
+
+		// Gets the total size of the player-properties extension data.
+		size_t GetTotalSize();
+
+		// Writes all extension data out to a player-properties structure.
+		void BuildData(int32_t playerIndex, void *out);
+
+		// Applies all extension data in a player-properties structure.
+		void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const void *data);
+
+		// Serializes all extension data in a player-properties structure.
+		void SerializeData(Blam::Data::BitStream *stream, const void *data);
+
+		// Deserializes all extension data in a player-properties structure.
+		void DeserializeData(Blam::Data::BitStream *stream, void *out);
+
+	private:
+		std::vector<std::shared_ptr<PlayerPropertiesExtensionBase>> extensions;
+	};
+
+	// Packet size constants
+	extern const size_t PlayerPropertiesPacketHeaderSize;
+	extern const size_t PlayerPropertiesSize;
+	extern const size_t PlayerPropertiesPacketFooterSize;
+
+	size_t GetPlayerPropertiesPacketSize();
 }
