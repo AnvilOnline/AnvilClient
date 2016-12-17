@@ -32,21 +32,21 @@
     <ClCompile Include="Source\Blam\Game\Stats.cpp" />
     <ClCompile Include="Source\Blam\Data\DataArray.cpp" />
     <ClCompile Include="Source\Blam\Game\Players.cpp" />
+    <ClCompile Include="Source\Blam\Network\Network.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
-    <ClCompile Include="Source\Core.cpp" />
+    <ClCompile Include="Source\Armor.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\Content.cpp" />
+    <ClCompile Include="Source\Forge.cpp" />
+    <ClCompile Include="Source\GameRules.cpp" />
     <ClCompile Include="Source\Graphics.cpp" />
     <ClCompile Include="Source\Input.cpp" />
     <ClCompile Include="Source\Network.cpp" />
-    <ClCompile Include="Source\Content.cpp" />
-    <ClCompile Include="Source\UserInterface.cpp" />
-    <ClCompile Include="Source\Armor.cpp" />
     <ClCompile Include="Source\Player.cpp" />
-    <ClCompile Include="Source\Forge.cpp" />
-    <ClCompile Include="Source\GameRules.cpp" />
-    <ClCompile Include="Source\VirtualKeyboard.cpp" />
     <ClCompile Include="Source\Scoreboard.cpp" />
-    <ClCompile Include="Source\Blam\Network\Session.cpp" />
+    <ClCompile Include="Source\UserInterface.cpp" />
+    <ClCompile Include="Source\VirtualKeyboard.cpp" />
+    <ClCompile Include="Source\Core.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -102,9 +102,9 @@
     <ClInclude Include="Source\Blam\Tags\Objects\Object.hpp" />
     <ClInclude Include="Source\Blam\Tags\Items\Item.hpp" />
     <ClInclude Include="Source\Blam\Sounds\Noise.hpp" />
+    <ClInclude Include="Source\Blam\Network\Network.hpp" />
     <ClInclude Include="Source\Blam\Tags\Game\VFilesList.hpp" />
     <ClInclude Include="Source\Blam\Objects\ObjectType.hpp" />
-    <ClInclude Include="Source\Blam\Objects\ObjectData.hpp" />
-    <ClInclude Include="Source\Blam\Network\Session.hpp" />
+    <ClInclude Include="Source\Blam\Objects\ObjectDatum.hpp" />
   </ItemGroup>
 </Project>

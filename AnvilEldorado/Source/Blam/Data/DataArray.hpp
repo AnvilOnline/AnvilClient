@@ -58,13 +58,12 @@ namespace Blam::Data
 
 		// Gets a pointer to the datum corresponding to a datum index.
 		// Returns null if the datum index does not match a valid datum.
-		TDatum *Get(const DatumIndex &p_Index) const { return static_cast<TDatum*>(DataArrayBase::Get(p_Index)); }
+		TDatum* Get(DatumIndex index) const { return static_cast<TDatum*>(DataArrayBase::Get(index)); }
 
 		// Gets a reference to the datum corresponding to a datum index.
 		// The datum index is NOT checked for validity and this will always succeed.
 		// Use Get() if you need validity checking.
-		TDatum &operator[](const DatumIndex &p_Index) const { return *static_cast<TDatum*>(GetAddress(p_Index)); }
-		TDatum &operator[](const uint16_t p_Index) const { return operator[](DatumIndex(0, p_Index)); }
+		TDatum& operator[](DatumIndex index) const { return *static_cast<TDatum*>(GetAddress(index)); }
 
 		// Gets an iterator pointing to the beginning of this data array.
 		DataIterator<TDatum> begin()

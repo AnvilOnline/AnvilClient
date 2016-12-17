@@ -17,12 +17,6 @@ using namespace Anvil::Client;
 #pragma comment(lib, "AnvilAusar")
 #endif
 
-std::shared_ptr<AnvilClient> AnvilClient::GetInstance()
-{
-	static auto s_Instance = std::make_shared<AnvilClient>();
-	return s_Instance;
-}
-
 bool AnvilClient::Init()
 {
 	// Initialize MinHook

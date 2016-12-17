@@ -1,11 +1,12 @@
 #pragma once
-#include <Interfaces/IInitializable.hpp>
+#include <memory>
 #include <mutex>
 #include <fstream>
-#include <memory>
+#include "Interfaces\IInitializable.hpp"
+#include "Utils\Singleton.hpp"
 
 #ifdef _DEBUG
-#define WriteLog(p_Format, ...) AnvilCommon::Utils::Logger::GetInstance()->InternalWriteLog(__FUNCTION__, __LINE__, p_Format, __VA_ARGS__);
+#define WriteLog(p_Format, ...) AnvilCommon::Utils::Logger::Instance()->InternalWriteLog(__FUNCTION__, __LINE__, p_Format, __VA_ARGS__);
 #else
 #pragma warning(disable : 4390)
 #define WriteLog(p_Format, ...)
@@ -13,7 +14,7 @@
 
 namespace AnvilCommon::Utils
 {
-	class Logger : IInitializable
+	class Logger : IInitializable, public AnvilCommon::Utils::Singleton<Logger>
 	{
 	private:
 		std::mutex m_Lock;
@@ -22,7 +23,6 @@ namespace AnvilCommon::Utils
 		bool m_Debug;
 
 	public:
-		static std::shared_ptr<Logger> GetInstance();
 		bool Init() override;
 
 		bool InitConsole(std::string p_Title);

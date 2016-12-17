@@ -5,9 +5,9 @@
 
 DWORD WINAPI Initialize(LPVOID)
 {
-	AnvilCommon::Utils::Logger::GetInstance()->Init();
+	AnvilCommon::Utils::Logger::Instance()->Init();
 
-	Anvil::Client::AnvilClient::GetInstance()->Init();
+	Anvil::Client::AnvilClient::Instance()->Init();
 
 	return 0;
 }

@@ -1,22 +1,17 @@
 #pragma once
+#include <memory>
+#include <mutex>
 
-namespace Utils
+namespace AnvilCommon::Utils
 {
 	template <typename T>
 	class Singleton
 	{
 	public:
-		static T& Instance()
+		static T *Instance()
 		{
-			static T Inst;
-			return Inst;
+			static T s_Instance;
+			return &s_Instance;
 		}
-
-		Singleton(Singleton const&) = delete;
-		Singleton& operator=(Singleton const&) = delete;
-	protected:
-		Singleton()
-		{
-		};
 	};
 }
