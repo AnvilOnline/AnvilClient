@@ -138,19 +138,19 @@ namespace AnvilEldorado
 
 		memset(p_Customization->Colors, 0, 5 * sizeof(uint32_t));
 
-		p_Customization->Colors[(int)Blam::Game::PlayerColor::Primary] = 0x3D3D3D;
-		p_Customization->Colors[(int)Blam::Game::PlayerColor::Secondary] = 0x3D7777;
-		p_Customization->Colors[(int)Blam::Game::PlayerColor::Visor] = 0x77663D;
-		p_Customization->Colors[(int)Blam::Game::PlayerColor::Lights] = 0x000000;
-		p_Customization->Colors[(int)Blam::Game::PlayerColor::Holo] = 0x000000;
+		p_Customization->Colors[(int)Blam::Game::PlayerColor::Primary] = g_Player_PrimaryColor;
+		p_Customization->Colors[(int)Blam::Game::PlayerColor::Secondary] = g_Player_SecondaryColor;
+		p_Customization->Colors[(int)Blam::Game::PlayerColor::Visor] = g_Player_VisorColor;
+		p_Customization->Colors[(int)Blam::Game::PlayerColor::Lights] = g_Player_LightsColor;
+		p_Customization->Colors[(int)Blam::Game::PlayerColor::Holo] = g_Player_HoloColor;
 
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Helmet] = GetArmorIndex("air_assault", g_PlayerArmor_HelmetIndices);
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Chest] = GetArmorIndex("dutch", g_PlayerArmor_ChestIndices);
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Shoulders] = GetArmorIndex("dutch", g_PlayerArmor_ShouldersIndices);
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Arms] = GetArmorIndex("stealth", g_PlayerArmor_ArmsIndices);
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Legs] = GetArmorIndex("stealth", g_PlayerArmor_LegsIndices);
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Acc] = GetArmorIndex("", g_PlayerArmor_AccessoryIndices);
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Pelvis] = GetArmorIndex("", g_PlayerArmor_PelvisIndices);
+		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Helmet] = GetArmorIndex(g_Player_Helmet, g_PlayerArmor_HelmetIndices);
+		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Chest] = GetArmorIndex(g_Player_Chest, g_PlayerArmor_ChestIndices);
+		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Shoulders] = GetArmorIndex(g_Player_Shoulders, g_PlayerArmor_ShouldersIndices);
+		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Arms] = GetArmorIndex(g_Player_Arms, g_PlayerArmor_ArmsIndices);
+		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Legs] = GetArmorIndex(g_Player_Legs , g_PlayerArmor_LegsIndices);
+		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Acc] = GetArmorIndex(g_Player_Accessory, g_PlayerArmor_AccessoryIndices);
+		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Pelvis] = GetArmorIndex(g_Player_Pelvis, g_PlayerArmor_PelvisIndices);
 	}
 
 	class ArmorExtension : public Blam::Game::PlayerPropertiesExtension<Blam::Game::PlayerCustomization>
