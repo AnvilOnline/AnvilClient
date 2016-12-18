@@ -57,6 +57,11 @@ namespace AnvilEldorado
 	
 	void *Game_InitSaberCode()
 	{
+		//Fix the audio being disabled
+		typedef char(*sub_64E190Func)();
+		sub_64E190Func sub_64E190 = (sub_64E190Func)0x64E190;
+		sub_64E190();
+
 		return nullptr;
 	}
 
