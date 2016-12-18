@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Armor.cpp" />
+    <ClCompile Include="Source\Audio.cpp" />
     <ClCompile Include="Source\Blam\Data\DataPoolBase.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
     <ClCompile Include="Source\Blam\Data\LruvCacheBase.cpp" />
@@ -112,11 +113,10 @@
     <ClCompile Include="Source\Blam\Math\Rectangle2D.cpp" />
     <ClCompile Include="Source\Blam\Network\Session.cpp" />
     <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
-    <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Content.cpp" />
     <ClCompile Include="Source\Core.cpp" />
     <ClCompile Include="Source\Forge.cpp" />
-    <ClCompile Include="Source\GameRules.cpp" />
+    <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\Graphics.cpp" />
     <ClCompile Include="Source\Input.cpp" />

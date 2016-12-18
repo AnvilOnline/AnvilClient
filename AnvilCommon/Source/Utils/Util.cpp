@@ -114,21 +114,6 @@ bool Util::PatchAddress(void *p_Address, const std::string &p_HexString, const i
 	return PatchAddressInFile(p_Address, p_HexString, p_Length);
 }
 
-bool Util::NopAddress(const size_t p_Offset, const int32_t p_Length, bool p_InMemory)
-{
-	return NopAddress(reinterpret_cast<void *>(p_Offset), p_Length, p_InMemory);
-}
-
-bool Util::NopAddress(void *p_Address, const int32_t p_Length, bool p_InMemory)
-{
-	std::stringstream ss;
-
-	for (auto i = 0; i < p_Length; i++)
-		ss << "\x90";
-
-	return PatchAddress(p_Address, ss.str(), p_Length, p_InMemory);
-}
-
 bool Util::WriteCall(void *p_Address, void* p_NewFunction)
 {
 	DWORD temp;

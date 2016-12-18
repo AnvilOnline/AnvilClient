@@ -8,17 +8,17 @@ namespace AnvilEldorado
 	{
 	private:
 		bool ApplyPatches_Core();
-		bool ApplyPatches_Camera();
+		bool ApplyPatches_Audio();
 		bool ApplyPatches_Graphics();
 		bool ApplyPatches_Input();
 		bool ApplyPatches_Network();
 		bool ApplyPatches_Content();
-		bool ApplyPatches_UserInterface();
 		bool ApplyPatches_Armor();
 		bool ApplyPatches_Player();
+		bool ApplyPatches_Game();
 		bool ApplyPatches_Forge();
-		bool ApplyPatches_GameRules();
 		bool ApplyPatches_Scoreboard();
+		bool ApplyPatches_UserInterface();
 		bool ApplyPatches_VirtualKeyboard();
 	
 		bool OnTagsLoaded_Armor();
@@ -27,17 +27,17 @@ namespace AnvilEldorado
 		inline bool ApplyPatches()
 		{
 			return ApplyPatches_Core()
-				&& ApplyPatches_Camera()
+				&& ApplyPatches_Audio()
 				&& ApplyPatches_Graphics()
 				&& ApplyPatches_Input()
 				&& ApplyPatches_Network()
 				&& ApplyPatches_Content()
-				&& ApplyPatches_UserInterface()
 				&& ApplyPatches_Armor()
 				&& ApplyPatches_Player()
 				&& ApplyPatches_Forge()
-				&& ApplyPatches_GameRules()
+				&& ApplyPatches_Game()
 				&& ApplyPatches_Scoreboard()
+				&& ApplyPatches_UserInterface()
 				&& ApplyPatches_VirtualKeyboard();
 		}
 
