@@ -65,6 +65,11 @@ namespace AnvilEldorado
 		return nullptr;
 	}
 
+	char Game_LoadBinkVideo()
+	{
+		return 1;
+	}
+
 	bool Engine::ApplyPatches_Core()
 	{
 		using AnvilCommon::Utils::Util;
@@ -80,6 +85,8 @@ namespace AnvilEldorado
 			&& Util::PatchAddress(0x4373AD, "\xEB\x03", 2)
 			// Disable saber's additions to the engine
 			&& Util::ApplyHook(0x200990, Game_InitSaberCode)
+			// Disable BIK videos
+			&& Util::ApplyHook(0x699120, Game_LoadBinkVideo)
 			// Set game locale to english
 			&& Util::PatchAddress(0x2333FD, "\x00", 1)
 			// Enable tag edits
