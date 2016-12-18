@@ -54,6 +54,11 @@ namespace AnvilEldorado
 			ret
 		}
 	}
+	
+	void *Game_InitSaberCode()
+	{
+		return nullptr;
+	}
 
 	bool Engine::ApplyPatches_Core()
 	{
@@ -65,9 +70,11 @@ namespace AnvilEldorado
 		// Enable write to all executable memory
 		UnprotectMemory();
 
-		// No --account args
+			// No --account args
 		return Util::PatchAddress(0x43731A, "\xEB\x0E", 2)
 			&& Util::PatchAddress(0x4373AD, "\xEB\x03", 2)
+			// Disable saber's additions to the engine
+			&& Util::ApplyHook(0x200990, Game_InitSaberCode)
 			// Set game locale to english
 			&& Util::PatchAddress(0x2333FD, "\x00", 1)
 			// Enable tag edits
