@@ -1,5 +1,6 @@
 #include "Globals.hpp"
-#include "Utils\Util.hpp"
+#include "Utils\Hook.hpp"
+#include "Utils\Patch.hpp"
 #include "Blam\Network\Session.hpp"
 #include "Engine.hpp"
 
@@ -114,7 +115,8 @@ namespace AnvilEldorado
 	bool Engine::ApplyPatches_Game()
 	{
 		using AnvilCommon::Utils::HookFlags;
-		using AnvilCommon::Utils::Util;
+		using AnvilCommon::Utils::Hook;
+		using AnvilCommon::Utils::Patch;
 
 		auto *s_ModuleBase = AnvilCommon::Internal_GetModuleStorage();
 
@@ -125,19 +127,19 @@ namespace AnvilEldorado
 		*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x1536F0) = 3; // team notification
 
 			// Hook game ticks
-		return Util::ApplyHook(0x105ABA, GameTickHook, HookFlags::IsCall)
-			&& Util::ApplyHook(0x1063E6, GameTickHook, HookFlags::IsCall)
+		return Hook(0x105ABA, GameTickHook, HookFlags::IsCall).Apply()
+			&& Hook(0x1063E6, GameTickHook, HookFlags::IsCall).Apply()
 			// Run callbacks on engine shutdown
-			&& Util::ApplyHook(0x2EBD7, ShutdownHook, HookFlags::IsCall)
+			&& Hook(0x2EBD7, ShutdownHook, HookFlags::IsCall).Apply()
 			// Map loading
-			&& Util::ApplyHook(0x10FC2C, LoadMapHook, HookFlags::IsCall)
-			&& Util::ApplyHook(0x1671BE, LoadMapHook, HookFlags::IsCall)
-			&& Util::ApplyHook(0x167B4F, LoadMapHook, HookFlags::IsCall)
+			&& Hook(0x10FC2C, LoadMapHook, HookFlags::IsCall).Apply()
+			&& Hook(0x1671BE, LoadMapHook, HookFlags::IsCall).Apply()
+			&& Hook(0x167B4F, LoadMapHook, HookFlags::IsCall).Apply()
 			// Rewire $hq.MatchmakingLeaveQueue() to end the game
-			&& Util::ApplyHook(0x3B6826, EndGameHook, HookFlags::IsCall)
-			&& Util::PatchAddress(0x3B682B, "\x90", 1)
+			&& Hook(0x3B6826, EndGameHook, HookFlags::IsCall).Apply()
+			&& Patch::NopFill(0x3B682B, 1)
 			// Prevent game variant weapons from being overridden
-			&& Util::PatchAddress(0x1A315F, "\xEB", 1)
-			&& Util::PatchAddress(0x1A31A4, "\xEB", 1);
+			&& Patch(0x1A315F, 0xEB).Apply()
+			&& Patch(0x1A31A4, 0xEB).Apply();
 	}
 }

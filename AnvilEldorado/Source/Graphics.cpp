@@ -1,4 +1,5 @@
-#include "Utils\Util.hpp"
+#include "Utils\Hook.hpp"
+#include "Utils\Patch.hpp"
 #include "Engine.hpp"
 
 namespace AnvilEldorado
@@ -38,22 +39,23 @@ namespace AnvilEldorado
 	bool Engine::ApplyPatches_Graphics()
 	{
 		using AnvilCommon::Utils::HookFlags;
-		using AnvilCommon::Utils::Util;
+		using AnvilCommon::Utils::Hook;
+		using AnvilCommon::Utils::Patch;
 
 			// Runs when the game's resolution is changed
-		return Util::ApplyHook(0x621303, ResolutionChangeHook, HookFlags::IsCall)
+		return Hook(0x621303, ResolutionChangeHook, HookFlags::IsCall).Apply()
 			// Fix aspect ratio not matching resolution
-			&& Util::ApplyHook(0x6648C9, AspectRatioHook, HookFlags::IsCall)
-			&& Util::ApplyHook(0x216487, AspectRatioHook, HookFlags::IsCall)
+			&& Hook(0x6648C9, AspectRatioHook, HookFlags::IsCall).Apply()
+			&& Hook(0x216487, AspectRatioHook, HookFlags::IsCall).Apply()
 			// Disable converting the game's resolution to 16:9
-			&& Util::PatchAddress(0x62217D, "\x90\x90", 2)
-			&& Util::PatchAddress(0x622183, "\x90\x90\x90\x90\x90\x90", 6)
+			&& Patch::NopFill(0x62217D, 2)
+			&& Patch::NopFill(0x622183, 6)
 			// Allow the user to select any resolution that Windows supports in the settings screen
-			&& Util::PatchAddress(0x10BF1B, "\x90\x90", 2)
-			&& Util::PatchAddress(0x10BF21, "\x90\x90\x90\x90\x90\x90", 6)
+			&& Patch::NopFill(0x10BF1B, 2)
+			&& Patch::NopFill(0x10BF21, 6)
 			// Prevent FOV from being overridden when the game loads
-			&& Util::PatchAddress(0x25FA79, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10)
-			&& Util::PatchAddress(0x25FA86, "\x90\x90\x90\x90\x90", 5)
-			&& Util::ApplyHook(0x10CA02, FovHook);
+			&& Patch::NopFill(0x25FA79, 10)
+			&& Patch::NopFill(0x25FA86, 5)
+			&& Hook(0x10CA02, FovHook).Apply();
 	}
 }

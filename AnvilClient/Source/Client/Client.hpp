@@ -5,7 +5,7 @@
 
 namespace Anvil::Client
 {
-	class AnvilClient : AnvilCommon::IInitializable, public AnvilCommon::Utils::Singleton<AnvilClient>
+	class AnvilClient : AnvilCommon::IInitializable, public AnvilCommon::Singleton<AnvilClient>
 	{
 	private:
 		std::shared_ptr<AnvilCommon::IInitializable> m_Engine;

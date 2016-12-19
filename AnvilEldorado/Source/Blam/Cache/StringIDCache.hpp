@@ -12,7 +12,7 @@ namespace Blam::Cache
 		int32_t StringDataSize;
 	};
 
-	struct StringIDCache : public AnvilCommon::Utils::Singleton<StringIDCache>
+	struct StringIDCache : public AnvilCommon::Singleton<StringIDCache>
 	{
 		StringIDCacheHeader Header;
 		char *Data;

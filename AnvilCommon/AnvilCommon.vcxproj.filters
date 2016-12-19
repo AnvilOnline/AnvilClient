@@ -8,9 +8,13 @@
     <ClInclude Include="Source\Globals.hpp" />
     <ClInclude Include="Source\Utils\Singleton.hpp" />
     <ClInclude Include="Depends\Include\MinHook.h" />
+    <ClInclude Include="Source\Utils\Hook.hpp" />
+    <ClInclude Include="Source\Utils\Patch.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utils\Util.cpp" />
     <ClCompile Include="Source\Utils\Logger.cpp" />
+    <ClCompile Include="Source\Utils\Hook.cpp" />
+    <ClCompile Include="Source\Utils\Patch.cpp" />
   </ItemGroup>
 </Project>

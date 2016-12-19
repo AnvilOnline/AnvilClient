@@ -4,7 +4,9 @@
 #include <sstream>
 #include "BuildInfo.hpp"
 #include "Globals.hpp"
-#include "Utils\Util.hpp"
+#include "Utils\Logger.hpp"
+#include "Utils\Hook.hpp"
+#include "Utils\Patch.hpp"
 #include "Blam\Network\Session.hpp"
 #include "Engine.hpp"
 
@@ -614,97 +616,86 @@ namespace AnvilEldorado
 		}
 	}
 
+	bool PatchVersionNumbers()
+	{
+		using AnvilCommon::Utils::Patch;
+
+		uint32_t s_VersionNumber = ANVIL_BUILD;
+		auto *s_Version = (uint8_t *)&s_VersionNumber;
+
+		return Patch(0x101421, { s_Version[3], s_Version[2], s_Version[1], s_Version[0] }).Apply()
+			&& Patch(0x10143A, { s_Version[3], s_Version[2], s_Version[1], s_Version[0] }).Apply();
+	}
+
+
+	bool HookVirtualMethod(const size_t p_Offset, void *p_NewFunction, void *p_BaseAddress = nullptr)
+	{
+		DWORD s_Temp1, s_Temp2;
+
+		auto *s_Address = reinterpret_cast<uint32_t *>((uint8_t *)p_BaseAddress + p_Offset);
+
+		if (!VirtualProtect(s_Address, 4, PAGE_READWRITE, &s_Temp1))
+		{
+			std::stringstream ss;
+			ss << "Failed to set protection on memory address " << std::hex << (void*)s_Address;
+			
+			WriteLog("ERROR: %s", ss.str().c_str());
+
+			return false;
+		}
+		
+		*s_Address = (uint32_t)p_NewFunction;
+		VirtualProtect(s_Address, 4, s_Temp1, &s_Temp2);
+
+		return true;
+	}
+
 	bool Engine::ApplyPatches_Network()
 	{
 		using AnvilCommon::Utils::HookFlags;
-		using AnvilCommon::Utils::Util;
+		using AnvilCommon::Utils::Hook;
+		using AnvilCommon::Utils::Patch;
 
-		auto *s_ModuleBase = AnvilCommon::Internal_GetModuleStorage();
-
-		// Fix network debug strings having (null) instead of an IP address
-		Util::ApplyHook(0x3F6F0, GetIPStringFromInAddrHook);
-
-		// Fix for XnAddrToInAddr to try checking syslink-menu data for XnAddr->InAddr mapping before consulting XNet
-		Util::ApplyHook(0x30B6C, XnAddrToInAddrHook, HookFlags::IsCall);
-		Util::ApplyHook(0x30F51, InAddrToXnAddrHook, HookFlags::IsCall);
-
-		// Hook call to Network_managed_session_create_session_internal so we can detect when an online game is started
-		Util::ApplyHook(0x82AAC, Network_ManagedSession_CreateSessionInternal_Hook, HookFlags::IsCall);
-
-		// Patch version subs to return version of this DLL, to make people with older DLLs incompatible
-		uint32_t verNum = ANVIL_BUILD;
-		*reinterpret_cast<uint32_t *>((uint8_t *)s_ModuleBase + 0x101421) = verNum;
-		*reinterpret_cast<uint32_t *>((uint8_t *)s_ModuleBase + 0x10143A) = verNum;
-
-		// Player-properties packet hooks
-		Util::ApplyHook(0x5DD20, PeerRequestPlayerDesiredPropertiesUpdateHook);
-		Util::ApplyHook(0xDAF4F, ApplyPlayerPropertiesExtendedHook, HookFlags::IsCall);
-		Util::ApplyHook(0xDFF7E, RegisterPlayerPropertiesPacketHook, HookFlags::IsCall);
-		Util::ApplyHook(0xDFD53, SerializePlayerPropertiesHook, HookFlags::IsCall);
-		Util::ApplyHook(0xDE178, DeserializePlayerPropertiesHook, HookFlags::IsCall);
-
-		// Hook leader_request_boot_machine so we can do some extra things if the boot succeeded
-		Util::ApplyHook(0x37E17, RequestBootMachineHook, HookFlags::IsCall);
-
-		// Pong hook
-		Util::ApplyHook(0x9D9DB, PongReceivedHook);
-
-		// Lifecycle state change hook
-		Util::ApplyHook(0x8E527, LifeCycleStateChangedHook, HookFlags::IsCall);
-		Util::ApplyHook(0x8E10F, LifeCycleStateChangedHook, HookFlags::IsCall);
-
-		// Hook the join request handler to check the user's IP address against the ban list
-		Util::ApplyHook(0x9D0F7, Network_Session_HandleJoinRequest_Hook, HookFlags::IsCall);
-
-		// Hook c_life_cycle_state_handler_end_game_write_stats's vftable ::entry method
-		DWORD s_Temp1;
-		DWORD s_Temp2;
-		auto s_Address = reinterpret_cast<uint32_t *>(0x16183A0);
-		if (!VirtualProtect(s_Address, 4, PAGE_READWRITE, &s_Temp1))
-		{
-			std::stringstream ss;
-			ss << "Failed to set protection on memory address " << std::hex << (void*)s_Address;
-			OutputDebugString(ss.str().c_str());
-		}
-		else
-		{
-			*s_Address = (uint32_t)&Network_State_EndGame_WriteStatsEnter_Hook;
-			VirtualProtect(s_Address, 4, s_Temp1, &s_Temp2);
-		}
-
-		// Hook c_life_cycle_state_handler_leaving's vftable ::entry method
-		s_Address = reinterpret_cast<uint32_t *>(0x16183BC);
-		if (!VirtualProtect(s_Address, 4, PAGE_READWRITE, &s_Temp1))
-		{
-			std::stringstream ss;
-			ss << "Failed to set protection on memory address " << std::hex << (void*)s_Address;
-			OutputDebugString(ss.str().c_str());
-		}
-		else
-		{
-			*s_Address = (uint32_t)&Network_State_LeavingEnter_Hook;
-			VirtualProtect(s_Address, 4, s_Temp1, &s_Temp2);
-		}
-
-		// Set the max player count to Server.MaxPlayers when hosting a lobby
-		Util::ApplyHook(0x67FA0D, Network_GetMaxPlayers_Hook, HookFlags::IsCall);
-
-		Util::ApplyHook(0x3BAFB, Network_GetEndpoint_Hook, HookFlags::IsCall);
-
-		Util::ApplyHook(0x7F5B9, Network_Session_JoinRemoteSession_Hook, HookFlags::IsCall);
-
-		// Hook Network_session_initiate_leave_protocol in Network_session_idle_peer_joining's error states
-		// "peer join timed out waiting for secure connection to become established"
-		Util::ApplyHook(0x9BFCA, Network_Session_InitiateLeaveProtocol_Hook, HookFlags::IsCall);
-		// "peer join timed out waiting for initial updates"
-		Util::ApplyHook(0x9C0BE, Network_Session_InitiateLeaveProtocol_Hook, HookFlags::IsCall);
-
-		// "received initial update, clearing"
-		Util::ApplyHook(0x899AF, Network_Session_ParametersClear_Hook, HookFlags::IsCall);
-
-		// Fix dedicated servers
-		Util::ApplyHook(0x62E6F3, DedicatedServerHook);
-
-		return true;
+			// Fix network debug strings having (null) instead of an IP address
+		return Hook(0x3F6F0, GetIPStringFromInAddrHook).Apply()
+			// Fix for XnAddrToInAddr to try checking syslink-menu data for XnAddr->InAddr mapping before consulting XNet
+			&& Hook(0x30B6C, XnAddrToInAddrHook, HookFlags::IsCall).Apply()
+			&& Hook(0x30F51, InAddrToXnAddrHook, HookFlags::IsCall).Apply()
+			// Hook call to Network_managed_session_create_session_internal so we can detect when an online game is started
+			&& Hook(0x82AAC, Network_ManagedSession_CreateSessionInternal_Hook, HookFlags::IsCall).Apply()
+			// Patch version subs to return version of this DLL, to make people with older DLLs incompatible
+			&& PatchVersionNumbers()
+			// Player-properties packet hooks
+			&& Hook(0x5DD20, PeerRequestPlayerDesiredPropertiesUpdateHook).Apply()
+			&& Hook(0xDAF4F, ApplyPlayerPropertiesExtendedHook, HookFlags::IsCall).Apply()
+			&& Hook(0xDFF7E, RegisterPlayerPropertiesPacketHook, HookFlags::IsCall).Apply()
+			&& Hook(0xDFD53, SerializePlayerPropertiesHook, HookFlags::IsCall).Apply()
+			&& Hook(0xDE178, DeserializePlayerPropertiesHook, HookFlags::IsCall).Apply()
+			// Hook leader_request_boot_machine so we can do some extra things if the boot succeeded
+			&& Hook(0x37E17, RequestBootMachineHook, HookFlags::IsCall).Apply()
+			// Pong hook
+			&& Hook(0x9D9DB, PongReceivedHook).Apply()
+			// Lifecycle state change hook
+			&& Hook(0x8E527, LifeCycleStateChangedHook, HookFlags::IsCall).Apply()
+			&& Hook(0x8E10F, LifeCycleStateChangedHook, HookFlags::IsCall).Apply()
+			// Hook the join request handler to check the user's IP address against the ban list
+			&& Hook(0x9D0F7, Network_Session_HandleJoinRequest_Hook, HookFlags::IsCall).Apply()
+			// Hook c_life_cycle_state_handler_end_game_write_stats's vftable ::entry method
+			&& HookVirtualMethod(0x16183A0, Network_State_EndGame_WriteStatsEnter_Hook)
+			// Hook c_life_cycle_state_handler_leaving's vftable ::entry method
+			&& HookVirtualMethod(0x16183BC, Network_State_LeavingEnter_Hook)
+			// Set the max player count to Server.MaxPlayers when hosting a lobby
+			&& Hook(0x67FA0D, Network_GetMaxPlayers_Hook, HookFlags::IsCall).Apply()
+			&& Hook(0x3BAFB, Network_GetEndpoint_Hook, HookFlags::IsCall).Apply()
+			&& Hook(0x7F5B9, Network_Session_JoinRemoteSession_Hook, HookFlags::IsCall).Apply()
+			// Hook Network_session_initiate_leave_protocol in Network_session_idle_peer_joining's error states
+			// "peer join timed out waiting for secure connection to become established"
+			&& Hook(0x9BFCA, Network_Session_InitiateLeaveProtocol_Hook, HookFlags::IsCall).Apply()
+			// "peer join timed out waiting for initial updates"
+			&& Hook(0x9C0BE, Network_Session_InitiateLeaveProtocol_Hook, HookFlags::IsCall).Apply()
+			// "received initial update, clearing"
+			&& Hook(0x899AF, Network_Session_ParametersClear_Hook, HookFlags::IsCall).Apply()
+			// Fix dedicated servers
+			&& Hook(0x62E6F3, DedicatedServerHook).Apply();
 	}
 }

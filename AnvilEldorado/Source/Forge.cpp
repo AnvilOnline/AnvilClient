@@ -1,4 +1,5 @@
-#include "Utils\Util.hpp"
+#include "Utils\Hook.hpp"
+#include "Utils\Patch.hpp"
 #include "Blam\Objects\ObjectData.hpp"
 #include "Engine.hpp"
 
@@ -117,28 +118,21 @@ namespace AnvilEldorado
 	bool Engine::ApplyPatches_Forge()
 	{
 		using AnvilCommon::Utils::HookFlags;
-		using AnvilCommon::Utils::Util;
-
-		// Change the way that Forge handles dpad up so that it doesn't mess with key repeat
-		// Comparing the action tick count to 1 instead of using the "handled" flag does roughly the same thing and lets the menu UI read the key too
-		Util::PatchAddress(0x19F17F, "\x75", 1);
-		Util::PatchAddress(0x19F198, "\x90\x90\x90\x90", 4);
-
-		Util::ApplyHook(0x19D482, Forge_UpdateInput_Hook, HookFlags::IsCall);
-
-		Util::ApplyHook(0x771C7D, CheckKillTriggersHook, HookFlags::IsCall);
-		Util::ApplyHook(0x7B4C32, CheckKillTriggersHook, HookFlags::IsCall);
-
-		Util::ApplyHook(0x19EBA1, ObjectSafeZoneHook, HookFlags::IsCall);
-		Util::ApplyHook(0x19FDBE, ObjectSafeZoneHook, HookFlags::IsCall);
-		Util::ApplyHook(0x19FEEC, ObjectSafeZoneHook, HookFlags::IsCall);
-		Util::ApplyHook(0x32663D, ObjectSafeZoneHook, HookFlags::IsCall);
-
-		Util::ApplyHook(0x2749D1, PushBarriersGetStructureDesignHook, HookFlags::IsCall);
-		Util::ApplyHook(0x274DBA, PushBarriersGetStructureDesignHook, HookFlags::IsCall);
-		Util::ApplyHook(0x2750F8, PushBarriersGetStructureDesignHook, HookFlags::IsCall);
-		Util::ApplyHook(0x275655, PushBarriersGetStructureDesignHook, HookFlags::IsCall);
-
-		return true;
+		using AnvilCommon::Utils::Hook;
+		using AnvilCommon::Utils::Patch;
+		
+		return Patch(0x19F17F, 0x75).Apply()
+			&& Patch::NopFill(0x19F198, 4)
+			&& Hook(0x19D482, Forge_UpdateInput_Hook, HookFlags::IsCall).Apply()
+			&& Hook(0x771C7D, CheckKillTriggersHook, HookFlags::IsCall).Apply()
+			&& Hook(0x7B4C32, CheckKillTriggersHook, HookFlags::IsCall).Apply()
+			&& Hook(0x19EBA1, ObjectSafeZoneHook, HookFlags::IsCall).Apply()
+			&& Hook(0x19FDBE, ObjectSafeZoneHook, HookFlags::IsCall).Apply()
+			&& Hook(0x19FEEC, ObjectSafeZoneHook, HookFlags::IsCall).Apply()
+			&& Hook(0x32663D, ObjectSafeZoneHook, HookFlags::IsCall).Apply()
+			&& Hook(0x2749D1, PushBarriersGetStructureDesignHook, HookFlags::IsCall).Apply()
+			&& Hook(0x274DBA, PushBarriersGetStructureDesignHook, HookFlags::IsCall).Apply()
+			&& Hook(0x2750F8, PushBarriersGetStructureDesignHook, HookFlags::IsCall).Apply()
+			&& Hook(0x275655, PushBarriersGetStructureDesignHook, HookFlags::IsCall).Apply();
 	}
 }

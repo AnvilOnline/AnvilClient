@@ -48,6 +48,9 @@
     <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
     <ClCompile Include="Source\Audio.cpp" />
     <ClCompile Include="Source\Game.cpp" />
+    <ClCompile Include="Source\Modules\CommandMap.cpp" />
+    <ClCompile Include="Source\Modules\ModuleBase.cpp" />
+    <ClCompile Include="Source\Modules\ModuleCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -108,5 +111,8 @@
     <ClInclude Include="Source\Blam\Objects\ObjectDatum.hpp" />
     <ClInclude Include="Source\Blam\Network\Session.hpp" />
     <ClInclude Include="Source\Blam\Tags\Game\CacheFileGlobalTags.hpp" />
+    <ClInclude Include="Source\Modules\CommandMap.hpp" />
+    <ClInclude Include="Source\Modules\ModuleBase.hpp" />
+    <ClInclude Include="Source\Modules\ModuleCamera.hpp" />
   </ItemGroup>
 </Project>

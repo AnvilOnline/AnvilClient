@@ -2,7 +2,8 @@
 #include <Windows.h>
 #include "Globals.hpp"
 #include "Utils\Logger.hpp"
-#include "Utils\Util.hpp"
+#include "Utils\Hook.hpp"
+#include "Utils\Patch.hpp"
 #include "Blam\Cache\StringIDCache.hpp"
 #include "Engine.hpp"
 
@@ -73,7 +74,8 @@ namespace AnvilEldorado
 
 	bool Engine::ApplyPatches_Core()
 	{
-		using AnvilCommon::Utils::Util;
+		using AnvilCommon::Utils::Hook;
+		using AnvilCommon::Utils::Patch;
 
 		//Disable Windows DPI scaling
 		SetProcessDPIAware();
@@ -82,18 +84,18 @@ namespace AnvilEldorado
 		UnprotectMemory();
 
 			// No --account args
-		return Util::PatchAddress(0x43731A, "\xEB\x0E", 2)
-			&& Util::PatchAddress(0x4373AD, "\xEB\x03", 2)
+		return Patch(0x43731A, { 0xEB, 0x0E }).Apply()
+			&& Patch(0x4373AD, { 0xEB, 0x03 }).Apply()
 			// Disable saber's additions to the engine
-			&& Util::ApplyHook(0x200990, Game_InitSaberCode)
+			&& Hook(0x200990, Game_InitSaberCode).Apply()
 			// Disable Bink videos
-			&& Util::ApplyHook(0x699120, Video_GetBinkVideoPath)
+			&& Hook(0x699120, Video_GetBinkVideoPath).Apply()
 			// Set game locale to english
-			&& Util::PatchAddress(0x2333FD, "\x00", 1)
+			&& Patch(0x2333FD, 0x00).Apply()
 			// Enable tag edits
-			&& Util::PatchAddress(0x101A5B, "\xEB", 1)
-			&& Util::PatchAddress(0x102874, "\x90\x90", 2)
-			&& Util::PatchAddress(0x1030AA, "\x90\x90", 2)
-			&& Util::ApplyHook(0x1030EA, TagsLoadedHook);
+			&& Patch(0x101A5B, 0xEB).Apply()
+			&& Patch::NopFill(0x102874, 2)
+			&& Patch::NopFill(0x1030AA, 2)
+			&& Hook(0x1030EA, TagsLoadedHook).Apply();
 	}
 }

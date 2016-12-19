@@ -76,6 +76,9 @@
     <ClInclude Include="Source\Blam\Tags\TagReference.hpp" />
     <ClInclude Include="Source\Blam\Text\StringID.hpp" />
     <ClInclude Include="Source\Engine.hpp" />
+    <ClInclude Include="Source\Modules\CommandMap.hpp" />
+    <ClInclude Include="Source\Modules\ModuleBase.hpp" />
+    <ClInclude Include="Source\Modules\ModuleCamera.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Armor.cpp" />
@@ -120,6 +123,9 @@
     <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\Graphics.cpp" />
     <ClCompile Include="Source\Input.cpp" />
+    <ClCompile Include="Source\Modules\CommandMap.cpp" />
+    <ClCompile Include="Source\Modules\ModuleBase.cpp" />
+    <ClCompile Include="Source\Modules\ModuleCamera.cpp" />
     <ClCompile Include="Source\Network.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\Scoreboard.cpp" />

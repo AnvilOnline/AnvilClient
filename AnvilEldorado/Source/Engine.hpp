@@ -1,10 +1,11 @@
 #pragma once
 #include "Interfaces\IInitializable.hpp"
 #include "Utils\Singleton.hpp"
+#include "Modules\ModuleCamera.hpp"
 
 namespace AnvilEldorado
 {
-	class Engine final : public AnvilCommon::IInitializable, public AnvilCommon::Utils::Singleton<Engine>
+	class Engine final : public AnvilCommon::IInitializable, public AnvilCommon::Singleton<Engine>
 	{
 	private:
 		bool ApplyPatches_Core();
@@ -22,6 +23,8 @@ namespace AnvilEldorado
 		bool ApplyPatches_VirtualKeyboard();
 	
 		bool OnTagsLoaded_Armor();
+
+		bool m_MainMenuShown = false;
 
 	public:
 		inline bool ApplyPatches()
@@ -46,9 +49,24 @@ namespace AnvilEldorado
 			return OnTagsLoaded_Armor();
 		}
 
+		inline bool HasMainMenuShown() const
+		{
+			return m_MainMenuShown;
+		}
+
+		inline void SetMainMenuShown(const bool p_Shown = true)
+		{
+			m_MainMenuShown = p_Shown;
+		}
+
 		inline bool Init() override
 		{
-			return ApplyPatches();
+			if (!ApplyPatches())
+				return false;
+
+			Modules::ModuleCamera::Instance();
+
+			return true;
 		}
 	};
 }

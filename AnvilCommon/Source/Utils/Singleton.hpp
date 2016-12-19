@@ -2,7 +2,7 @@
 #include <memory>
 #include <mutex>
 
-namespace AnvilCommon::Utils
+namespace AnvilCommon
 {
 	template <typename T>
 	class Singleton

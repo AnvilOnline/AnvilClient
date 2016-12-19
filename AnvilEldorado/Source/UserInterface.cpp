@@ -3,7 +3,8 @@
 #include <vector>
 #include "BuildInfo.hpp"
 #include "Globals.hpp"
-#include "Utils\Util.hpp"
+#include "Utils\Hook.hpp"
+#include "Utils\Patch.hpp"
 #include "Engine.hpp"
 
 namespace AnvilEldorado
@@ -161,60 +162,45 @@ namespace AnvilEldorado
 	bool Engine::ApplyPatches_UserInterface()
 	{
 		using AnvilCommon::Utils::HookFlags;
-		using AnvilCommon::Utils::Util;
+		using AnvilCommon::Utils::Hook;
+		using AnvilCommon::Utils::Patch;
 
-		auto *s_ModuleBase = AnvilCommon::Internal_GetModuleStorage();
-
-		// Game window creation callbacks
-		Util::ApplyHook(0x622057, CreateGameWindowHook, HookFlags::IsCall);
-
-		// Hook window title sprintf to replace the dest buf with our string
-		Util::ApplyHook(0x2EB84, WindowTitleSprintfHook, HookFlags::IsCall);
-
-		// Rewire $hf2pEngine.PerformLogin() to show the pause menu
-		Util::ApplyHook(0x234756, ShowHalo3PauseMenuHook, HookFlags::IsCall);
-		Util::PatchAddress(0x23475B, "\x90", 1);
-
-		// Allows you to press B to close the H3 pause menu
-		// TODO: find out what the byte that's being checked does, we're just patching out the check here but maybe it's important
-		Util::PatchAddress(0x6E05F3, "\x90\x90", 2);
-
-		// Fix "Network" setting in lobbies (change broken 0x100B7 menuID to 0x100B6)
-		Util::PatchAddress(0x6C34B0, "\xB6", 1);
-
-		// Fix gamepad option in settings (todo: find out why it doesn't detect gamepads
-		// and find a way to at least enable pressing ESC when gamepad is enabled)
-		Util::PatchAddress(0x20D7F2, "\x90\x90", 2);
-
-		// Fix menu update code to include missing mainmenu code
-		Util::ApplyHook(0x6DFB73, MenuUpdateHook, HookFlags::IsCall);
-
-		// Sorta hacky way of getting game options screen to show when you press X on lobby
-		// TODO: find real way of showing the [X] Edit Game Options text, that might enable it to work without patching
-		Util::ApplyHook(0x721B8A, LobbyMenuButtonHandlerHook, HookFlags::IsJmpIfEqual);
-
-		// Remove Xbox Live from the network menu
-		Util::PatchAddress(0x723D85, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 23);
-		*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x723DA1) = 0;
-		*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x723DB8) = 1;
-		Util::PatchAddress(0x723DFF, "\x90\x90\x90", 3);
-		*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x723E07) = 0;
-		*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x723E1C) = 0;
-
-		// Localized string override hook
-		Util::ApplyHook(0x11E040, LocalizedStringHook);
-
-		// Remove "BUILT IN" text when choosing map/game variants by feeding the UI_SetVisiblityOfElement func a nonexistant string ID for the element (0x202E8 instead of 0x102E8)
-		// TODO: find way to fix this text instead of removing it, since the 0x102E8 element (subitem_edit) is used for other things like editing/viewing map variant metadata
-		Util::PatchAddress(0x705D6F, "\x02", 1);
-
-		// Hook the call to create a lobby from the main menu so that we
-		// can show the server browser if matchmaking is selected
-		Util::ApplyHook(0x6E79A7, MainMenuCreateLobbyHook, HookFlags::IsCall);
-
-		// Enable H3UI scaling
-		Util::PatchAddress(0x61FAD1, "\x90\x90", 2);
-
-		return true;
+			// Game window creation callbacks
+		return Hook(0x622057, CreateGameWindowHook, HookFlags::IsCall).Apply()
+			// Hook window title sprintf to replace the dest buf with our string
+			&& Hook(0x2EB84, WindowTitleSprintfHook, HookFlags::IsCall).Apply()
+			// Rewire $hf2pEngine.PerformLogin() to show the pause menu
+			&& Hook(0x234756, ShowHalo3PauseMenuHook, HookFlags::IsCall).Apply()
+			&& Patch::NopFill(0x23475B, 1)
+			// Allows you to press B to close the H3 pause menu
+			// TODO: find out what the byte that's being checked does, we're just patching out the check here but maybe it's important
+			&& Patch::NopFill(0x6E05F3, 2)
+			// Fix "Network" setting in lobbies (change broken 0x100B7 menuID to 0x100B6)
+			&& Patch(0x6C34B0, 0xB6).Apply()
+			// Fix gamepad option in settings (todo: find out why it doesn't detect gamepads
+			// and find a way to at least enable pressing ESC when gamepad is enabled)
+			&& Patch::NopFill(0x20D7F2, 2)
+			// Fix menu update code to include missing mainmenu code
+			&& Hook(0x6DFB73, MenuUpdateHook, HookFlags::IsCall).Apply()
+			// Sorta hacky way of getting game options screen to show when you press X on lobby
+			// TODO: find real way of showing the [X] Edit Game Options text, that might enable it to work without patching
+			&& Hook(0x721B8A, LobbyMenuButtonHandlerHook, HookFlags::IsJmpIfEqual).Apply()
+			// Remove Xbox Live from the network menu
+			&& Patch::NopFill(0x723D85, 23)
+			&& Patch(0x723DA1, 0x00).Apply()
+			&& Patch(0x723DB8, 0x01).Apply()
+			&& Patch::NopFill(0x723DFF, 3)
+			&& Patch(0x723E07, 0x00).Apply()
+			&& Patch(0x723E1C, 0x00).Apply()
+			// Localized string override hook
+			&& Hook(0x11E040, LocalizedStringHook).Apply()
+			// Remove "BUILT IN" text when choosing map/game variants by feeding the UI_SetVisiblityOfElement func a nonexistant string ID for the element (0x202E8 instead of 0x102E8)
+			// TODO: find way to fix this text instead of removing it, since the 0x102E8 element (subitem_edit) is used for other things like editing/viewing map variant metadata
+			&& Patch(0x705D6F, 0x02).Apply()
+			// Hook the call to create a lobby from the main menu so that we
+			// can show the server browser if matchmaking is selected
+			&& Hook(0x6E79A7, MainMenuCreateLobbyHook, HookFlags::IsCall).Apply()
+			// Enable H3UI scaling
+			&& Patch::NopFill(0x61FAD1, 2);
 	}
 }

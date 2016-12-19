@@ -5,6 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnvilClient", "AnvilClient\AnvilClient.vcxproj", "{15EC28EA-8932-40C4-94A9-2C6CA9957F22}"
 	ProjectSection(ProjectDependencies) = postProject
+		{F7267A5F-7009-40A3-B523-424279DEF2C7} = {F7267A5F-7009-40A3-B523-424279DEF2C7}
 		{89774CFE-D1EA-435F-B484-DC092221BE23} = {89774CFE-D1EA-435F-B484-DC092221BE23}
 	EndProjectSection
 EndProject
@@ -15,47 +16,24 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnvilEldorado", "AnvilEldor
 		{89774CFE-D1EA-435F-B484-DC092221BE23} = {89774CFE-D1EA-435F-B484-DC092221BE23}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnvilAusar", "AnvilAusar\AnvilAusar.vcxproj", "{349E5495-8A3F-4057-B86B-E192663DA85E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{89774CFE-D1EA-435F-B484-DC092221BE23} = {89774CFE-D1EA-435F-B484-DC092221BE23}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Ausar = Debug|Ausar
 		Debug|Eldorado = Debug|Eldorado
-		Release|Ausar = Release|Ausar
 		Release|Eldorado = Release|Eldorado
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{15EC28EA-8932-40C4-94A9-2C6CA9957F22}.Debug|Ausar.ActiveCfg = Debug|x64
-		{15EC28EA-8932-40C4-94A9-2C6CA9957F22}.Debug|Ausar.Build.0 = Debug|x64
 		{15EC28EA-8932-40C4-94A9-2C6CA9957F22}.Debug|Eldorado.ActiveCfg = Debug|Win32
 		{15EC28EA-8932-40C4-94A9-2C6CA9957F22}.Debug|Eldorado.Build.0 = Debug|Win32
-		{15EC28EA-8932-40C4-94A9-2C6CA9957F22}.Release|Ausar.ActiveCfg = Release|x64
-		{15EC28EA-8932-40C4-94A9-2C6CA9957F22}.Release|Ausar.Build.0 = Release|x64
 		{15EC28EA-8932-40C4-94A9-2C6CA9957F22}.Release|Eldorado.ActiveCfg = Release|Win32
 		{15EC28EA-8932-40C4-94A9-2C6CA9957F22}.Release|Eldorado.Build.0 = Release|Win32
-		{89774CFE-D1EA-435F-B484-DC092221BE23}.Debug|Ausar.ActiveCfg = Debug|x64
-		{89774CFE-D1EA-435F-B484-DC092221BE23}.Debug|Ausar.Build.0 = Debug|x64
 		{89774CFE-D1EA-435F-B484-DC092221BE23}.Debug|Eldorado.ActiveCfg = Debug|Win32
 		{89774CFE-D1EA-435F-B484-DC092221BE23}.Debug|Eldorado.Build.0 = Debug|Win32
-		{89774CFE-D1EA-435F-B484-DC092221BE23}.Release|Ausar.ActiveCfg = Release|x64
-		{89774CFE-D1EA-435F-B484-DC092221BE23}.Release|Ausar.Build.0 = Release|x64
 		{89774CFE-D1EA-435F-B484-DC092221BE23}.Release|Eldorado.ActiveCfg = Release|Win32
 		{89774CFE-D1EA-435F-B484-DC092221BE23}.Release|Eldorado.Build.0 = Release|Win32
-		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Debug|Ausar.ActiveCfg = Debug|Win32
 		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Debug|Eldorado.ActiveCfg = Debug|Win32
 		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Debug|Eldorado.Build.0 = Debug|Win32
-		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Release|Ausar.ActiveCfg = Release|Win32
 		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Release|Eldorado.ActiveCfg = Release|Win32
 		{F7267A5F-7009-40A3-B523-424279DEF2C7}.Release|Eldorado.Build.0 = Release|Win32
-		{349E5495-8A3F-4057-B86B-E192663DA85E}.Debug|Ausar.ActiveCfg = Debug|x64
-		{349E5495-8A3F-4057-B86B-E192663DA85E}.Debug|Ausar.Build.0 = Debug|x64
-		{349E5495-8A3F-4057-B86B-E192663DA85E}.Debug|Eldorado.ActiveCfg = Debug|x64
-		{349E5495-8A3F-4057-B86B-E192663DA85E}.Release|Ausar.ActiveCfg = Release|x64
-		{349E5495-8A3F-4057-B86B-E192663DA85E}.Release|Ausar.Build.0 = Release|x64
-		{349E5495-8A3F-4057-B86B-E192663DA85E}.Release|Eldorado.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

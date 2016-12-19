@@ -14,7 +14,7 @@
 
 namespace AnvilCommon::Utils
 {
-	class Logger : IInitializable, public AnvilCommon::Utils::Singleton<Logger>
+	class Logger : IInitializable, public AnvilCommon::Singleton<Logger>
 	{
 	private:
 		std::mutex m_Lock;

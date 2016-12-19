@@ -149,7 +149,7 @@ namespace Blam::Game
 
 	// Singleton object which lets the player-properties packet be extended with custom data
 	// TODO: Make this more generic and not so specific to player-properties
-	class PlayerPropertiesExtender : public AnvilCommon::Utils::Singleton<PlayerPropertiesExtender>
+	class PlayerPropertiesExtender : public AnvilCommon::Singleton<PlayerPropertiesExtender>
 	{
 	public:
 		// Adds an extension to the player-properties packet.

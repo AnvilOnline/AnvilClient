@@ -1,4 +1,5 @@
-#include "Utils\Util.hpp"
+#include "Utils\Hook.hpp"
+#include "Utils\Patch.hpp"
 #include "Engine.hpp"
 
 namespace AnvilEldorado
@@ -33,16 +34,17 @@ namespace AnvilEldorado
 
 	bool Engine::ApplyPatches_Audio()
 	{
-		using AnvilCommon::Utils::Util;
+		using AnvilCommon::Utils::Hook;
+		using AnvilCommon::Utils::Patch;
 
 			// Adds the FMOD WASAPI output fix from FMODEx 4.44.56, which stops weird popping sound at startup
-		return Util::PatchAddress(0x100DA75, "\x02", 1)
+		return Patch(0x100DA75, 0x02).Apply()
 			// Increase max virtual audio channels from 64 to 256
 			// http://www.fmod.org/docs/content/generated/FMOD_System_Init.html
-			&& Util::ApplyHook(0x4E9C, FmodSystemInitHook)
-			&& Util::ApplyHook(0x4EC0, FmodSystemInitHook2)
+			&& Hook(0x4E9C, FmodSystemInitHook).Apply()
+			&& Hook(0x4EC0, FmodSystemInitHook2).Apply()
 			// Increase software channels from 192 to 256
 			// http://www.fmod.org/docs/content/generated/FMOD_System_SetSoftwareChannels.html
-			&& Util::PatchAddress(0x4DF9, "\x00\x00\x01\x00", 4);
+			&& Patch(0x4DF9, { 0x00, 0x00, 0x01, 0x00 }).Apply();
 	}
 }

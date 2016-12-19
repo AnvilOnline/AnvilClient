@@ -1,3 +1,4 @@
+#include "Utils\Hook.hpp"
 #include "Engine.hpp"
 #include "Blam\Game\Players.hpp"
 #include "Blam\Tags\Scenario\Scenario.hpp"
@@ -56,9 +57,9 @@ namespace AnvilEldorado
 
 	bool Engine::ApplyPatches_Player()
 	{
-		using AnvilCommon::Utils::Util;
+		using AnvilCommon::Utils::Hook;
 
 			// Fix grenade loadouts
-		return Util::ApplyHook(0x1A3267, GrenadeLoadoutHook);
+		return Hook(0x1A3267, GrenadeLoadoutHook).Apply();
 	}
 }
