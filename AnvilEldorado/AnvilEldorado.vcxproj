@@ -79,6 +79,7 @@
     <ClInclude Include="Source\Modules\CommandMap.hpp" />
     <ClInclude Include="Source\Modules\ModuleBase.hpp" />
     <ClInclude Include="Source\Modules\ModuleCamera.hpp" />
+    <ClInclude Include="Source\Modules\ModuleDebug.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Armor.cpp" />
@@ -126,6 +127,7 @@
     <ClCompile Include="Source\Modules\CommandMap.cpp" />
     <ClCompile Include="Source\Modules\ModuleBase.cpp" />
     <ClCompile Include="Source\Modules\ModuleCamera.cpp" />
+    <ClCompile Include="Source\Modules\ModuleDebug.cpp" />
     <ClCompile Include="Source\Network.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\Scoreboard.cpp" />

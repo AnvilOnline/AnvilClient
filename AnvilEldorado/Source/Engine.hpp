@@ -2,6 +2,7 @@
 #include "Interfaces\IInitializable.hpp"
 #include "Utils\Singleton.hpp"
 #include "Modules\ModuleCamera.hpp"
+#include "Modules\ModuleDebug.hpp"
 
 namespace AnvilEldorado
 {
@@ -65,6 +66,7 @@ namespace AnvilEldorado
 				return false;
 
 			Modules::ModuleCamera::Instance();
+			Modules::ModuleDebug::Instance();
 
 			return true;
 		}
