@@ -26,7 +26,7 @@ namespace AnvilCommon::Utils
 	private:
 		size_t m_Offset;
 		void* m_DestFunc;
-		const HookFlags m_Flags;
+		HookFlags m_Flags;
 		std::vector<uint8_t> m_OriginalData;
 	};
 }

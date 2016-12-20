@@ -33,7 +33,6 @@
     <ClCompile Include="Source\Blam\Data\DataArray.cpp" />
     <ClCompile Include="Source\Blam\Game\Players.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
-    <ClCompile Include="Source\Armor.cpp" />
     <ClCompile Include="Source\Content.cpp" />
     <ClCompile Include="Source\Forge.cpp" />
     <ClCompile Include="Source\Graphics.cpp" />
@@ -48,10 +47,12 @@
     <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
     <ClCompile Include="Source\Audio.cpp" />
     <ClCompile Include="Source\Game.cpp" />
-    <ClCompile Include="Source\Modules\CommandMap.cpp" />
-    <ClCompile Include="Source\Modules\ModuleBase.cpp" />
-    <ClCompile Include="Source\Modules\ModuleCamera.cpp" />
-    <ClCompile Include="Source\Modules\ModuleDebug.cpp" />
+    <ClCompile Include="Source\Module.cpp" />
+    <ClCompile Include="Source\Command.cpp" />
+    <ClCompile Include="Source\CommandMap.cpp" />
+    <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\Debug.cpp" />
+    <ClCompile Include="Source\Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -112,9 +113,12 @@
     <ClInclude Include="Source\Blam\Objects\ObjectDatum.hpp" />
     <ClInclude Include="Source\Blam\Network\Session.hpp" />
     <ClInclude Include="Source\Blam\Tags\Game\CacheFileGlobalTags.hpp" />
-    <ClInclude Include="Source\Modules\CommandMap.hpp" />
-    <ClInclude Include="Source\Modules\ModuleBase.hpp" />
-    <ClInclude Include="Source\Modules\ModuleCamera.hpp" />
-    <ClInclude Include="Source\Modules\ModuleDebug.hpp" />
+    <ClInclude Include="Source\Module.hpp" />
+    <ClInclude Include="Source\Command.hpp" />
+    <ClInclude Include="Source\CommandMap.hpp" />
+    <ClInclude Include="Source\Camera.hpp" />
+    <ClInclude Include="Source\Debug.hpp" />
+    <ClInclude Include="Source\Graphics.hpp" />
+    <ClInclude Include="Source\Player.hpp" />
   </ItemGroup>
 </Project>

@@ -1,15 +1,31 @@
 #pragma once
+#include "Interfaces\IInitializable.hpp"
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
 #include "Utils\Singleton.hpp"
-#include "ModuleBase.hpp"
+#include "Module.hpp"
+#include "Blam\Math\RealPoint3D.hpp"
+#include "Blam\Math\RealVector2D.hpp"
+#include "Blam\Math\RealVector3D.hpp"
 
-namespace AnvilEldorado::Modules
+namespace AnvilEldorado
 {
 	using AnvilCommon::Utils::Hook;
 	using AnvilCommon::Utils::Patch;
 
-	class ModuleCamera final : public ModuleBase, public AnvilCommon::Singleton<ModuleCamera>
+	struct CameraGlobals
+	{
+		size_t UpdatePerspectiveFunction;
+		Blam::Math::RealPoint3D Position;
+		Blam::Math::RealVector3D PositionShift;
+		Blam::Math::RealVector2D LookShift;
+		float Depth;
+		float FieldOfView;
+		Blam::Math::RealVector3D Forward;
+		Blam::Math::RealVector2D Up;
+	};
+
+	class Camera final : public Module, public AnvilCommon::IInitializable, public AnvilCommon::Singleton<Camera>
 	{
 	public:
 		Command* VarCameraCrosshair;
@@ -39,7 +55,11 @@ namespace AnvilEldorado::Modules
 		Hook CameraPermissionHookAlt2;
 		Hook CameraPermissionHookAlt3;
 
-		ModuleCamera();
+		static CameraGlobals *GetCameraGlobals();
+
+		Camera();
+
+		bool Init() override;
 
 		void UpdatePosition();
 	};

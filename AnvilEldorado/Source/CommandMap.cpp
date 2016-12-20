@@ -10,70 +10,12 @@
 
 namespace
 {
-	PCHAR* CommandLineToArgvA(PCHAR CmdLine, int* _argc);
+	PCHAR *CommandLineToArgvA(PCHAR CmdLine, int* _argc);
 }
 
-namespace AnvilEldorado::Modules
+namespace AnvilEldorado
 {
-	Command::Command() : UpdateEvent(0), ValueInt(0), ValueFloat(0.f), DefaultValueInt(0), DefaultValueFloat(0.f), ValueIntMin(0), ValueIntMax(0), ValueFloatMin(0.f), ValueFloatMax(0.f)
-	{
-	}
-
-	std::string Command::GenerateHelpText()
-	{
-		std::stringstream ss;
-		ss << Name << " - " << Description << "." << std::endl;
-		ss << "Usage: " << Name << " ";
-		if (Type != eCommandTypeCommand)
-		{
-			ss << "<value(";
-			switch (Type)
-			{
-			case eCommandTypeVariableInt:
-				ss << "int";
-				break;
-			case eCommandTypeVariableInt64:
-				ss << "int64";
-				break;
-			case eCommandTypeVariableFloat:
-				ss << "float";
-				break;
-			case eCommandTypeVariableString:
-				ss << "string";
-				break;
-			}
-			ss << ")>" << std::endl << "Current value: " << ValueString << std::endl << std::endl;
-		}
-		else
-		{
-			std::stringstream paramStream;
-			for (auto arg : CommandArgs)
-			{
-				auto argname = arg;
-				std::string argdesc = "";
-				auto nameEnd = arg.find(" ");
-				if (nameEnd != std::string::npos)
-				{
-					argname = arg.substr(0, nameEnd);
-					if (arg.length() > (nameEnd + 1))
-						argdesc = arg.substr(nameEnd + 1);
-				}
-				ss << "<" << argname << "> ";
-				if (argdesc.length() > 0)
-					paramStream << "  " << argname << ": " << argdesc << std::endl;
-			}
-			ss << std::endl;
-			auto paramDescs = paramStream.str();
-			if (paramDescs.length() > 0)
-				ss << paramDescs << std::endl;
-			else
-				ss << std::endl;
-		}
-
-		return ss.str();
-	}
-
-	Command* CommandMap::FindCommand(const std::string& name)
+	Command *CommandMap::FindCommand(const std::string& name)
 	{
 		for (auto it = Commands.begin(); it < Commands.end(); it++)
 		if ((it->Name.length() > 0 && !_stricmp(it->Name.c_str(), name.c_str())) || (it->ShortName.length() > 0 && !_stricmp(it->ShortName.c_str(), name.c_str())))
@@ -82,7 +24,7 @@ namespace AnvilEldorado::Modules
 		return nullptr;
 	}
 
-	Command* CommandMap::AddCommand(Command command)
+	Command *CommandMap::AddCommand(Command command)
 	{
 		if (FindCommand(command.Name) || FindCommand(command.ShortName))
 			return nullptr;
@@ -94,11 +36,11 @@ namespace AnvilEldorado::Modules
 
 	void CommandMap::FinishAddCommands()
 	{
-		for (auto command : Commands)
+		for (auto &s_Command : Commands)
 		{
-			if (command.Type != eCommandTypeCommand && (command.Flags & eCommandFlagsDontUpdateInitial) != eCommandFlagsDontUpdateInitial)
-				if (command.UpdateEvent)
-					command.UpdateEvent(std::vector<std::string>(), std::string());
+			if ((s_Command.Type != CommandType::Command) && (s_Command.Flags & CommandFlags::DontUpdateInitial))
+				if (s_Command.UpdateEvent)
+					s_Command.UpdateEvent(std::vector<std::string>(), std::string());
 		}
 	}
 
@@ -125,13 +67,13 @@ namespace AnvilEldorado::Modules
 		}
 
 		auto cmd = FindCommand(args[0]);
-		if (!cmd || (isUserInput && cmd->Flags & eCommandFlagsInternal))
+		if (!cmd || (isUserInput && cmd->Flags & CommandFlags::Internal))
 		{
 			*output = "Command/Variable not found";
 			return false;
 		}
 
-		if ((cmd->Flags & eCommandFlagsRunOnMainMenu) && !Engine::Instance()->HasMainMenuShown())
+		if ((cmd->Flags & CommandFlags::RunOnMainMenu) && !Engine::Instance()->HasMainMenuShown())
 		{
 			queuedCommands.push_back(command);
 			*output = "Command queued until mainmenu shows";
@@ -139,7 +81,7 @@ namespace AnvilEldorado::Modules
 		}
 
 		// Host-only commands
-		if (cmd->Flags & eCommandFlagsCheat || cmd->Flags & eCommandFlagsHostOnly)
+		if (cmd->Flags & CommandFlags::Cheat || cmd->Flags & CommandFlags::HostOnly)
 		{
 			auto session = Blam::Network::GetActiveSession();
 			if (session && session->IsEstablished() && !session->IsHost())
@@ -154,7 +96,7 @@ namespace AnvilEldorado::Modules
 			for (int i = 1; i < numArgs; i++)
 				argsVect.push_back(args[i]);
 
-		if (cmd->Type == eCommandTypeCommand)
+		if (cmd->Type == CommandType::Command)
 			return cmd->UpdateEvent(argsVect, *output); // if it's a command call it and return
 
 		if (numArgs <= 1)
@@ -174,11 +116,11 @@ namespace AnvilEldorado::Modules
 			*output = "Invalid value";
 			return false;
 		case eVariableSetReturnValueOutOfRange:
-			if (cmd->Type == eCommandTypeVariableInt)
+			if (cmd->Type == CommandType::VariableInt)
 				*output = "Value " + argsVect[0] + " out of range [" + std::to_string(cmd->ValueIntMin) + ".." + std::to_string(cmd->ValueIntMax) + "]";
-			else if (cmd->Type == eCommandTypeVariableInt64)
+			else if (cmd->Type == CommandType::VariableInt64)
 				*output = "Value " + argsVect[0] + " out of range [" + std::to_string(cmd->ValueInt64Min) + ".." + std::to_string(cmd->ValueInt64Max) + "]";
-			else if (cmd->Type == eCommandTypeVariableFloat)
+			else if (cmd->Type == CommandType::VariableFloat)
 				*output = "Value " + argsVect[0] + " out of range [" + std::to_string(cmd->ValueFloatMin) + ".." + std::to_string(cmd->ValueFloatMax) + "]";
 			else
 				*output = "Value " + argsVect[0] + " out of range [this shouldn't be happening!]";
@@ -212,7 +154,7 @@ namespace AnvilEldorado::Modules
 	bool CommandMap::GetVariableInt(const std::string& name, unsigned long& value)
 	{
 		auto command = FindCommand(name);
-		if (!command || command->Type != eCommandTypeVariableInt)
+		if (!command || command->Type != CommandType::VariableInt)
 			return false;
 
 		value = command->ValueInt;
@@ -222,7 +164,7 @@ namespace AnvilEldorado::Modules
 	bool CommandMap::GetVariableInt64(const std::string& name, unsigned long long& value)
 	{
 		auto command = FindCommand(name);
-		if (!command || command->Type != eCommandTypeVariableInt64)
+		if (!command || command->Type != CommandType::VariableInt64)
 			return false;
 
 		value = command->ValueInt64;
@@ -232,7 +174,7 @@ namespace AnvilEldorado::Modules
 	bool CommandMap::GetVariableFloat(const std::string& name, float& value)
 	{
 		auto command = FindCommand(name);
-		if (!command || command->Type != eCommandTypeVariableFloat)
+		if (!command || command->Type != CommandType::VariableFloat)
 			return false;
 
 		value = command->ValueFloat;
@@ -242,7 +184,7 @@ namespace AnvilEldorado::Modules
 	bool CommandMap::GetVariableString(const std::string& name, std::string& value)
 	{
 		auto command = FindCommand(name);
-		if (!command || command->Type != eCommandTypeVariableString)
+		if (!command || command->Type != CommandType::VariableString)
 			return false;
 
 		value = command->ValueString;
@@ -261,17 +203,17 @@ namespace AnvilEldorado::Modules
 	VariableSetReturnValue CommandMap::SetVariable(Command* command, std::string& value, std::string& previousValue)
 	{
 		// Disallow setting internal variables through the console
-		if (command->Flags & eCommandFlagsInternal)
+		if (command->Flags & CommandFlags::Internal)
 			return eVariableSetReturnValueError;
 
 		try {
 			switch (command->Type)
 			{
-			case eCommandTypeVariableString:
+			case CommandType::VariableString:
 				previousValue = command->ValueString;
 				command->ValueString = value;
 				break;
-			case eCommandTypeVariableInt:
+			case CommandType::VariableInt:
 				{
 					previousValue = std::to_string(command->ValueInt);
 					auto newValue = std::stoul(value, 0, 0);
@@ -282,7 +224,7 @@ namespace AnvilEldorado::Modules
 					command->ValueString = std::to_string(command->ValueInt); // set the ValueString too so we can print the value out easier
 					break;
 				}
-			case eCommandTypeVariableInt64:
+			case CommandType::VariableInt64:
 				{
 					previousValue = std::to_string(command->ValueInt);
 					auto newValue = std::stoull(value, 0, 0);
@@ -293,7 +235,7 @@ namespace AnvilEldorado::Modules
 					command->ValueString = std::to_string(command->ValueInt64); // set the ValueString too so we can print the value out easier
 					break;
 				}
-			case eCommandTypeVariableFloat:
+			case CommandType::VariableFloat:
 				{
 					previousValue = std::to_string(command->ValueFloat);
 					auto newValue = std::stof(value, 0);
@@ -331,14 +273,14 @@ namespace AnvilEldorado::Modules
 		std::stringstream hasParent; // store commands with a parent module seperately, so they can be added to the main stringstream after the non-parent commands
 		for (auto cmd : tempCommands)
 		{
-			if (cmd.Flags & eCommandFlagsHidden || cmd.Flags & eCommandFlagsInternal)
+			if (cmd.Flags & CommandFlags::Hidden || cmd.Flags & CommandFlags::Internal)
 				continue;
 
 			if (!moduleFilter.empty() && (cmd.ModuleName.empty() || _stricmp(cmd.ModuleName.c_str(), moduleFilter.c_str())))
 				continue;
 
 			std::string helpText = cmd.Name;
-			if (cmd.Type != eCommandTypeCommand && !(cmd.Flags & eCommandFlagsOmitValueInList))
+			if (cmd.Type != CommandType::Command && !(cmd.Flags & CommandFlags::OmitValueInList))
 				helpText += " " + cmd.ValueString;
 
 			helpText += " - " + cmd.Description;
@@ -359,7 +301,7 @@ namespace AnvilEldorado::Modules
 		std::stringstream ss;
 		for (auto cmd : Commands)
 		{
-			if (cmd.Type == eCommandTypeCommand || !(cmd.Flags & eCommandFlagsArchived) || (cmd.Flags & eCommandFlagsInternal))
+			if (cmd.Type == CommandType::Command || !(cmd.Flags & CommandFlags::Archived) || (cmd.Flags & CommandFlags::Internal))
 				continue;
 
 			ss << cmd.Name << " \"" << cmd.ValueString << "\"" << std::endl;

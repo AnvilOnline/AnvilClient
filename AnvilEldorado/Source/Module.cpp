@@ -1,13 +1,13 @@
-#include "ModuleBase.hpp"
+#include "Module.hpp"
 
-namespace AnvilEldorado::Modules
+namespace AnvilEldorado
 {
-	ModuleBase::ModuleBase(const std::string &p_ModuleName)
+	Module::Module(const std::string &p_ModuleName)
 	{
 		this->moduleName = p_ModuleName;
 	}
 
-	Command* ModuleBase::AddCommand(const std::string& name, const std::string& shortName, const std::string& description, CommandFlags flags, CommandUpdateFunc updateEvent, std::initializer_list<std::string> arguments)
+	Command* Module::AddCommand(const std::string& name, const std::string& shortName, const std::string& description, CommandFlags flags, CommandUpdateFunc updateEvent, std::initializer_list<std::string> arguments)
 	{
 		Command command;
 		command.Name = moduleName + "." + name;
@@ -22,13 +22,13 @@ namespace AnvilEldorado::Modules
 			command.Name = name;
 
 		command.Flags = flags;
-		command.Type = eCommandTypeCommand;
+		command.Type = CommandType::Command;
 		command.UpdateEvent = updateEvent;
 
 		return CommandMap::Instance()->AddCommand(command);
 	}
 
-	Command* ModuleBase::AddVariableInt(const std::string& name, const std::string& shortName, const std::string& description, CommandFlags flags, unsigned long defaultValue, CommandUpdateFunc updateEvent)
+	Command* Module::AddVariableInt(const std::string& name, const std::string& shortName, const std::string& description, CommandFlags flags, unsigned long defaultValue, CommandUpdateFunc updateEvent)
 	{
 		Command command;
 		command.Name = moduleName + "." + name;
@@ -40,7 +40,7 @@ namespace AnvilEldorado::Modules
 			command.Name = name;
 
 		command.Flags = flags;
-		command.Type = eCommandTypeVariableInt;
+		command.Type = CommandType::VariableInt;
 		command.DefaultValueInt = defaultValue;
 		command.ValueInt = defaultValue;
 		command.ValueString = std::to_string(defaultValue); // set the ValueString too so we can print the value out easier
@@ -49,7 +49,7 @@ namespace AnvilEldorado::Modules
 		return CommandMap::Instance()->AddCommand(command);
 	}
 
-	Command* ModuleBase::AddVariableInt64(const std::string& name, const std::string& shortName, const std::string& description, CommandFlags flags, unsigned long long defaultValue, CommandUpdateFunc updateEvent)
+	Command* Module::AddVariableInt64(const std::string& name, const std::string& shortName, const std::string& description, CommandFlags flags, unsigned long long defaultValue, CommandUpdateFunc updateEvent)
 	{
 		Command command;
 		command.Name = moduleName + "." + name;
@@ -61,7 +61,7 @@ namespace AnvilEldorado::Modules
 			command.Name = name;
 
 		command.Flags = flags;
-		command.Type = eCommandTypeVariableInt64;
+		command.Type = CommandType::VariableInt64;
 		command.DefaultValueInt64 = defaultValue;
 		command.ValueInt64 = defaultValue;
 		command.ValueString = std::to_string(defaultValue); // set the ValueString too so we can print the value out easier
@@ -70,7 +70,7 @@ namespace AnvilEldorado::Modules
 		return CommandMap::Instance()->AddCommand(command);
 	}
 
-	Command* ModuleBase::AddVariableFloat(const std::string& name, const std::string& shortName, const std::string& description, CommandFlags flags, float defaultValue, CommandUpdateFunc updateEvent)
+	Command* Module::AddVariableFloat(const std::string& name, const std::string& shortName, const std::string& description, CommandFlags flags, float defaultValue, CommandUpdateFunc updateEvent)
 	{
 		Command command;
 		command.Name = moduleName + "." + name;
@@ -82,7 +82,7 @@ namespace AnvilEldorado::Modules
 			command.Name = name;
 
 		command.Flags = flags;
-		command.Type = eCommandTypeVariableFloat;
+		command.Type = CommandType::VariableFloat;
 		command.DefaultValueFloat = defaultValue;
 		command.ValueFloat = defaultValue;
 		command.ValueString = std::to_string(defaultValue); // set the ValueString too so we can print the value out easier
@@ -91,7 +91,7 @@ namespace AnvilEldorado::Modules
 		return CommandMap::Instance()->AddCommand(command);
 	}
 
-	Command* ModuleBase::AddVariableString(const std::string& name, const std::string& shortName, const std::string& description, CommandFlags flags, std::string defaultValue, CommandUpdateFunc updateEvent)
+	Command* Module::AddVariableString(const std::string& name, const std::string& shortName, const std::string& description, CommandFlags flags, std::string defaultValue, CommandUpdateFunc updateEvent)
 	{
 		Command command;
 		command.Name = moduleName + "." + name;
@@ -103,7 +103,7 @@ namespace AnvilEldorado::Modules
 			command.Name = name;
 
 		command.Flags = flags;
-		command.Type = eCommandTypeVariableString;
+		command.Type = CommandType::VariableString;
 		command.DefaultValueString = defaultValue;
 		command.ValueString = defaultValue;
 		command.UpdateEvent = updateEvent;
@@ -111,15 +111,15 @@ namespace AnvilEldorado::Modules
 		return CommandMap::Instance()->AddCommand(command);
 	}
 
-	bool ModuleBase::GetVariableInt(const std::string& name, unsigned long& value)
+	bool Module::GetVariableInt(const std::string& name, unsigned long& value)
 	{
 		return CommandMap::Instance()->GetVariableInt(moduleName + "." + name, value);
 	}
-	bool ModuleBase::GetVariableFloat(const std::string& name, float& value)
+	bool Module::GetVariableFloat(const std::string& name, float& value)
 	{
 		return CommandMap::Instance()->GetVariableFloat(moduleName + "." + name, value);
 	}
-	bool ModuleBase::GetVariableString(const std::string& name, std::string& value)
+	bool Module::GetVariableString(const std::string& name, std::string& value)
 	{
 		return CommandMap::Instance()->GetVariableString(moduleName + "." + name, value);
 	}

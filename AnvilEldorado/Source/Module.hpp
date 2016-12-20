@@ -2,12 +2,12 @@
 #include <string>
 #include "CommandMap.hpp"
 
-namespace AnvilEldorado::Modules
+namespace AnvilEldorado
 {
-	class ModuleBase abstract
+	class Module abstract
 	{
 	public:
-		ModuleBase(const std::string &p_ModuleName);
+		Module(const std::string &p_ModuleName);
 
 		bool GetVariableInt(const std::string &name, unsigned long &value);
 		bool GetVariableFloat(const std::string &name, float &value);
