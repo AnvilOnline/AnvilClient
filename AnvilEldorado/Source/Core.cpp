@@ -92,6 +92,8 @@ namespace AnvilEldorado
 			&& Hook(0x699120, Video_GetBinkVideoPath).Apply()
 			// Set game locale to english
 			&& Patch(0x2333FD, 0x00).Apply()
+			// Fix random colored lighting
+			&& Patch(0x14F2FFC, { 0x0, 0x0, 0x0, 0x0 }).Apply()
 			// Enable tag edits
 			&& Patch(0x101A5B, 0xEB).Apply()
 			&& Patch::NopFill(0x102874, 2)

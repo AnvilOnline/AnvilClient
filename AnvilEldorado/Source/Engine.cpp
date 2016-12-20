@@ -1,4 +1,4 @@
-#include "Debug.hpp"
+#include "Graphics.hpp"
 #include "Camera.hpp"
 #include "Player.hpp"
 #include "Engine.hpp"
@@ -19,7 +19,7 @@ namespace AnvilEldorado
 			&& ApplyPatches_Scoreboard()
 			&& ApplyPatches_UserInterface()
 			&& ApplyPatches_VirtualKeyboard()
-			&& Debug::Instance()->Init()
+			&& Graphics::Instance()->Init()
 			&& Camera::Instance()->Init()
 			&& Player::Instance()->Init();
 	}

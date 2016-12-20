@@ -26,135 +26,6 @@ namespace AnvilEldorado
 		return ((double)s_GameResolution[0] / (double)s_GameResolution[1]);
 	}
 
-	bool VariableSaturationUpdate(const std::vector<std::string> &p_Arguments, std::string &p_ReturnInfo)
-	{
-		auto s_Saturation = Graphics::Instance()->VarSaturation->ValueFloat;
-
-		auto *s_GraphicsGlobals = Graphics::GetGraphicsGlobals();
-
-		s_GraphicsGlobals->Override = true;
-		s_GraphicsGlobals->Saturation = s_Saturation;
-
-		std::stringstream ss;
-		ss << "Set saturation to " << s_Saturation;
-
-		p_ReturnInfo = ss.str();
-
-		return true;
-	}
-
-	bool VariableRedHueUpdate(const std::vector<std::string> &p_Arguments, std::string &p_ReturnInfo)
-	{
-		auto s_RedHue = Graphics::Instance()->VarRedHue->ValueFloat;
-
-		auto *s_GraphicsGlobals = Graphics::GetGraphicsGlobals();
-
-		s_GraphicsGlobals->Override = true;
-		s_GraphicsGlobals->Hue.Red = s_RedHue;
-
-		std::stringstream ss;
-		ss << "Set red hue to " << s_RedHue;
-
-		p_ReturnInfo = ss.str();
-
-		return true;
-	}
-
-	bool VariableGreenHueUpdate(const std::vector<std::string> &p_Arguments, std::string &p_ReturnInfo)
-	{
-		auto s_GreenHue = Graphics::Instance()->VarGreenHue->ValueFloat;
-
-		auto *s_GraphicsGlobals = Graphics::GetGraphicsGlobals();
-
-		s_GraphicsGlobals->Override = true;
-		s_GraphicsGlobals->Hue.Green = s_GreenHue;
-
-		std::stringstream ss;
-		ss << "Set green hue to " << s_GreenHue;
-
-		p_ReturnInfo = ss.str();
-
-		return true;
-	}
-
-	bool VariableBlueHueUpdate(const std::vector<std::string> &Arguments, std::string &p_ReturnInfo)
-	{
-		auto s_BlueHue = Graphics::Instance()->VarBlueHue->ValueFloat;
-
-		auto *s_GraphicsGlobals = Graphics::GetGraphicsGlobals();
-
-		s_GraphicsGlobals->Override = true;
-		s_GraphicsGlobals->Hue.Blue = s_BlueHue;
-
-		std::stringstream ss;
-		ss << "Set blue hue to " << s_BlueHue;
-
-		p_ReturnInfo = ss.str();
-
-		return true;
-	}
-
-	bool VariableBloomUpdate(const std::vector<std::string> &Arguments, std::string &p_ReturnInfo)
-	{
-		auto s_BloomIntensity = Graphics::Instance()->VarBloom->ValueFloat;
-
-		auto *s_BloomGlobals = Graphics::GetBloomGlobals();
-
-		s_BloomGlobals->Enabled = true;
-		s_BloomGlobals->Intensity = s_BloomIntensity;
-
-		std::stringstream ss;
-		ss << "Set bloom intensity to " << s_BloomIntensity;
-
-		p_ReturnInfo = ss.str();
-
-		return true;
-	}
-
-	bool VariableDepthOfFieldUpdate(const std::vector<std::string> &Arguments, std::string &p_ReturnInfo)
-	{
-		auto s_DepthOfFieldIntensity = Graphics::Instance()->VarDepthOfField->ValueFloat;
-
-		auto *s_DepthOfFieldGlobals = Graphics::GetDepthOfFieldGlobals();
-
-		s_DepthOfFieldGlobals->Enabled = true;
-		s_DepthOfFieldGlobals->Intensity = s_DepthOfFieldIntensity;
-
-		std::stringstream ss;
-		ss << "Set depth of field intensity to " << s_DepthOfFieldIntensity;
-
-		p_ReturnInfo = ss.str();
-
-		return true;
-	}
-
-	bool VariableLetterboxUpdate(const std::vector<std::string> &Arguments, std::string &p_ReturnInfo)
-	{
-		auto s_LetterboxEnabled = Graphics::Instance()->VarLetterbox->ValueInt;
-
-		auto *s_CinematicGlobals = Graphics::GetCinematicGlobals();
-
-		s_CinematicGlobals->LetterboxEnabled = s_LetterboxEnabled;
-
-		std::stringstream ss;
-		ss << (s_LetterboxEnabled ? "Enabled" : "Disabled") << " letterbox";
-
-		p_ReturnInfo = ss.str();
-
-		return true;
-	}
-
-	bool VariableUIScalingUpdate(const std::vector<std::string> &Arguments, std::string &p_ReturnInfo)
-	{
-		if (Graphics::Instance()->VarUIScaling->ValueInt == 0)
-			p_ReturnInfo = "The changes will apply on game restart";
-		else if (Engine::Instance()->HasMainMenuShown()) //If the user comes to their senses and turns UI scaling back on then apply the change. Running before the main menu has shown may result in a crash.
-			/* TODO: Patches::Ui::ApplyUIResolution(); */
-			return true;
-
-		return true;
-	}
-
 	GraphicsGlobals *Graphics::GetGraphicsGlobals()
 	{
 		static GraphicsGlobals *s_GraphicsGlobals = nullptr;
@@ -195,44 +66,6 @@ namespace AnvilEldorado
 		return s_CinematicGlobals;
 	}
 
-	Graphics::Graphics()
-		: Module("Graphics")
-	{
-		VarSaturation = AddVariableFloat("Saturation", "saturation", "The saturation", CommandFlags::Archived, 1.0f, VariableSaturationUpdate);
-		VarSaturation->ValueFloatMin = -10.0f;
-		VarSaturation->ValueFloatMax = 10.0f;
-
-		VarRedHue = AddVariableFloat("RedHue", "red_hue", "The red hue", CommandFlags::None, 1.0f, VariableRedHueUpdate);
-		VarRedHue->ValueFloatMin = 0.0f;
-		VarRedHue->ValueFloatMax = 1.0f;
-
-		VarGreenHue = AddVariableFloat("GreenHue", "green_hue", "The green hue", CommandFlags::None, 1.0f, VariableGreenHueUpdate);
-		VarGreenHue->ValueFloatMin = 0.0f;
-		VarGreenHue->ValueFloatMax = 1.0f;
-
-		VarBlueHue = AddVariableFloat("BlueHue", "blue_hue", "The blue hue", CommandFlags::None, 1.0f, VariableBlueHueUpdate);
-		VarBlueHue->ValueFloatMin = 0.0f;
-		VarBlueHue->ValueFloatMax = 1.0f;
-
-		// TODO: consider breaking some of these out into a separate cinematics module or possibly moving dof to camera
-
-		VarBloom = AddVariableFloat("Bloom", "bloom", "The atmosphere bloom", CommandFlags::Archived, 0.0f, VariableBloomUpdate);
-		VarBloom->ValueFloatMin = 0.0f;
-		VarBloom->ValueFloatMax = 5.0f;
-
-		VarDepthOfField = AddVariableFloat("DepthOfField", "dof", "The camera's depth of field", CommandFlags::None, 0.0f, VariableDepthOfFieldUpdate);
-		VarDepthOfField->ValueFloatMin = 0.0f;
-		VarDepthOfField->ValueFloatMax = 1.0f;
-
-		VarLetterbox = AddVariableInt("Letterbox", "letterbox", "A cinematic letterbox.", CommandFlags::None, 0, VariableLetterboxUpdate);
-		VarLetterbox->ValueIntMin = 0;
-		VarLetterbox->ValueIntMax = 1;
-
-		VarUIScaling = AddVariableInt("UIScaling", "uiscaling", "Enables proper UI scaling to match your monitor's resolution.", CommandFlags::Archived, 1, VariableUIScalingUpdate);
-		VarUIScaling->ValueIntMin = 0;
-		VarUIScaling->ValueIntMax = 1;
-	}
-
 	bool Graphics::Init()
 	{
 		using AnvilCommon::Utils::HookFlags;
@@ -250,5 +83,124 @@ namespace AnvilEldorado
 			// Allow the user to select any resolution that Windows supports in the settings screen
 			&& Patch::NopFill(0x10BF1B, 2)
 			&& Patch::NopFill(0x10BF21, 6);
+	}
+
+	float Graphics::GetRedHue() const
+	{
+		auto *s_GraphicsGlobals = GetGraphicsGlobals();
+		
+		return s_GraphicsGlobals->Hue.Red;
+	}
+
+	void Graphics::SetRedHue(const float p_RedHue)
+	{
+		auto *s_GraphicsGlobals = GetGraphicsGlobals();
+
+		s_GraphicsGlobals->Override = true;
+		s_GraphicsGlobals->Hue.Red = p_RedHue;
+	}
+
+	float Graphics::GetGreenHue() const
+	{
+		auto *s_GraphicsGlobals = GetGraphicsGlobals();
+
+		return s_GraphicsGlobals->Hue.Green;
+	}
+
+	void Graphics::SetGreenHue(const float p_GreenHue)
+	{
+		auto *s_GraphicsGlobals = GetGraphicsGlobals();
+
+		s_GraphicsGlobals->Override = true;
+		s_GraphicsGlobals->Hue.Green = p_GreenHue;
+	}
+
+	float Graphics::GetBlueHue() const
+	{
+		auto *s_GraphicsGlobals = GetGraphicsGlobals();
+
+		return s_GraphicsGlobals->Hue.Blue;
+	}
+
+	void Graphics::SetBlueHue(const float p_BlueHue)
+	{
+		auto *s_GraphicsGlobals = GetGraphicsGlobals();
+
+		s_GraphicsGlobals->Override = true;
+		s_GraphicsGlobals->Hue.Blue = p_BlueHue;
+	}
+
+	Blam::Math::RealColorRGB Graphics::GetHue() const
+	{
+		auto *s_GraphicsGlobals = GetGraphicsGlobals();
+
+		return s_GraphicsGlobals->Hue;
+	}
+
+	void Graphics::SetHue(const Blam::Math::RealColorRGB &p_Hue)
+	{
+		auto *s_GraphicsGlobals = GetGraphicsGlobals();
+
+		s_GraphicsGlobals->Override = true;
+		s_GraphicsGlobals->Hue = p_Hue;
+	}
+
+	float Graphics::GetSaturation() const
+	{
+		auto *s_GraphicsGlobals = GetGraphicsGlobals();
+
+		return s_GraphicsGlobals->Saturation;
+	}
+
+	void Graphics::SetSaturation(const float p_Saturation)
+	{
+		auto *s_GraphicsGlobals = GetGraphicsGlobals();
+
+		s_GraphicsGlobals->Override = true;
+		s_GraphicsGlobals->Saturation = p_Saturation;
+	}
+
+	float Graphics::GetBloomIntensity() const
+	{
+		auto *s_BloomGlobals = GetBloomGlobals();
+
+		return s_BloomGlobals->Intensity;
+	};
+
+	void Graphics::SetBloomIntensity(const float p_Intensity)
+	{
+		auto *s_BloomGlobals = GetBloomGlobals();
+
+		s_BloomGlobals->Enabled = true;
+		s_BloomGlobals->Intensity = p_Intensity;
+	}
+
+	float Graphics::GetDepthOfFieldIntensity() const
+	{
+		auto *s_DepthOfFieldGlobals = GetDepthOfFieldGlobals();
+
+		return s_DepthOfFieldGlobals->Intensity;
+	}
+
+	void Graphics::SetDepthOfFieldIntensity(const float p_Intensity)
+	{
+		auto *s_DepthOfFieldGlobals = GetDepthOfFieldGlobals();
+
+		s_DepthOfFieldGlobals->Enabled = true;
+		s_DepthOfFieldGlobals->Intensity = p_Intensity;
+	}
+
+	bool Graphics::IsLetterboxEnabled() const
+	{
+		auto *s_CinematicGlobals = GetCinematicGlobals();
+
+		return s_CinematicGlobals->LetterboxEnabled != 0;
+	}
+
+	void Graphics::SetLetterboxEnabled(const bool p_Enabled)
+	{
+		auto *s_CinematicGlobals = GetCinematicGlobals();
+
+		s_CinematicGlobals->LetterboxEnabled = p_Enabled;
 	}
 }

@@ -75,15 +75,6 @@ namespace AnvilEldorado
 		}
 	}
 
-	const auto Biped_ApplyArmor = reinterpret_cast<void(*)(Blam::Game::PlayerCustomization *, uint32_t)>(0x5A4430);
-	const auto Biped_ApplyArmorColor = reinterpret_cast<void(*)(uint32_t, int32_t, float *)>(0xB328F0);
-	const auto Biped_UpdateArmorColors = reinterpret_cast<void(*)(uint32_t)>(0x5A2FA0);
-
-	uint32_t GetUiPlayerBiped()
-	{
-		return *reinterpret_cast<uint32_t *>((uint8_t *)AnvilCommon::Internal_GetModuleStorage() + 0x4BE67A0);
-	}
-
 	void UiPlayerModelArmorHook()
 	{
 		auto *s_Player = Player::Instance();
@@ -93,7 +84,7 @@ namespace AnvilEldorado
 			return;
 
 		// Try to get the UI player biped
-		auto s_UiPlayerBiped = GetUiPlayerBiped();
+		auto s_UiPlayerBiped = s_Player->GetPodiumBiped();
 		if (s_UiPlayerBiped == 0xFFFFFFFF)
 			return;
 
@@ -221,7 +212,7 @@ namespace AnvilEldorado
 		}
 
 		return LoadArmor(s_MultiplayerGlobals)
-			&& LoadWeapons(s_MultiplayerGlobals);
+			&& LoadPodiumWeapons(s_MultiplayerGlobals);
 	}
 
 	bool AddArmorPermutations(const Blam::Tags::Game::MultiplayerGlobals::Universal::ArmorCustomization &p_Element, std::map<std::string, uint8_t> &p_Map)
@@ -289,7 +280,7 @@ namespace AnvilEldorado
 		return true;
 	}
 
-	bool Player::LoadWeapons(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGlobals)
+	bool Player::LoadPodiumWeapons(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGlobals)
 	{
 		auto *s_StringIDs = Blam::Cache::StringIDCache::Instance();
 
@@ -299,7 +290,7 @@ namespace AnvilEldorado
 			auto s_Index = (uint16_t)s_Variant.Weapon.TagIndex;
 
 			if (s_Index != 0xFFFF)
-				m_WeaponIndices.emplace(s_Name, s_Index);
+				m_PodiumWeaponIndices.emplace(s_Name, s_Index);
 		}
 
 		return true;
@@ -310,6 +301,11 @@ namespace AnvilEldorado
 		auto it = p_Indices.find(p_Name);
 
 		return (it != p_Indices.end()) ? it->second : 0;
+	}
+
+	Blam::Data::DatumIndex Player::GetPodiumBiped() const
+	{
+		return Blam::Data::DatumIndex(*reinterpret_cast<uint32_t *>((uint8_t *)AnvilCommon::Internal_GetModuleStorage() + 0x4BE67A0));
 	}
 
 	void Player::BuildCustomization(Blam::Game::PlayerCustomization *p_Customization) const
@@ -333,14 +329,18 @@ namespace AnvilEldorado
 		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Pelvis] = GetArmorIndex(m_ArmorPelvis, m_ArmorPelvisIndices);
 	}
 
-	void Player::CustomizeBiped(const uint32_t p_BipedObject)
+	const auto Biped_ApplyArmor = reinterpret_cast<void(*)(Blam::Game::PlayerCustomization *, uint32_t)>(0x5A4430);
+	const auto Biped_ApplyArmorColor = reinterpret_cast<void(*)(uint32_t, int32_t, float *)>(0xB328F0);
+	const auto Biped_UpdateArmorColors = reinterpret_cast<void(*)(uint32_t)>(0x5A2FA0);
+
+	void Player::CustomizeBiped(const Blam::Data::DatumIndex &p_BipedIndex)
 	{
 		// Generate customization data
 		Blam::Game::PlayerCustomization customization;
 		BuildCustomization(&customization);
 
 		// Apply armor to the biped
-		Biped_ApplyArmor(&customization, p_BipedObject);
+		Biped_ApplyArmor(&customization, p_BipedIndex.Value);
 
 		// Apply each color
 		for (int32_t i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
@@ -352,18 +352,195 @@ namespace AnvilEldorado
 			RgbToFloatColor(customization.Colors[i], colorData);
 
 			// Apply the color
-			Biped_ApplyArmorColor(p_BipedObject, i, colorData);
+			Biped_ApplyArmorColor(p_BipedIndex.Value, i, colorData);
 		}
 
 		// Need to call this or else colors don't actually show up
-		Biped_UpdateArmorColors(p_BipedObject);
+		Biped_UpdateArmorColors(p_BipedIndex.Value);
 
 		// Give the biped a weapon (0x151E = tag index for Assault Rifle)
-		auto s_WeaponName = m_Weapon;
+		auto s_WeaponName = m_PodiumWeapon;
 
-		if (m_WeaponIndices.find(s_WeaponName) == m_WeaponIndices.end())
-			s_WeaponName = (m_Weapon = "assault_rifle");
+		if (m_PodiumWeaponIndices.find(s_WeaponName) == m_PodiumWeaponIndices.end())
+			s_WeaponName = (m_PodiumWeapon = "assault_rifle");
 
-		Biped_PoseWithWeapon_Hook(p_BipedObject, m_WeaponIndices.find(s_WeaponName)->second);
+		Biped_PoseWithWeapon_Hook(p_BipedIndex.Value, m_PodiumWeaponIndices.find(s_WeaponName)->second);
+	}
+
+	std::wstring Player::GetUserName() const
+	{
+		return m_UserName;
+	}
+
+	void Player::SetUserName(const std::string &p_UserName)
+	{
+		m_UserName = std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>().from_bytes(p_UserName.c_str());
+		m_UserName.resize(17);
+		m_UserName.back() = 0;
+	}
+
+	bool Player::NeedsArmorUpdate() const
+	{
+		return m_UpdateArmor;
+	}
+
+	void Player::SetUpdateArmor(const bool p_UpdateArmor)
+	{
+		m_UpdateArmor = p_UpdateArmor;
+	}
+
+	uint32_t Player::GetArmorPrimaryColor() const
+	{
+		return m_ArmorPrimaryColor;
+	}
+
+	void Player::SetArmorPrimaryColor(const uint32_t p_Color)
+	{
+		m_ArmorPrimaryColor = p_Color;
+	}
+
+	void Player::SetArmorPrimaryColor(const uint8_t p_Red, const uint8_t p_Green, const uint8_t p_Blue)
+	{
+		SetArmorPrimaryColor((p_Blue << 16) | (p_Green << 8) | (p_Red << 0));
+	}
+
+	uint32_t Player::GetArmorSecondaryColor() const
+	{
+		return m_ArmorSecondaryColor;
+	}
+
+	void Player::SetArmorSecondaryColor(const uint32_t p_Color)
+	{
+		m_ArmorSecondaryColor = p_Color;
+	}
+
+	void Player::SetArmorSecondaryColor(const uint8_t p_Red, const uint8_t p_Green, const uint8_t p_Blue)
+	{
+		SetArmorSecondaryColor((p_Blue << 16) | (p_Green << 8) | (p_Red << 0));
+	}
+
+	uint32_t Player::GetArmorVisorColor() const
+	{
+		return m_ArmorVisorColor;
+	}
+
+	void Player::SetArmorVisorColor(const uint32_t p_Color)
+	{
+		m_ArmorVisorColor = p_Color;
+	}
+
+	void Player::SetArmorVisorColor(const uint8_t p_Red, const uint8_t p_Green, const uint8_t p_Blue)
+	{
+		SetArmorVisorColor((p_Blue << 16) | (p_Green << 8) | (p_Red << 0));
+	}
+
+	uint32_t Player::GetArmorLightsColor() const
+	{
+		return m_ArmorLightsColor;
+	}
+
+	void Player::SetArmorLightsColor(const uint32_t p_Color)
+	{
+		m_ArmorLightsColor = p_Color;
+	}
+
+	void Player::SetArmorLightsColor(const uint8_t p_Red, const uint8_t p_Green, const uint8_t p_Blue)
+	{
+		SetArmorLightsColor((p_Blue << 16) | (p_Green << 8) | (p_Red << 0));
+	}
+
+	uint32_t Player::GetArmorHoloColor() const
+	{
+		return m_ArmorHoloColor;
+	}
+
+	void Player::SetArmorHoloColor(const uint32_t p_Color)
+	{
+		m_ArmorHoloColor = p_Color;
+	}
+
+	void Player::SetArmorHoloColor(const uint8_t p_Red, const uint8_t p_Green, const uint8_t p_Blue)
+	{
+		SetArmorHoloColor((p_Blue << 16) | (p_Green << 8) | (p_Red << 0));
+	}
+
+	std::string Player::GetArmorHelmet() const
+	{
+		return m_ArmorHelmet;
+	}
+
+	void Player::SetArmorHelmet(const std::string &p_ArmorHelmet)
+	{
+		m_ArmorHelmet = p_ArmorHelmet;
+	}
+
+	std::string Player::GetArmorChest() const
+	{
+		return m_ArmorChest;
+	}
+
+	void Player::SetArmorChest(const std::string &p_ArmorChest)
+	{
+		m_ArmorChest = p_ArmorChest;
+	}
+
+	std::string Player::GetArmorShoulders() const
+	{
+		return m_ArmorShoulders;
+	}
+
+	void Player::SetArmorShoulders(const std::string &p_ArmorShoulders)
+	{
+		m_ArmorShoulders = p_ArmorShoulders;
+	}
+
+	std::string Player::GetArmorArms() const
+	{
+		return m_ArmorArms;
+	}
+
+	void Player::SetArmorArms(const std::string &p_ArmorArms)
+	{
+		m_ArmorArms = p_ArmorArms;
+	}
+
+	std::string Player::GetArmorLegs() const
+	{
+		return m_ArmorLegs;
+	}
+
+	void Player::SetArmorLegs(const std::string &p_ArmorLegs)
+	{
+		m_ArmorLegs = p_ArmorLegs;
+	}
+
+	std::string Player::GetArmorPelvis() const
+	{
+		return m_ArmorPelvis;
+	}
+
+	void Player::SetArmorPelvis(const std::string &p_ArmorPelvis)
+	{
+		m_ArmorPelvis = p_ArmorPelvis;
+	}
+
+	std::string Player::GetArmorAccessory() const
+	{
+		return m_ArmorAccessory;
+	}
+
+	void Player::SetArmorAccessory(const std::string &p_ArmorAccessory)
+	{
+		m_ArmorAccessory = p_ArmorAccessory;
+	}
+
+	std::string Player::GetPodiumWeapon() const
+	{
+		return m_PodiumWeapon;
+	}
+
+	void Player::SetPodiumWeapon(const std::string &p_PodiumWeapon)
+	{
+		m_PodiumWeapon = p_PodiumWeapon;
 	}
 }

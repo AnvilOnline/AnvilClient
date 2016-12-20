@@ -47,11 +47,7 @@
     <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
     <ClCompile Include="Source\Audio.cpp" />
     <ClCompile Include="Source\Game.cpp" />
-    <ClCompile Include="Source\Module.cpp" />
-    <ClCompile Include="Source\Command.cpp" />
-    <ClCompile Include="Source\CommandMap.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
-    <ClCompile Include="Source\Debug.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -113,11 +109,7 @@
     <ClInclude Include="Source\Blam\Objects\ObjectDatum.hpp" />
     <ClInclude Include="Source\Blam\Network\Session.hpp" />
     <ClInclude Include="Source\Blam\Tags\Game\CacheFileGlobalTags.hpp" />
-    <ClInclude Include="Source\Module.hpp" />
-    <ClInclude Include="Source\Command.hpp" />
-    <ClInclude Include="Source\CommandMap.hpp" />
     <ClInclude Include="Source\Camera.hpp" />
-    <ClInclude Include="Source\Debug.hpp" />
     <ClInclude Include="Source\Graphics.hpp" />
     <ClInclude Include="Source\Player.hpp" />
   </ItemGroup>

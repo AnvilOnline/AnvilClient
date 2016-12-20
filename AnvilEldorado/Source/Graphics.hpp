@@ -1,7 +1,6 @@
 #pragma once
 #include "Interfaces\IInitializable.hpp"
 #include "Utils\Singleton.hpp"
-#include "Module.hpp"
 #include "Blam\Math\RealColorRGB.hpp"
 
 namespace AnvilEldorado
@@ -27,33 +26,42 @@ namespace AnvilEldorado
 
 	struct CinematicGlobals
 	{
-		int32_t : 32; // Unknown
+		int32_t Unknown0;
 		int32_t LetterboxEnabled;
 	};
 
-	class Graphics final : public Module, public AnvilCommon::IInitializable, public AnvilCommon::Singleton<Graphics>
+	class Graphics final : public AnvilCommon::IInitializable, public AnvilCommon::Singleton<Graphics>
 	{
 	public:
-		Command *VarSaturation;
-
-		// TODO: possibly refactor into single #RRGGBB command or provide such functionality as a separate all-in-one command
-		Command *VarRedHue;
-		Command *VarGreenHue;
-		Command *VarBlueHue;
-
-		Command *VarBloom;
-		Command *VarDepthOfField;
-		Command *VarLetterbox;
-
-		Command *VarUIScaling;
-
 		static GraphicsGlobals *GetGraphicsGlobals();
 		static BloomGlobals *GetBloomGlobals();
 		static DepthOfFieldGlobals *GetDepthOfFieldGlobals();
 		static CinematicGlobals *GetCinematicGlobals();
 
-		Graphics();
-
 		bool Init() override;
+
+		float GetRedHue() const;
+		void SetRedHue(const float p_RedHue);
+
+		float GetGreenHue() const;
+		void SetGreenHue(const float p_GreenHue);
+
+		float GetBlueHue() const;
+		void SetBlueHue(const float p_BlueHue);
+
+		Blam::Math::RealColorRGB GetHue() const;
+		void SetHue(const Blam::Math::RealColorRGB &p_Hue);
+
+		float GetSaturation() const;
+		void SetSaturation(const float p_Saturation);
+
+		float GetBloomIntensity() const;
+		void SetBloomIntensity(const float p_Intensity);
+
+		float GetDepthOfFieldIntensity() const;
+		void SetDepthOfFieldIntensity(const float p_Intensity);
+
+		bool IsLetterboxEnabled() const;
+		void SetLetterboxEnabled(const bool p_Enabled = true);
 	};
 }

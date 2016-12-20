@@ -1,6 +1,9 @@
 #include <locale>
 #include <string>
 #include <sstream>
+#include "Globals.hpp"
+#include "Utils\Hook.hpp"
+#include "Utils\Patch.hpp"
 #include "Blam\Math\RealPoint3D.hpp"
 #include "Blam\Math\RealVector2D.hpp"
 #include "Blam\Math\RealVector3D.hpp"
@@ -8,16 +11,6 @@
 
 namespace AnvilEldorado
 {
-	enum class CameraDefinitionType : int32_t
-	{
-		Position = 0,
-		PositionShift = 1,
-		LookShift = 2,
-		Depth = 3,
-		FieldOfView = 4,
-		LookVectors = 5
-	};
-
 	// Override the FOV that the memmove before this sets
 	__declspec(naked) void FovHook()
 	{
@@ -34,13 +27,10 @@ namespace AnvilEldorado
 	// determine which camera definitions are editable based on the current camera mode
 	bool __stdcall IsCameraDefinitionEditable(const CameraDefinitionType &definition)
 	{
-		auto s_CameraMode = Camera::Instance()->VarCameraMode->ValueString;
+		auto *s_Camera = Camera::Instance();
+		auto s_CameraMode = s_Camera->GetCameraMode();
 
-		std::locale s_Locale;
-		for (std::string::size_type i = 0; i < s_CameraMode.length(); ++i)
-			s_CameraMode[i] = std::tolower(s_CameraMode[i], s_Locale);
-
-		if (!s_CameraMode.compare("first") || !s_CameraMode.compare("third"))
+		if (s_CameraMode != CameraMode::FirstPerson || s_CameraMode != CameraMode::Following)
 		{
 			if (definition == CameraDefinitionType::PositionShift ||
 				definition == CameraDefinitionType::LookShift ||
@@ -49,7 +39,7 @@ namespace AnvilEldorado
 				return true;
 			}
 		}
-		else if (!s_CameraMode.compare("flying") || !s_CameraMode.compare("static"))
+		else if (s_CameraMode != CameraMode::Flying || s_CameraMode != CameraMode::Static)
 		{
 			return true;
 		}
@@ -137,8 +127,8 @@ namespace AnvilEldorado
 			ret
 		}
 	}
-
-	bool VariableCameraCrosshairUpdate(const std::vector<std::string> &p_Arguments, std::string &p_ReturnInfo)
+	
+	/*bool VariableCameraCrosshairUpdate(const std::vector<std::string> &p_Arguments, std::string &p_ReturnInfo)
 	{
 		unsigned long s_Value = Camera::Instance()->VarCameraCrosshair->ValueInt;
 
@@ -300,7 +290,7 @@ namespace AnvilEldorado
 		}
 
 		return true;
-	}
+	}*/
 
 	CameraGlobals *Camera::GetCameraGlobals()
 	{
@@ -311,9 +301,8 @@ namespace AnvilEldorado
 
 		return s_CameraGlobals;
 	}
-
-	Camera::Camera()
-		: Module("Camera")
+	
+	/*Camera::Camera()
 	{
 		VarCameraCrosshair = AddVariableInt(
 			"Crosshair", "crosshair",
@@ -357,10 +346,14 @@ namespace AnvilEldorado
 			"Mode", "camera_mode",
 			"Camera mode, valid modes: default, first, third, flying, static",
 			(CommandFlags::DontUpdateInitial | CommandFlags::Cheat), "default", VariableCameraModeUpdate);
-	}
+	}*/
 
 	bool Camera::Init()
 	{
+		using AnvilCommon::Utils::Hook;
+		using AnvilCommon::Utils::Patch;
+
+		/*
 		CameraPermissionHook = Hook(0x21440D, UpdateCameraDefinitionsHook);
 		CameraPermissionHookAlt1 = Hook(0x214818, UpdateCameraDefinitionsAlt1Hook);
 		CameraPermissionHookAlt2 = Hook(0x2148BE, UpdateCameraDefinitionsAlt2Hook);
@@ -374,6 +367,7 @@ namespace AnvilEldorado
 		StaticKLookVectorPatch = Patch(0x21143E, 0x90, 6);
 		HideHudPatch = Patch(0x12B5A5C, { 0xC3, 0xF5, 0x48, 0x40 }); // 3.14f in hex form
 		CenteredCrosshairPatch = Patch(0x25FA43, { 0x31, 0xC0, 0x90, 0x90 });
+		*/
 
 			// Prevent FOV from being overridden when the game loads
 		return Patch::NopFill(0x25FA79, 10)
@@ -381,9 +375,8 @@ namespace AnvilEldorado
 			&& Hook(0x10CA02, FovHook).Apply();
 	}
 
-	void Camera::UpdatePosition()
+	/*void Camera::UpdatePosition()
 	{
-		/* TODO:
 		auto *s_ModuleCamera = Camera::Instance();
 
 		auto s_CameraMode = s_ModuleCamera->VarCameraMode->ValueString;
@@ -490,6 +483,18 @@ namespace AnvilEldorado
 		directorGlobalsPtr(0x86C).Write<float>(-sin(hLookAngle) * sin(vLookAngle));
 		directorGlobalsPtr(0x870).Write<float>(cos(vLookAngle));
 
-		directorGlobalsPtr(0x858).Write<float>(fov);*/
+		directorGlobalsPtr(0x858).Write<float>(fov);
+	}*/
+
+	CameraMode Camera::GetCameraMode() const
+	{
+		return m_CameraMode;
+	}
+
+	void Camera::SetCameraMode(const CameraMode &p_Mode)
+	{
+		m_CameraMode = p_Mode;
+
+		// TODO: Apply changes after switching camera modes
 	}
 }
