@@ -16,6 +16,7 @@ namespace AnvilEldorado
 	struct CameraGlobals
 	{
 		size_t UpdatePerspectiveFunction;
+		uint8_t Unknown[0x830];
 		Blam::Math::RealPoint3D Position;
 		Blam::Math::RealVector3D PositionShift;
 		Blam::Math::RealVector2D LookShift;
