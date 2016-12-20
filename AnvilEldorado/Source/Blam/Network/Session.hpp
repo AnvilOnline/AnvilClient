@@ -309,6 +309,8 @@ namespace Blam::Network
 		int AddressIndex; // Idk what this actually is, but it's used to look up xnkaddr
 		uint8_t Unknown25BBF4[0x4C];
 
+		static Session *Current();
+
 		// Gets the index of the peer associated with a channel, or -1 on
 		// failure.
 		int GetChannelPeer(const ObserverChannel *channel) const;
@@ -349,10 +351,6 @@ namespace Blam::Network
 		eLifeCycleStateEndMatchWriteStats,
 		eLifeCycleStatePostMatch,
 	};
-
-	// Gets a pointer to the active network session.
-	// Can be null!
-	Session *GetActiveSession();
 
 	// Gets a pointer to the active packet table.
 	// Can be null!

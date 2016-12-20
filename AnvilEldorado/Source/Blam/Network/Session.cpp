@@ -6,11 +6,6 @@
 
 namespace Blam::Network
 {
-	Session *GetActiveSession()
-	{
-		return AnvilCommon::GetModuleStorage<Session>(0x15AB848);
-	}
-
 	const auto SessionMembership_FindFirstPeer = reinterpret_cast<int(__thiscall *)(const SessionMembership *)>(0x44E690);
 	int SessionMembership::FindFirstPeer() const
 	{
@@ -91,14 +86,21 @@ namespace Blam::Network
 	const auto PacketHeader_Initialize = reinterpret_cast<void(*)(int32_t, PacketHeader *)>(0x482040);
 	PacketHeader::PacketHeader()
 	{
-		auto session = GetActiveSession();
-		if (!session)
+		auto s_Session = Session::Current();
+
+		if (!s_Session)
 		{
 			memset(this, 0, sizeof(*this));
 			return;
 		}
 
-		PacketHeader_Initialize(session->AddressIndex, this);
+		PacketHeader_Initialize(s_Session->AddressIndex, this);
+	}
+
+
+	Session *Session::Current()
+	{
+		return AnvilCommon::GetModuleStorage<Session>(0x15AB848);
 	}
 
 	const auto Session_GetChannelIndex = reinterpret_cast<int(__thiscall *)(const Observer *, uint32_t, const ObserverChannel *)>(0x447150);

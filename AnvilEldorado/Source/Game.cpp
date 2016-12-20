@@ -1,8 +1,11 @@
 #include "Globals.hpp"
+#include "Utils\Logger.hpp"
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
+#include "Blam\Tags\Tag.hpp"
 #include "Blam\Network\Session.hpp"
 #include "Engine.hpp"
+#include "Game.hpp"
 
 namespace AnvilEldorado
 {
@@ -101,33 +104,27 @@ namespace AnvilEldorado
 
 	void EndGameHook()
 	{
-		auto *session = Blam::Network::GetActiveSession();
+		auto *s_Session = Blam::Network::Session::Current();
 
-		if (!session || !session->IsEstablished())
+		if (!s_Session || !s_Session->IsEstablished())
 			return;
 
-		if (session->IsHost())
+		if (s_Session->IsHost())
 			Blam::Network::EndGame();
 		else
 			Blam::Network::LeaveGame();
 	}
 
-	bool Engine::ApplyPatches_Game()
+	bool Game::Init()
 	{
 		using AnvilCommon::Utils::HookFlags;
 		using AnvilCommon::Utils::Hook;
 		using AnvilCommon::Utils::Patch;
 
-		auto *s_ModuleBase = AnvilCommon::Internal_GetModuleStorage();
-
-		// Update countdown timer
-		*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x153708) = 5; // player control
-		*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x153738) = 9; // camera position
-		*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x1521D1) = 9; // ui timer
-		*reinterpret_cast<uint8_t *>((uint8_t *)s_ModuleBase + 0x1536F0) = 3; // team notification
-
+			// Set game locale
+		return SetGameLocale(GameLocale::English)
 			// Hook game ticks
-		return Hook(0x105ABA, GameTickHook, HookFlags::IsCall).Apply()
+			&& Hook(0x105ABA, GameTickHook, HookFlags::IsCall).Apply()
 			&& Hook(0x1063E6, GameTickHook, HookFlags::IsCall).Apply()
 			// Run callbacks on engine shutdown
 			&& Hook(0x2EBD7, ShutdownHook, HookFlags::IsCall).Apply()
@@ -140,6 +137,237 @@ namespace AnvilEldorado
 			&& Patch::NopFill(0x3B682B, 1)
 			// Prevent game variant weapons from being overridden
 			&& Patch(0x1A315F, 0xEB).Apply()
-			&& Patch(0x1A31A4, 0xEB).Apply();
+			&& Patch(0x1A31A4, 0xEB).Apply()
+			// Update countdown timer
+			&& Patch(0x153708, 5).Apply() // player control
+			&& Patch(0x153738, 9).Apply() // camera position
+			&& Patch(0x1521D1, 9).Apply() // ui timer
+			&& Patch(0x1536F0, 3).Apply(); // team notification
+	}
+
+	GameLocale Game::GetGameLocale() const
+	{
+		return *(GameLocale *)((uint8_t *)AnvilCommon::Internal_GetModuleStorage() + 0x2333FD);
+	}
+
+	bool Game::SetGameLocale(const GameLocale &p_Language)
+	{
+		using AnvilCommon::Utils::Patch;
+
+		return Patch(0x2333FD, (uint8_t)p_Language).Apply();
+	}
+	
+	void Game::Shutdown()
+	{
+		// TODO: Call pre-shutdown callbacks...
+
+		std::exit(0);
+	}
+
+	bool Game::StartGame()
+	{
+		auto *s_Session = Blam::Network::Session::Current();
+
+		if (!s_Session || !s_Session->Parameters.SetSessionMode(2))
+		{
+			WriteLog("ERROR: Unable to start the game!");
+			return false;
+		}
+
+		WriteLog("Starting game...");
+		return true;
+	}
+
+	bool Game::EndGame()
+	{
+		auto *s_Session = Blam::Network::Session::Current();
+
+		if (!s_Session || !s_Session->Parameters.SetSessionMode(2))
+		{
+			WriteLog("ERROR: Unable to end the game!");
+			return false;
+		}
+
+		WriteLog("Ending game...");
+		return true;
+	}
+
+	int32_t Game::GetMapID(const std::string &p_MapName)
+	{
+		//
+		// Open the .map file
+		//
+
+		auto s_MapPath = "maps\\" + p_MapName + ".map";
+
+		std::ifstream s_MapFile(s_MapPath, std::ios::binary | std::ios::end);
+		if (!s_MapFile.is_open())
+			return -1;
+
+		//
+		// Verify map file's size
+		//
+
+		auto s_MapFileSize = s_MapFile.tellg();
+		s_MapFile.seekg(0, std::ios::beg);
+
+		if (s_MapFileSize < 0x3390)
+			return -1;
+
+		//
+		// Verify the map file's header
+		//
+
+		Blam::Tags::Tag s_HeaderTag;
+		s_MapFile.read(reinterpret_cast<char *>(&s_HeaderTag), sizeof(Blam::Tags::Tag));
+
+		if (s_HeaderTag != 'head')
+			return -1;
+
+		//
+		// Read the map's ID
+		//
+
+		int32_t s_MapID;
+		s_MapFile.seekg(0x2DEC);
+		s_MapFile.read(reinterpret_cast<char*>(&s_MapID), sizeof(int32_t));
+
+		return s_MapID;
+	}
+
+	const auto Game_LoadMap = reinterpret_cast<bool(*)(uint8_t *, void *)>(0xA83AF0);
+
+	bool Game::LoadMap(const std::string &p_MapName)
+	{
+		auto s_LobbyType = GetLobbyType();
+
+		if (s_LobbyType != GameLobbyType::CustomGame && s_LobbyType != GameLobbyType::Forge)
+		{
+			WriteLog("ERROR: You can only load a map from a Custom Games or Forge lobby!");
+			return false;
+		}
+
+		//
+		// Check to see if a map variant exists
+		//
+
+		auto s_MapPath = "mods\\maps\\" + p_MapName + "\\sandbox.map";
+
+		uint8_t s_MapData[0xE090];
+		std::ifstream s_MapVariant(s_MapPath, std::ios::binary);
+		if (s_MapVariant.is_open())
+		{
+			WriteLog("Loading map variant '%s'...", s_MapPath.c_str());
+			if (!LoadMapVariant(s_MapVariant, s_MapData))
+			{
+				WriteLog("ERROR: Invalid map variant file: %s", s_MapPath.c_str());
+				return false;
+			}
+		}
+		else
+		{
+			s_MapPath = "maps\\" + p_MapName + ".map";
+
+			WriteLog("Loading default map '%s'...", s_MapPath.c_str());
+			if (!LoadDefaultMapVariant(p_MapName, s_MapData))
+			{
+				WriteLog("ERROR: Invalid map file: %s", s_MapPath.c_str());
+				return false;
+			}
+		}
+
+		if (!Game_LoadMap(s_MapData, nullptr))
+		{
+			WriteLog("ERROR: Failed to load map: %s", s_MapPath.c_str());
+			return false;
+		}
+
+		SaveMapVariantToPreferences(s_MapData);
+
+		WriteLog("Map '%s' loaded successfully!", p_MapName.c_str());
+		return true;
+	}
+
+	const auto InitializeMapVariant = reinterpret_cast<void(__thiscall *)(uint8_t *, int32_t)>(0x581F70);
+	const auto ParseMapVariant = reinterpret_cast<bool(__thiscall *)(void *, uint8_t *, bool *)>(0x573250);
+
+	bool Game::LoadMapVariant(std::ifstream &p_File, uint8_t *out)
+	{
+		if (!p_File.is_open())
+			return false;
+
+		//
+		// Verify the size of the map variant file
+		//
+
+		p_File.seekg(0, std::ios::end);
+		auto s_FileSize = p_File.tellg();
+		p_File.seekg(0, std::ios::beg);
+
+		if (s_FileSize < 0xE1F0)
+			return false;
+
+		// Load it into a buffer and have the game parse it
+		uint8_t s_BLFData[0xE1F0];
+		p_File.read(reinterpret_cast<char*>(s_BLFData), 0xE1F0);
+
+		return ParseMapVariant(s_BLFData, out, nullptr);
+	}
+
+	bool Game::LoadDefaultMapVariant(const std::string &p_MapName, uint8_t *out)
+	{
+		int s_MapID = GetMapID(p_MapName);
+
+		if (s_MapID < 0)
+			return false;
+
+		InitializeMapVariant(out, s_MapID);
+
+		// Make sure it actually loaded the map correctly by verifying that the
+		// variant is valid for the map
+		int32_t firstMapId = *reinterpret_cast<int32_t*>(out + 0xE0);
+		int32_t secondMapId = *reinterpret_cast<int32_t*>(out + 0x100);
+		return (firstMapId == s_MapID && secondMapId == s_MapID);
+	}
+
+	void Game::SaveMapVariantToPreferences(const uint8_t *data)
+	{
+		size_t s_VariantOffset;
+
+		switch (GetLobbyType())
+		{
+		case GameLobbyType::CustomGame:
+			s_VariantOffset = 0x7F0;
+			break;
+
+		case GameLobbyType::Forge:
+			s_VariantOffset = 0xEA98;
+			break;
+
+		default:
+			return;
+		}
+
+		// Copy the data in
+		auto s_SavedVariant = reinterpret_cast<uint8_t *>(0x22C0130 + s_VariantOffset);
+		memcpy(s_SavedVariant, data, 0xE090);
+
+		// Mark preferences as dirty
+		*reinterpret_cast<bool *>(0x22C0129) = true;
+	}
+
+	GameLobbyType Game::GetLobbyType() const
+	{
+		return (GameLobbyType)reinterpret_cast<int32_t(__thiscall *)()>(0x435640)();
+	}
+
+	const std::vector<std::string> &Game::GetMaps() const
+	{
+		return m_Maps;
+	}
+
+	const std::vector<std::string> &Game::GetMapVariants() const
+	{
+		return m_MapVariants;
 	}
 }

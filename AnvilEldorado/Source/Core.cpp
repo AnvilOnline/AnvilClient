@@ -90,8 +90,6 @@ namespace AnvilEldorado
 			&& Hook(0x200990, Game_InitSaberCode).Apply()
 			// Disable Bink videos
 			&& Hook(0x699120, Video_GetBinkVideoPath).Apply()
-			// Set game locale to english
-			&& Patch(0x2333FD, 0x00).Apply()
 			// Fix random colored lighting
 			&& Patch(0x14F2FFC, { 0x0, 0x0, 0x0, 0x0 }).Apply()
 			// Enable tag edits

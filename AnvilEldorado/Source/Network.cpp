@@ -382,7 +382,7 @@ namespace AnvilEldorado
 
 	bool __fastcall RequestBootMachineHook(void *thisPtr, void *unused, Blam::Network::PeerInfo *peer, int32_t reason)
 	{
-		auto session = Blam::Network::GetActiveSession();
+		auto session = Blam::Network::Session::Current();
 		auto membership = &session->MembershipInfo;
 		auto peerIndex = peer - membership->Peers;
 		auto playerIndex = membership->GetPeerPlayer(peerIndex);

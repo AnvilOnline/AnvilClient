@@ -3,7 +3,7 @@
 
 namespace Blam::Game
 {
-	enum class GameEngine : int32_t
+	enum class GameType : int32_t
 	{
 		None,
 		CTF,
@@ -71,7 +71,7 @@ namespace Blam::Game
 
 	struct GameVariant
 	{
-		GameEngine Engine : 32;
+		GameType Engine : 32;
 		float Unknown1;
 		uint8_t Unknown2[0x2C];
 		wchar_t Name[0x10];

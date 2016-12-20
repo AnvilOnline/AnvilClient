@@ -76,9 +76,11 @@
     <ClInclude Include="Source\Blam\Tags\TagReference.hpp" />
     <ClInclude Include="Source\Blam\Text\StringID.hpp" />
     <ClInclude Include="Source\Engine.hpp" />
+    <ClInclude Include="Source\Game.hpp" />
     <ClInclude Include="Source\Graphics.hpp" />
     <ClInclude Include="Source\Camera.hpp" />
     <ClInclude Include="Source\Player.hpp" />
+    <ClInclude Include="Source\UserInterface.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Audio.cpp" />
@@ -115,6 +117,7 @@
     <ClCompile Include="Source\Blam\Math\Rectangle2D.cpp" />
     <ClCompile Include="Source\Blam\Network\Session.cpp" />
     <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
+    <ClCompile Include="Source\Blam\Text\StringID.cpp" />
     <ClCompile Include="Source\Content.cpp" />
     <ClCompile Include="Source\Core.cpp" />
     <ClCompile Include="Source\Engine.cpp" />

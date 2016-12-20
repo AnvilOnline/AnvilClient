@@ -3,9 +3,11 @@
 #include <vector>
 #include "BuildInfo.hpp"
 #include "Globals.hpp"
+#include "Utils\Logger.hpp"
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
-#include "Engine.hpp"
+#include "Blam\Cache\StringIDCache.hpp"
+#include "UserInterface.hpp"
 
 namespace AnvilEldorado
 {
@@ -30,27 +32,11 @@ namespace AnvilEldorado
 		strcpy_s(p_DestBuf, 0x40, AnvilCommon::g_BuildInfo.c_str());
 	}
 
-	//
-	// TODO: Find a better place for the dialog variables below...
-	//
-
-	bool g_DialogShow;
-	uint32_t g_DialogStringId;
-	int32_t g_DialogArg1;
-	int32_t g_DialogFlags;
-	uint32_t g_DialogParentStringId;
-	void *g_UiData = 0;
-
 	int32_t ShowHalo3PauseMenuHook(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, uint32_t a5)
 	{
-		g_UiData = nullptr;
-		g_DialogStringId = 0x10084;
-		g_DialogArg1 = 0;
-		g_DialogFlags = 4;
-		g_DialogParentStringId = 0x1000C;
-		g_DialogShow = true;
+		auto *s_UserInterface = UserInterface::Instance();
 
-		return 1;
+		return (int32_t)s_UserInterface->ShowDialog(Blam::Text::StringID(0x10084), 0, 4, Blam::Text::StringID(0x1000C));
 	}
 
 	void __fastcall MenuUpdateHook(void *a1, int32_t unused, int32_t menuIdToLoad)
@@ -159,7 +145,7 @@ namespace AnvilEldorado
 		}
 	}
 
-	bool Engine::ApplyPatches_UserInterface()
+	bool UserInterface::Init()
 	{
 		using AnvilCommon::Utils::HookFlags;
 		using AnvilCommon::Utils::Hook;
@@ -202,5 +188,19 @@ namespace AnvilEldorado
 			&& Hook(0x6E79A7, MainMenuCreateLobbyHook, HookFlags::IsCall).Apply()
 			// Enable H3UI scaling
 			&& Patch::NopFill(0x61FAD1, 2);
+	}
+
+	bool UserInterface::ShowDialog(const Blam::Text::StringID &p_DialogID, const int32_t p_Arg1, const int32_t p_Flags, const Blam::Text::StringID &p_ParentID)
+	{
+		m_ShowDialog = true;
+
+		m_DialogID = p_DialogID;
+		m_DialogArg1 = p_Arg1;
+		m_DialogFlags = p_Flags;
+		m_DialogParentID = p_ParentID;
+		m_DialogData = nullptr;
+
+		WriteLog("Showing ui dialog '%s'...", Blam::Cache::StringIDCache::Instance()->GetString(p_DialogID));
+		return true;
 	}
 }
