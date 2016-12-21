@@ -14,7 +14,7 @@ namespace Blam::Data
 
 	DatumBase *DataArrayBase::GetAddress(const DatumIndex &p_Index) const
 	{
-		return reinterpret_cast<DatumBase *>(static_cast<uint8_t *>(Data) + p_Index.Index * DatumSize);
+		return reinterpret_cast<DatumBase *>(static_cast<uint8_t *>(Data) + p_Index.Index() * DatumSize);
 	}
 
 	DatumBase *DataIteratorBase::Next()

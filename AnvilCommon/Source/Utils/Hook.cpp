@@ -1,6 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <sstream>
+#include "Logger.hpp"
 #include "Hook.hpp"
 
 namespace AnvilCommon::Utils
@@ -27,7 +28,7 @@ namespace AnvilCommon::Utils
 		}
 	}
 
-	bool WriteCall(void *p_Address, void* p_NewFunction)
+	bool WriteCall(void *p_Address, void *p_NewFunction)
 	{
 		DWORD temp;
 		DWORD temp2;
@@ -38,7 +39,9 @@ namespace AnvilCommon::Utils
 		{
 			std::stringstream ss;
 			ss << "Failed to set protection on memory address " << std::hex << p_Address;
-			OutputDebugString(ss.str().c_str());
+
+			WriteLog("ERROR: %s", ss.str().c_str());
+
 			return false;
 		}
 
@@ -49,7 +52,30 @@ namespace AnvilCommon::Utils
 		return true;
 	}
 
-	bool WriteJump(void *p_Address, void* p_NewFunction, const HookFlags &p_Flags)
+	bool WriteVirtual(void *p_Address, void *p_NewFunction)
+	{
+		DWORD temp;
+		DWORD temp2;
+
+		if (!VirtualProtect(p_Address, 4, PAGE_READWRITE, &temp))
+		{
+			std::stringstream ss;
+			ss << "Failed to set protection on memory address " << std::hex << (void*)p_Address;
+
+			WriteLog("ERROR: %s", ss.str().c_str());
+
+			return false;
+		}
+		else
+		{
+			*(uint32_t *)p_Address = (uint32_t)p_NewFunction;
+			VirtualProtect(p_Address, 4, temp, &temp2);
+		}
+
+		return true;
+	}
+
+	bool WriteJump(void *p_Address, void *p_NewFunction, const HookFlags &p_Flags)
 	{
 		DWORD temp;
 		DWORD temp2;
@@ -82,15 +108,17 @@ namespace AnvilCommon::Utils
 		return true;
 	}
 
-	bool Hook::Apply(const bool p_Reset, void *p_Offset) const
+	bool Hook::Apply(const bool p_Reset, void *p_BaseAddress) const
 	{
 		if (p_Reset)
-			return Reset(p_Offset);
+			return Reset(p_BaseAddress);
 
 		if (m_Flags & HookFlags::IsCall)
-			return WriteCall((uint8_t *)p_Offset + m_Offset, m_DestFunc);
+			return WriteCall((uint8_t *)p_BaseAddress + m_Offset, m_DestFunc);
+		else if (m_Flags & HookFlags::IsVirtual)
+			return WriteVirtual((uint8_t *)p_BaseAddress + m_Offset, m_DestFunc);
 		else
-			return WriteJump((uint8_t *)p_Offset + m_Offset, m_DestFunc, m_Flags);
+			return WriteJump((uint8_t *)p_BaseAddress + m_Offset, m_DestFunc, m_Flags);
 	}
 
 	bool Hook::Reset(void *p_Offset) const

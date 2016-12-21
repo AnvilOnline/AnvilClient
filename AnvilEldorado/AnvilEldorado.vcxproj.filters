@@ -50,6 +50,7 @@
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\Blam\Text\StringID.cpp" />
+    <ClCompile Include="Source\Blam\Input\InputTypes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -115,5 +116,8 @@
     <ClInclude Include="Source\Player.hpp" />
     <ClInclude Include="Source\Game.hpp" />
     <ClInclude Include="Source\UserInterface.hpp" />
+    <ClInclude Include="Source\Forge.hpp" />
+    <ClInclude Include="Source\Blam\Input\InputTypes.hpp" />
+    <ClInclude Include="Source\Input.hpp" />
   </ItemGroup>
 </Project>

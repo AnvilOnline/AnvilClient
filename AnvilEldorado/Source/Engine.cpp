@@ -1,8 +1,10 @@
 #include "Graphics.hpp"
+#include "Input.hpp"
 #include "Camera.hpp"
 #include "UserInterface.hpp"
 #include "Game.hpp"
 #include "Player.hpp"
+#include "Forge.hpp"
 #include "Engine.hpp"
 
 namespace AnvilEldorado
@@ -13,17 +15,17 @@ namespace AnvilEldorado
 
 		return ApplyPatches_Core()
 			&& ApplyPatches_Audio()
-			&& ApplyPatches_Input()
 			&& ApplyPatches_Network()
 			&& ApplyPatches_Content()
-			&& ApplyPatches_Forge()
 			&& ApplyPatches_Scoreboard()
 			&& ApplyPatches_VirtualKeyboard()
 			&& Graphics::Instance()->Init()
+			&& Input::Instance()->Init()
 			&& Camera::Instance()->Init()
 			&& UserInterface::Instance()->Init()
 			&& Game::Instance()->Init()
-			&& Player::Instance()->Init();
+			&& Player::Instance()->Init()
+			&& Forge::Instance()->Init();
 	}
 
 	bool Engine::OnTagsLoaded()

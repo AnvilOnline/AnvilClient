@@ -7,6 +7,7 @@
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
 #include "Blam\Cache\StringIDCache.hpp"
+#include "Blam\Input\InputTypes.hpp"
 #include "UserInterface.hpp"
 
 namespace AnvilEldorado
@@ -145,12 +146,33 @@ namespace AnvilEldorado
 		}
 	}
 
+	const auto UI_Forge_ButtonPressHandler = reinterpret_cast<char(__thiscall *)(void *, void *)>(0xAE2180);
+
+	char __fastcall UI_Forge_ButtonPressHandlerHook(void *p_Arg1, int32_t p_Unused, uint8_t *p_ControllerData)
+	{
+		auto s_ButtonCode = *(uint32_t*)(p_ControllerData + 0x1C);
+
+		if (s_ButtonCode == Blam::Input::eUiButtonCodeLeft || s_ButtonCode == Blam::Input::eUiButtonCodeRight ||
+			s_ButtonCode == Blam::Input::eUiButtonCodeDpadLeft || s_ButtonCode == Blam::Input::eUiButtonCodeDpadRight)
+		{
+			if (s_ButtonCode == Blam::Input::eUiButtonCodeLeft || s_ButtonCode == Blam::Input::eUiButtonCodeDpadLeft) // analog left / arrow key left
+				*(uint32_t*)(p_ControllerData + 0x1C) = Blam::Input::eUiButtonCodeLB;
+
+			if (s_ButtonCode == Blam::Input::eUiButtonCodeRight || s_ButtonCode == Blam::Input::eUiButtonCodeDpadRight) // analog right / arrow key right
+				*(uint32_t*)(p_ControllerData + 0x1C) = Blam::Input::eUiButtonCodeRB;
+		}
+
+		return UI_Forge_ButtonPressHandler(p_Arg1, p_ControllerData);
+	}
+
 	bool UserInterface::Init()
 	{
 		using AnvilCommon::Utils::HookFlags;
 		using AnvilCommon::Utils::Hook;
 		using AnvilCommon::Utils::Patch;
 
+		// Hook UI vftable's forge menu button handler, so arrow keys can act as bumpers
+		// added side effect: analog stick left/right can also navigate through menus
 			// Game window creation callbacks
 		return Hook(0x622057, CreateGameWindowHook, HookFlags::IsCall).Apply()
 			// Hook window title sprintf to replace the dest buf with our string
@@ -187,7 +209,11 @@ namespace AnvilEldorado
 			// can show the server browser if matchmaking is selected
 			&& Hook(0x6E79A7, MainMenuCreateLobbyHook, HookFlags::IsCall).Apply()
 			// Enable H3UI scaling
-			&& Patch::NopFill(0x61FAD1, 2);
+			&& Patch::NopFill(0x61FAD1, 2)
+			// Hook UI vftable's forge menu button handler, so arrow keys can act as bumpers
+			// added side effect: analog stick left/right can also navigate through menus
+			// TODO: Move to input class?
+			&& Hook(0x129EFD8, UI_Forge_ButtonPressHandlerHook, HookFlags::IsVirtual).Apply();
 	}
 
 	bool UserInterface::ShowDialog(const Blam::Text::StringID &p_DialogID, const int32_t p_Arg1, const int32_t p_Flags, const Blam::Text::StringID &p_ParentID)

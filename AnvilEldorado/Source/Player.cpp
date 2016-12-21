@@ -1,9 +1,12 @@
 #include <codecvt>
 #include <map>
 #include "Blam\Cache\StringIDCache.hpp"
+#include "Blam\Data\DatumIndex.hpp"
+#include "Blam\Objects\ObjectData.hpp"
 #include "Blam\Tags\TagInstance.hpp"
 #include "Blam\Tags\Game\CacheFileGlobalTags.hpp"
 #include "Blam\Tags\Game\Globals.hpp"
+#include "Blam\Tags\Items\Weapon.hpp"
 #include "Blam\Tags\Scenario\Scenario.hpp"
 #include "Utils\Logger.hpp"
 #include "Utils\Hook.hpp"
@@ -85,7 +88,7 @@ namespace AnvilEldorado
 
 		// Try to get the UI player biped
 		auto s_UiPlayerBiped = s_Player->GetPodiumBiped();
-		if (s_UiPlayerBiped == 0xFFFFFFFF)
+		if (s_UiPlayerBiped == Blam::Data::DatumIndex::Null)
 			return;
 
 		s_Player->CustomizeBiped(s_UiPlayerBiped);
@@ -160,6 +163,108 @@ namespace AnvilEldorado
 		}
 	}
 
+	int32_t __cdecl DualWieldHook(uint16_t p_ObjectIndex)
+	{
+		using Blam::Objects::ObjectData;
+		using Blam::Tags::TagInstance;
+		using Blam::Tags::Items::Weapon;
+
+		auto &s_ObjectArray = *ObjectData::GetDataArray();
+		auto s_TagIndex = *(uint32_t *)s_ObjectArray[Blam::Data::DatumIndex(0, p_ObjectIndex)].Data;
+		auto *s_WeaponDefinition = TagInstance(s_TagIndex).GetDefinition<Weapon>();
+
+		return (s_WeaponDefinition->WeaponFlags1 & Weapon::Flags1::CanBeDualWielded) != Weapon::Flags1::None;
+	}
+
+	const auto UnitGetWeapon = reinterpret_cast<uint32_t(*)(uint32_t, int16_t)>(0xB454D0);
+
+	bool UnitIsDualWielding(Blam::Data::DatumIndex unitIndex)
+	{
+		if (!unitIndex)
+			return false;
+
+		auto *s_ObjectArray = (uint8_t *)Blam::Objects::ObjectData::GetDataArray();
+		auto *s_UnitData = (uint8_t *)(*(uint32_t *)(((uint8_t *)(*(uint32_t *)(s_ObjectArray + 0x44))) + (unitIndex.Index() * 0x10) + (0xC)));
+
+		if (!s_UnitData)
+			return false;
+
+		auto s_DualWieldWeaponIndex = *(int8_t *)(s_UnitData + 0x2CB);
+
+		if (s_DualWieldWeaponIndex < 0 || s_DualWieldWeaponIndex >= 4)
+			return false;
+
+		return UnitGetWeapon(unitIndex, s_DualWieldWeaponIndex) != 0xFFFFFFFF;
+	}
+
+	bool PlayerIsDualWielding(Blam::Data::DatumIndex p_PlayerIndex)
+	{
+		auto &s_Players = Blam::Game::GetPlayers();
+
+		return UnitIsDualWielding(s_Players[p_PlayerIndex].SlaveUnit);
+	}
+
+	bool LocalPlayerIsDualWielding()
+	{
+		auto s_LocalPlayer = Blam::Game::GetLocalPlayer(0);
+
+		if (s_LocalPlayer == Blam::Data::DatumIndex::Null)
+			return false;
+
+		return PlayerIsDualWielding(s_LocalPlayer);
+	}
+
+	__declspec(naked) void SprintInputHook()
+	{
+		__asm
+		{
+			push eax
+			call LocalPlayerIsDualWielding
+			test al, al
+			pop eax
+			jz enable // leave sprint enabled(for now) if not dual wielding
+			and ax, 0FEFFh // disable by removing the 8th bit indicating no sprint input press
+			
+		enable:
+			mov dword ptr ds : [esi + 8], eax
+			mov ecx, edi
+			push 046DFC0h
+			ret
+		}
+	}
+
+	__declspec(naked) void ScopeLevelHook()
+	{
+		__asm
+		{
+			mov word ptr ds : [edi + esi + 32Ah], 0FFFFh // no scope by default
+			push eax
+			push ecx
+			call LocalPlayerIsDualWielding
+			test al, al
+			pop ecx
+			pop eax
+			jnz noscope // prevent scoping when dual wielding
+			mov word ptr ds : [edi + esi + 32Ah], ax // otherwise use intended scope level
+
+		noscope:
+			push 05D50D3h
+			ret
+		}
+	}
+
+	const auto GetEquipmentCount = reinterpret_cast<int32_t(__cdecl *)(uint32_t, int16_t)>(0xB440F0);
+
+	int32_t GetEquipmentCountHook(uint32_t p_UnitIndex, int16_t p_EquipmentIndex)
+	{
+		// Disable equipment use if dual wielding
+		if (UnitIsDualWielding(p_UnitIndex))
+			return 0;
+
+		// Call the original function if not dual wielding
+		return GetEquipmentCount(p_UnitIndex, p_EquipmentIndex);
+	}
+
 	bool Player::Init()
 	{
 		using AnvilCommon::Utils::HookFlags;
@@ -175,7 +280,17 @@ namespace AnvilEldorado
 			&& Patch(0x43628A, 0x1C).Apply()
 			&& Patch::NopFill(0x43628B, 0x3)
 			// Fix grenade loadouts
-			&& Hook(0x1A3267, GrenadeLoadoutHook).Apply();
+			&& Hook(0x1A3267, GrenadeLoadoutHook).Apply()
+			// Enable dual-wielding
+			&& Hook(0x761550, DualWieldHook).Apply()
+			// Hook sprint input for dual-wielding
+			&& Hook(0x6DFBB, SprintInputHook).Apply()
+			// Hook scope level for dual-wielding
+			&& Hook(0x1D50CB, ScopeLevelHook).Apply()
+			// Equipment patches
+			&& Patch::NopFill(0x786CFF, 6)
+			&& Patch::NopFill(0x786CF7, 6)
+			&& Hook(0x7A21D4, GetEquipmentCountHook, HookFlags::IsCall).Apply();
 	}
 
 	bool Player::OnTagsLoaded()

@@ -19,10 +19,8 @@ namespace AnvilEldorado
 
 		bool ApplyPatches_Core();
 		bool ApplyPatches_Audio();
-		bool ApplyPatches_Input();
 		bool ApplyPatches_Network();
 		bool ApplyPatches_Content();
-		bool ApplyPatches_Forge();
 		bool ApplyPatches_Scoreboard();
 		bool ApplyPatches_VirtualKeyboard();
 	};

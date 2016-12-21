@@ -3,30 +3,40 @@
 
 namespace Blam::Data
 {
+	// A unique handle used to refer to data.
 	struct DatumIndex
 	{
+		// Represents a null datum index.
 		static const DatumIndex Null;
 
-		union
+		typedef uint16_t TSalt;  // Type of a salt value
+		typedef uint16_t TIndex; // Type of an index value
+
+								 // Creates a null datum index.
+		DatumIndex() : Value(0xFFFFFFFF) { }
+
+		// Creates a datum index from a handle.
+		DatumIndex(uint32_t handle) : Value(handle) { }
+
+		// Creates a datum index from a salt and an index.
+		DatumIndex(TSalt salt, TIndex index)
 		{
-			uint32_t Value;
-			struct
-			{
-				uint16_t Salt;
-				uint16_t Index;
-			};
-		};
+			Value = (salt << 16) | index;
+		}
 
-		DatumIndex();
-		DatumIndex(const uint32_t p_Value);
-		DatumIndex(const uint16_t p_Salt, const uint16_t p_Index);
+		// The value of the datum index as a 32-bit integer.
+		uint32_t Value;
 
-		bool operator==(const DatumIndex &other) const;
-		bool operator!=(const DatumIndex &other) const;
+		// Gets the datum index's salt value.
+		TSalt Salt() const { return Value >> 16; }
 
-		explicit operator uint32_t() const;
+		// Gets the datum index's index value.
+		TIndex Index() const { return Value & 0xFFFF; }
 
-		explicit operator bool() const;
+		bool operator==(const DatumIndex other) const { return Value == other.Value; }
+		bool operator!=(const DatumIndex other) const { return !(*this == other); }
+		operator uint32_t() const { return Value; }
+		operator bool() const { return *this != Null; }
 	};
-	static_assert(sizeof(DatumIndex) == 0x4, "Blam::Data::DatumIndex");
+	static_assert(sizeof(DatumIndex) == 4, "Invalid DatumIndex size");
 }

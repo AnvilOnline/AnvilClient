@@ -548,4 +548,9 @@ namespace Blam::Tags::Items
 		static_assert(sizeof(struct Weapon::Barrel) == 0x1AC, "");
 	};
 	static_assert(sizeof(struct Weapon) == 0x558, "");
+
+	inline Weapon::Flags1 operator&(const Weapon::Flags1 &p_A, const Weapon::Flags1 &p_B)
+	{
+		return (Weapon::Flags1)((int32_t)p_A & (int32_t)p_B);
+	}
 }
