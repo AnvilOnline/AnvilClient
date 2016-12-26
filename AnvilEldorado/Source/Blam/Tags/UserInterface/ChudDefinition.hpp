@@ -379,7 +379,7 @@ namespace Blam::Tags::UserInterface
 		};
 		static_assert(sizeof(WidgetBase) == 0x38, "");
 
-		struct SubwidgetBase : WidgetBase
+		struct SubwidgetBase abstract : WidgetBase
 		{
 			int32_t WidgetIndex;
 		};
