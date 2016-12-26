@@ -1,31 +1,24 @@
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
 #include <vector>
-#include "BuildInfo.hpp"
-#include "Globals.hpp"
+
 #include "Utils\Logger.hpp"
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
+
 #include "Blam\Cache\StringIDCache.hpp"
 #include "Blam\Input\InputTypes.hpp"
+#include "Blam\Tags\TagInstance.hpp"
+#include "Blam\Tags\UserInterface\ChudDefinition.hpp"
+#include "Blam\Tags\UserInterface\ChudGlobalsDefinition.hpp"
+
+#include "BuildInfo.hpp"
+#include "Globals.hpp"
 #include "UserInterface.hpp"
 
 namespace AnvilEldorado
 {
-	typedef std::function<void(HWND window)> CreateWindowCallback;
-	std::vector<CreateWindowCallback> g_CreateWindowCallbacks;
-
-	const auto UI_CreateGameWindow = reinterpret_cast<HWND(*)()>(0xA223F0);
 	HWND CreateGameWindowHook()
 	{
-		auto s_HWND = UI_CreateGameWindow();
-		if (!s_HWND)
-			return nullptr;
-
-		for (auto &s_Callback : g_CreateWindowCallbacks)
-			s_Callback(s_HWND);
-
-		return s_HWND;
+		return UserInterface::Instance()->CreateGameWindow();
 	}
 
 	void WindowTitleSprintfHook(char *p_DestBuf, char *p_Format, char *p_Version)
@@ -171,8 +164,8 @@ namespace AnvilEldorado
 		using AnvilCommon::Utils::Hook;
 		using AnvilCommon::Utils::Patch;
 
-		// Hook UI vftable's forge menu button handler, so arrow keys can act as bumpers
-		// added side effect: analog stick left/right can also navigate through menus
+			// Hook UI vftable's forge menu button handler, so arrow keys can act as bumpers
+			// added side effect: analog stick left/right can also navigate through menus
 			// Game window creation callbacks
 		return Hook(0x622057, CreateGameWindowHook, HookFlags::IsCall).Apply()
 			// Hook window title sprintf to replace the dest buf with our string
@@ -214,6 +207,104 @@ namespace AnvilEldorado
 			// added side effect: analog stick left/right can also navigate through menus
 			// TODO: Move to input class?
 			&& Hook(0x129EFD8, UI_Forge_ButtonPressHandlerHook, HookFlags::IsVirtual).Apply();
+	}
+
+	const auto UI_CreateGameWindow = reinterpret_cast<HWND(*)()>(0xA223F0);
+	HWND UserInterface::CreateGameWindow()
+	{
+		auto s_HWND = UI_CreateGameWindow();
+
+		if (!s_HWND)
+			return nullptr;
+
+		for (auto &s_Callback : m_CreateWindowCallbacks)
+			s_Callback(s_HWND);
+
+		return s_HWND;
+	}
+
+	bool UserInterface::ShouldScaleInterface() const
+	{
+		return m_ScaleInterface;
+	}
+
+	void UserInterface::SetScaleInterface(const bool p_ScaleInterface)
+	{
+		m_ScaleInterface = p_ScaleInterface;
+	}
+
+	void UserInterface::ApplyResolution()
+	{
+		using Blam::Tags::TagInstance;
+		using Blam::Tags::UserInterface::ChudGlobalsDefinition;
+		using Blam::Tags::UserInterface::ChudDefinition;
+
+		auto *s_GameResolution = reinterpret_cast<int *>(0x19106C0);
+		auto *s_ChudGlobalsDefinition = TagInstance(0x01BD).GetDefinition<ChudGlobalsDefinition>();
+		auto *s_ChudDefinition = TagInstance(0x0C1E).GetDefinition<ChudDefinition>();
+
+		// Store initial HUD resolution values the first time the resolution is changed.
+		if (m_FirstResolutionChange)
+		{
+			m_HudResolutionWidth = s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].ResolutionWidth;
+			m_HudResolutionHeight = s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].ResolutionHeight;
+			m_HudResolutionScaleX = s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].HorizontalScale;
+			m_HudResolutionScaleY = s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].VerticalScale;
+			m_HudMotionSensorOffsetX = s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].MotionSensorOffsetX;
+
+			// Store bottom visor offset
+			for (auto &s_HudWidget : s_ChudDefinition->HudWidgets)
+			{
+				if (s_HudWidget.Name == "in_helmet_bottom_new")
+				{
+					m_HudBottomVisorOffsetY = s_HudWidget.PlacementData[0].OffsetY;
+					break;
+				}
+			}
+
+			m_FirstResolutionChange = false;
+		}
+
+		// Make UI match it's original width of 1920 pixels on non-widescreen monitors.
+		// Fixes the visor getting cut off.
+		s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].ResolutionWidth = m_HudResolutionWidth;
+
+		// H3UI Resolution
+		auto *s_InterfaceResolution = reinterpret_cast<int *>(0x19106C8);
+
+		if ((s_GameResolution[0] / 16 > s_GameResolution[1] / 9))
+		{
+			// On aspect ratios with a greater width than 16:9 center the UI on the screen
+			s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].ResolutionHeight = m_HudResolutionHeight;
+			s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].HorizontalScale = (s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].ResolutionWidth / (float)s_GameResolution[0]) * m_HudResolutionScaleX;
+			s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].VerticalScale = (s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].ResolutionHeight / (float)s_GameResolution[1]) * m_HudResolutionScaleY;
+
+			s_InterfaceResolution[0] = (int)(((float)s_GameResolution[0] / (float)s_GameResolution[1]) * 640);
+			s_InterfaceResolution[1] = 640;
+		}
+		else
+		{
+			s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].ResolutionHeight = (int)(((float)s_GameResolution[1] / (float)s_GameResolution[0]) * s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].ResolutionWidth);
+			s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].HorizontalScale = m_HudResolutionScaleX;
+			s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].VerticalScale = m_HudResolutionScaleY;
+
+			s_InterfaceResolution[0] = 1152;//1152 x 640 resolution
+			s_InterfaceResolution[1] = (int)(((float)s_GameResolution[1] / (float)s_GameResolution[0]) * 1152);
+		}
+
+		// Adjust motion sensor blip to match the UI resolution
+		s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].MotionSensorOffsetX = m_HudMotionSensorOffsetX;
+		s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].MotionSensorOffsetY = (float)(s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].ResolutionHeight - (s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].MotionSensorRadius - s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].MotionSensorScale));
+
+		// Search for the visor bottom and fix it if found
+		for (auto &s_Widget : s_ChudDefinition->HudWidgets)
+		{
+			if (s_Widget.Name == "in_helmet_bottom_new")
+			{
+				s_Widget.PlacementData[0].OffsetY = (((float)s_ChudGlobalsDefinition->HudGlobals[0].HudAttributes[0].ResolutionHeight - m_HudResolutionHeight) / 2) + m_HudBottomVisorOffsetY;
+				break;
+			}
+		}
 	}
 
 	bool UserInterface::ShowDialog(const Blam::Text::StringID &p_DialogID, const int32_t p_Arg1, const int32_t p_Flags, const Blam::Text::StringID &p_ParentID)

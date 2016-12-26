@@ -77,6 +77,8 @@
     <ClInclude Include="Source\Blam\Tags\TagData.hpp" />
     <ClInclude Include="Source\Blam\Tags\TagInstance.hpp" />
     <ClInclude Include="Source\Blam\Tags\TagReference.hpp" />
+    <ClInclude Include="Source\Blam\Tags\UserInterface\ChudDefinition.hpp" />
+    <ClInclude Include="Source\Blam\Tags\UserInterface\ChudGlobalsDefinition.hpp" />
     <ClInclude Include="Source\Blam\Text\StringID.hpp" />
     <ClInclude Include="Source\Engine.hpp" />
     <ClInclude Include="Source\Forge.hpp" />

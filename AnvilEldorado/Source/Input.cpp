@@ -1,7 +1,8 @@
-#include "Globals.hpp"
 #include "Utils\Logger.hpp"
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
+
+#include "Globals.hpp"
 #include "Input.hpp"
 
 namespace AnvilEldorado

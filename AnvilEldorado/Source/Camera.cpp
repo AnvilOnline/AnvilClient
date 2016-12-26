@@ -1,12 +1,15 @@
 #include <locale>
 #include <string>
 #include <sstream>
-#include "Globals.hpp"
+
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
+
 #include "Blam\Math\RealPoint3D.hpp"
 #include "Blam\Math\RealVector2D.hpp"
 #include "Blam\Math\RealVector3D.hpp"
+
+#include "Globals.hpp"
 #include "Camera.hpp"
 
 namespace AnvilEldorado

@@ -1,3 +1,4 @@
+#include "Blam\Cache\StringIDCache.hpp"
 #include "StringID.hpp"
 
 namespace Blam::Text
@@ -42,6 +43,21 @@ namespace Blam::Text
 	bool StringID::operator!=(const StringID &p_Other) const
 	{
 		return !(*this == p_Other);
+	}
+
+	bool StringID::operator==(const std::string &p_Other) const
+	{
+		return p_Other == Cache::StringIDCache::Instance()->GetString(*this);
+	}
+
+	bool StringID::operator!=(const std::string &p_Other) const
+	{
+		return !(*this == p_Other);
+	}
+
+	StringID::operator std::string() const
+	{
+		return Cache::StringIDCache::Instance()->GetString(*this);
 	}
 
 	StringID::operator uint32_t() const

@@ -1,9 +1,11 @@
 #include <sstream>
-#include "Globals.hpp"
+
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
-#include "Engine.hpp"
+
+#include "Globals.hpp"
 #include "Graphics.hpp"
+#include "UserInterface.hpp"
 
 namespace AnvilEldorado
 {
@@ -11,12 +13,9 @@ namespace AnvilEldorado
 
 	void ResolutionChangeHook()
 	{
-		// Update the ingame UI's resolution
 		ApplyResolutionChange();
 
-		//
-		// TODO: Apply new resolution to any subsystems...
-		//
+		UserInterface::Instance()->ApplyResolution();
 	}
 
 	double AspectRatioHook()

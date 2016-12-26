@@ -1,8 +1,10 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+
 #include <TlHelp32.h>
-#include <Globals.hpp>
-#include <BuildInfo.hpp>
+
+#include "BuildInfo.hpp"
+#include "Globals.hpp"
 
 std::string AnvilCommon::g_BuildInfo = "AnvilEldorado Client - " + std::string(__DATE__) + " - Build: " + std::to_string(ANVIL_BUILD);
 

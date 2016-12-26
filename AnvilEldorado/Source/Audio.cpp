@@ -1,5 +1,6 @@
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
+
 #include "Audio.hpp"
 
 namespace AnvilEldorado

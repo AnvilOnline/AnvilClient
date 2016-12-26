@@ -3,6 +3,7 @@
 #include <WinSock2.h>
 
 #include "Interfaces\IInitializable.hpp"
+
 #include "Utils\Singleton.hpp"
 
 #include "Blam\Network\Session.hpp"

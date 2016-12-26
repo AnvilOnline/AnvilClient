@@ -1,14 +1,13 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-#include "Globals.hpp"
-
 #include "Utils\Logger.hpp"
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
 
 #include "Blam\Cache\StringIDCache.hpp"
 
+#include "Globals.hpp"
 #include "Graphics.hpp"
 #include "Audio.hpp"
 #include "Input.hpp"
@@ -105,7 +104,7 @@ namespace AnvilEldorado
 		using AnvilCommon::Utils::Hook;
 		using AnvilCommon::Utils::Patch;
 
-		//Disable Windows DPI scaling
+			//Disable Windows DPI scaling
 		return SetProcessDPIAware()
 			// Enable write to all executable memory
 			&& UnprotectMemory()
@@ -127,6 +126,8 @@ namespace AnvilEldorado
 
 	bool Engine::OnTagsLoaded()
 	{
+		UserInterface::Instance()->ApplyResolution();
+
 		return Player::Instance()->OnTagsLoaded();
 	}
 

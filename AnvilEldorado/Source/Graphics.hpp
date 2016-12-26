@@ -1,6 +1,9 @@
 #pragma once
+
 #include "Interfaces\IInitializable.hpp"
+
 #include "Utils\Singleton.hpp"
+
 #include "Blam\Math\RealColorRGB.hpp"
 
 namespace AnvilEldorado

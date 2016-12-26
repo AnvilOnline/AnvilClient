@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <string>
 
 namespace Blam::Text
 {
@@ -22,6 +23,11 @@ namespace Blam::Text
 
 		bool operator==(const StringID &p_Other) const;
 		bool operator!=(const StringID &p_Other) const;
+
+		bool operator==(const std::string &p_Other) const;
+		bool operator!=(const std::string &p_Other) const;
+
+		explicit operator std::string() const;
 
 		explicit operator uint32_t() const;
 	};

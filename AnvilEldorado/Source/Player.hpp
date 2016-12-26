@@ -1,8 +1,12 @@
 #pragma once
+
 #include <cstdint>
 #include <map>
+
 #include "Interfaces\IInitializable.hpp"
+
 #include "Utils\Singleton.hpp"
+
 #include "Blam\Data\DatumIndex.hpp"
 #include "Blam\Game\Players.hpp"
 #include "Blam\Tags\Game\MultiplayerGlobals.hpp"

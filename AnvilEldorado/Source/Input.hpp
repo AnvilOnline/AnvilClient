@@ -1,8 +1,12 @@
 #pragma once
+
 #include <stack>
 #include <vector>
+
 #include "Interfaces\IInitializable.hpp"
+
 #include "Utils\Singleton.hpp"
+
 #include "Blam\Input\InputTypes.hpp"
 
 namespace AnvilEldorado

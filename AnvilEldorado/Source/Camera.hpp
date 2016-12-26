@@ -1,6 +1,9 @@
 #pragma once
+
 #include "Interfaces\IInitializable.hpp"
+
 #include "Utils\Singleton.hpp"
+
 #include "Blam\Math\RealPoint3D.hpp"
 #include "Blam\Math\RealVector2D.hpp"
 #include "Blam\Math\RealVector3D.hpp"

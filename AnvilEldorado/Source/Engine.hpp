@@ -1,5 +1,7 @@
 #pragma once
+
 #include "Interfaces\IInitializable.hpp"
+
 #include "Utils\Singleton.hpp"
 
 namespace AnvilEldorado

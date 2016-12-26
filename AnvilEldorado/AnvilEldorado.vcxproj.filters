@@ -118,5 +118,7 @@
     <ClInclude Include="Source\Audio.hpp" />
     <ClInclude Include="Source\Blam\Objects\ObjectData.hpp" />
     <ClInclude Include="Source\Network.hpp" />
+    <ClInclude Include="Source\Blam\Tags\UserInterface\ChudGlobalsDefinition.hpp" />
+    <ClInclude Include="Source\Blam\Tags\UserInterface\ChudDefinition.hpp" />
   </ItemGroup>
 </Project>

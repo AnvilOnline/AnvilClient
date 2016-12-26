@@ -1,6 +1,8 @@
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
+
 #include "Blam\Objects\ObjectData.hpp"
+
 #include "Forge.hpp"
 
 namespace AnvilEldorado

@@ -1,4 +1,3 @@
-
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <WS2tcpip.h>
 
@@ -556,7 +555,7 @@ namespace AnvilEldorado
 		using AnvilCommon::Utils::Hook;
 		using AnvilCommon::Utils::Patch;
 
-		// Fix network debug strings having (null) instead of an IP address
+			// Fix network debug strings having (null) instead of an IP address
 		return Hook(0x3F6F0, GetIPStringFromInAddrHook).Apply()
 			// Fix for XnAddrToInAddr to try checking syslink-menu data for XnAddr->InAddr mapping before consulting XNet
 			&& Hook(0x30B6C, XnAddrToInAddrHook, HookFlags::IsCall).Apply()

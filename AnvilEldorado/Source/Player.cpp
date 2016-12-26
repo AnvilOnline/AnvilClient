@@ -1,5 +1,6 @@
 #include <codecvt>
 #include <map>
+
 #include "Blam\Cache\StringIDCache.hpp"
 #include "Blam\Data\DatumIndex.hpp"
 #include "Blam\Objects\ObjectData.hpp"
@@ -8,9 +9,11 @@
 #include "Blam\Tags\Game\Globals.hpp"
 #include "Blam\Tags\Items\Weapon.hpp"
 #include "Blam\Tags\Scenario\Scenario.hpp"
+
 #include "Utils\Logger.hpp"
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
+
 #include "Player.hpp"
 
 namespace AnvilEldorado
