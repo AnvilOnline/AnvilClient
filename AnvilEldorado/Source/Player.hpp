@@ -83,7 +83,7 @@ namespace AnvilEldorado
 		std::string GetPodiumWeapon() const;
 		void SetPodiumWeapon(const std::string &p_PodiumWeapon);
 
-	protected:
+	private:
 		std::wstring m_UserName;
 
 		bool m_UpdateArmor = false;

@@ -1,33 +1,35 @@
+
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#include <WinSock2.h>
 #include <WS2tcpip.h>
+
 #include <sstream>
+
 #include "BuildInfo.hpp"
 #include "Globals.hpp"
 #include "Utils\Logger.hpp"
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
-#include "Blam\Network\Session.hpp"
-#include "Engine.hpp"
+
+#include "Network.hpp"
 
 namespace AnvilEldorado
 {
-	char *GetIPStringFromInAddrHook(void *inaddr)
+	char *GetIPStringFromInAddrHook(void *p_InAddr)
 	{
-		static char ipAddrStr[64];
-		memset(ipAddrStr, 0, 64);
+		static char s_IpAddrStr[64];
+		memset(s_IpAddrStr, 0, 64);
 
-		uint8_t ip3 = *(uint8_t *)inaddr;
-		uint8_t ip2 = *((uint8_t *)inaddr + 1);
-		uint8_t ip1 = *((uint8_t *)inaddr + 2);
-		uint8_t ip0 = *((uint8_t *)inaddr + 3);
+		auto s_Ip3 = *(uint8_t *)p_InAddr;
+		auto s_Ip2 = *((uint8_t *)p_InAddr + 1);
+		auto s_Ip1 = *((uint8_t *)p_InAddr + 2);
+		auto s_Ip0 = *((uint8_t *)p_InAddr + 3);
 
-		uint16_t port = *(uint16_t *)((uint8_t *)inaddr + 0x10);
-		uint16_t type = *(uint16_t *)((uint8_t *)inaddr + 0x12);
+		auto s_Port = *(uint16_t *)((uint8_t *)p_InAddr + 0x10);
+		auto s_Type = *(uint16_t *)((uint8_t *)p_InAddr + 0x12);
 
-		sprintf_s(ipAddrStr, 64, "%hd.%hd.%hd.%hd:%hd (%hd)", ip0, ip1, ip2, ip3, port, type);
+		sprintf_s(s_IpAddrStr, 64, "%hd.%hd.%hd.%hd:%hd (%hd)", s_Ip0, s_Ip1, s_Ip2, s_Ip3, s_Port, s_Type);
 
-		return ipAddrStr;
+		return s_IpAddrStr;
 	}
 
 	char XnAddrToInAddrHook(void *pxna, void *pxnkid, void *in_addr)
@@ -102,83 +104,11 @@ namespace AnvilEldorado
 		return InAddrToXnAddr(ina, pxna, pxnkid);
 	}
 
-	SOCKET g_InfoSocket;
-	bool g_InfoSocketOpen = false;
-
-	uint32_t g_ServerPort = 11775;
-
-	bool StartInfoServer()
-	{
-		if (g_InfoSocketOpen)
-			return true;
-
-		/* TODO: Server::Voting::StartNewVote(); */
-
-		auto s_HWND = *reinterpret_cast<HWND *>((uint8_t *)AnvilCommon::Internal_GetModuleStorage() + 0x159C014);
-
-		if (s_HWND == 0)
-			return false;
-
-		g_InfoSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-		SOCKADDR_IN bindAddr;
-		bindAddr.sin_family = AF_INET;
-		bindAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-		auto port = g_ServerPort;
-		if (port == *reinterpret_cast<uint32_t *>(0x1860454)) // make sure port isn't the same as game port
-			port++;
-		bindAddr.sin_port = htons((u_short)port);
-
-		// open our listener socket
-		while (bind(g_InfoSocket, (PSOCKADDR)&bindAddr, sizeof(bindAddr)) != 0)
-		{
-			port++;
-			if (port == *reinterpret_cast<uint32_t *>(0x1860454)) // make sure port isn't the same as game port
-				port++;
-			bindAddr.sin_port = htons((u_short)port);
-			if (port > (g_ServerPort + 10))
-				return false; // tried 10 ports, lets give up
-		}
-
-		g_ServerPort = port;
-
-		/* TODO: Setup UPnP
-		if (Modules::ModuleUPnP::Instance().VarUPnPEnabled->ValueInt)
-		{
-		Modules::ModuleUPnP::Instance().UPnPForwardPort(true, port, port, "ElDewrito InfoServer");
-		Modules::ModuleUPnP::Instance().UPnPForwardPort(false, Pointer(0x1860454).Read<uint32_t>(), Pointer(0x1860454).Read<uint32_t>(), "ElDewrito Game");
-		Modules::ModuleUPnP::Instance().UPnPForwardPort(false, 9987, 9987, "ElDewrito VoIP");
-		}*/
-
-		WSAAsyncSelect(g_InfoSocket, s_HWND, WM_USER + 1338, FD_ACCEPT | FD_CLOSE);
-		listen(g_InfoSocket, 5);
-		g_InfoSocketOpen = true;
-
-		return true;
-	}
-
-	bool StopInfoServer()
-	{
-		if (!g_InfoSocketOpen)
-			return true;
-
-		closesocket(g_InfoSocket);
-
-		int32_t truth = 1;
-		setsockopt(g_InfoSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&truth, sizeof(int));
-
-		// TODO: Modules::CommandMap::Instance().ExecuteCommand("Server.Unannounce");
-
-		g_InfoSocketOpen = false;
-		// TODO: lastAnnounce = 0;
-
-		return true;
-	}
-
 	const auto Network_ManagedSession_CreateSessionInternal = reinterpret_cast<DWORD(__cdecl *)(int32_t, int32_t)>(0x481550);
 	DWORD __cdecl Network_ManagedSession_CreateSessionInternal_Hook(int32_t a1, int32_t a2)
 	{
+		auto *s_Network = Network::Instance();
+
 		DWORD isOnline = *(DWORD*)a2;
 		bool isHost = (*(uint16_t *)(a2 + 284) & 1);
 
@@ -205,11 +135,11 @@ namespace AnvilEldorado
 			}*/
 
 			// TODO: give output if StartInfoServer fails
-			StartInfoServer();
+			s_Network->StartInfoServer();
 		}
 		else
 		{
-			StopInfoServer();
+			s_Network->StopInfoServer();
 			/* TODO:
 			//Stop the VoIP Server and client
 			StopTeamspeakClient();
@@ -401,13 +331,9 @@ namespace AnvilEldorado
 		return true;
 	}
 
-	typedef std::function<void(const Blam::Network::NetworkAddress &, uint32_t, uint16_t, uint32_t)> PongCallback;
-	std::vector<PongCallback> g_PongCallbacks;
-
-	void PongReceivedImpl(const Blam::Network::NetworkAddress &from, const Blam::Network::PongPacket &pong, uint32_t latency)
+	void PongReceivedImpl(const Blam::Network::NetworkAddress &p_From, const Blam::Network::PongPacket &p_Pong, uint32_t p_Latency)
 	{
-		for (auto &callback : g_PongCallbacks)
-			callback(from, pong.Timestamp, pong.ID, latency);
+		Network::Instance()->OnPongReceived(p_From, p_Pong, p_Latency);
 	}
 
 	__declspec(naked) void PongReceivedHook()
@@ -424,13 +350,9 @@ namespace AnvilEldorado
 		}
 	}
 
-	typedef std::function<void(Blam::Network::LifeCycleState)> LifeCycleStateChangedCallback;
-	std::vector<LifeCycleStateChangedCallback> g_LifeCycleStateChangedCallbacks;
-
 	void LifeCycleStateChangedImpl(Blam::Network::LifeCycleState p_NewState)
 	{
-		for (auto &s_Callback : g_LifeCycleStateChangedCallbacks)
-			s_Callback(p_NewState);
+		Network::Instance()->OnLifeCycleStateChanged(p_NewState);
 	}
 
 	__declspec(naked) void LifeCycleStateChangedHook()
@@ -452,26 +374,25 @@ namespace AnvilEldorado
 
 	bool __fastcall Network_Session_HandleJoinRequest_Hook(Blam::Network::Session *p_This, void *p_Unused, const Blam::Network::NetworkAddress &p_Address, void *p_Request)
 	{
+		/* TODO:
 		// Convert the IP to a string
 		struct in_addr s_InAddr;
 		s_InAddr.S_un.S_addr = p_Address.ToInAddr();
 		char ipStr[INET_ADDRSTRLEN];
 		if (inet_ntop(AF_INET, &s_InAddr, ipStr, sizeof(ipStr)))
 		{
-			/* TODO:
 			// Check if the IP is in the ban list
 			auto banList = Server::LoadDefaultBanList();
 			if (banList.ContainsIp(ipStr))
 			{
-			// Send a join refusal
-			typedef void(__thiscall *Network_session_acknowledge_join_requestFunc)(Blam::Network::Session *thisPtr, const Blam::Network::NetworkAddress &address, int32_t reason);
-			auto Network_session_acknowledge_join_request = reinterpret_cast<Network_session_acknowledge_join_requestFunc>(0x45A230);
-			Network_session_acknowledge_join_request(thisPtr, address, 0); // TODO: Use a special code for bans and hook the join refusal handler so we can display a message to the player
-			Utils::Logger::Instance().Log(Utils::LogTypes::Network, Utils::LogLevel::Info, "Refused join request from banned IP %s", ipStr);
-			return true;
+				// Send a join refusal
+				typedef void(__thiscall *Network_session_acknowledge_join_requestFunc)(Blam::Network::Session *thisPtr, const Blam::Network::NetworkAddress &address, int32_t reason);
+				auto Network_session_acknowledge_join_request = reinterpret_cast<Network_session_acknowledge_join_requestFunc>(0x45A230);
+				Network_session_acknowledge_join_request(thisPtr, address, 0); // TODO: Use a special code for bans and hook the join refusal handler so we can display a message to the player
+				Utils::Logger::Instance().Log(Utils::LogTypes::Network, Utils::LogLevel::Info, "Refused join request from banned IP %s", ipStr);
+				return true;
 			}
-			*/
-		}
+		}*/
 
 		// Continue the join process
 		typedef bool(__thiscall *Network_session_handle_join_requestFunc)(Blam::Network::Session *thisPtr, const Blam::Network::NetworkAddress &address, void *request);
@@ -512,33 +433,35 @@ namespace AnvilEldorado
 	const auto Network_Link_CreateEndpoint = reinterpret_cast<bool(__cdecl *)(int32_t, int16_t, int8_t, void *)>(0x43B6F0);
 	const auto Network_Sub43FED0 = reinterpret_cast<void *(__cdecl *)(SOCKET)>(0x43FED0);
 
-	bool __fastcall Network_GetEndpoint_Hook(char *thisPtr, void *unused)
+	bool __fastcall Network_GetEndpoint_Hook(uint8_t *p_Data, void *p_Unused)
 	{
-		char *socket = thisPtr + 12;
-		uint32_t port = g_ServerPort;
-		bool success = false;
+		auto *s_Network = Network::Instance();
+
+		auto *s_Socket = p_Data + 12;
+		auto s_Port = s_Network->GetServerPort();
+		auto s_Success = false;
 
 		while (true)
 		{
-			*reinterpret_cast<uint32_t *>(0x1860454) = port;
-			success = Network_Link_CreateEndpoint(0, (short)port, 1, socket);
+			*reinterpret_cast<uint32_t *>(0x1860454) = s_Port;
+			s_Success = Network_Link_CreateEndpoint(0, (short)s_Port, 1, s_Socket);
 
-			if (success)
+			if (s_Success)
 				break;
 
-			if (*socket)
+			if (*s_Socket)
 			{
-				Network_Sub43FED0(*socket);
-				*socket = 0;
+				Network_Sub43FED0(*s_Socket);
+				*s_Socket = 0;
 			}
 
-			if (++port - g_ServerPort >= 1000)
+			if (++s_Port - s_Network->GetServerPort() >= 1000)
 			{
-				*reinterpret_cast<uint32_t *>(0x1860454) = g_ServerPort;
-				return success;
+				*reinterpret_cast<uint32_t *>(0x1860454) = s_Network->GetServerPort();
+				return s_Success;
 			}
 		}
-		return success;
+		return s_Success;
 	}
 
 	const auto Network_Session_JoinRemoteSession = reinterpret_cast<char(__fastcall *)(void *, int32_t, int8_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, void *, int32_t, int32_t)>(0x45D1E0);
@@ -597,7 +520,7 @@ namespace AnvilEldorado
 
 		return Network_Session_ParametersClear(thisPtr, unused);
 	}
-	
+
 	__declspec(naked) void DedicatedServerHook()
 	{
 		__asm
@@ -610,9 +533,9 @@ namespace AnvilEldorado
 			mov eax, [eax + 0x44]
 			mov edi, [eax + ecx + 0x30]
 
-		end:
+			end:
 			push 0xA2E709
-			ret
+				ret
 		}
 	}
 
@@ -627,36 +550,13 @@ namespace AnvilEldorado
 			&& Patch(0x10143A, { s_Version[3], s_Version[2], s_Version[1], s_Version[0] }).Apply();
 	}
 
-
-	bool HookVirtualMethod(const size_t p_Offset, void *p_NewFunction, void *p_BaseAddress = nullptr)
-	{
-		DWORD s_Temp1, s_Temp2;
-
-		auto *s_Address = reinterpret_cast<uint32_t *>((uint8_t *)p_BaseAddress + p_Offset);
-
-		if (!VirtualProtect(s_Address, 4, PAGE_READWRITE, &s_Temp1))
-		{
-			std::stringstream ss;
-			ss << "Failed to set protection on memory address " << std::hex << (void*)s_Address;
-			
-			WriteLog("ERROR: %s", ss.str().c_str());
-
-			return false;
-		}
-		
-		*s_Address = (uint32_t)p_NewFunction;
-		VirtualProtect(s_Address, 4, s_Temp1, &s_Temp2);
-
-		return true;
-	}
-
-	bool Engine::ApplyPatches_Network()
+	bool Network::Init()
 	{
 		using AnvilCommon::Utils::HookFlags;
 		using AnvilCommon::Utils::Hook;
 		using AnvilCommon::Utils::Patch;
 
-			// Fix network debug strings having (null) instead of an IP address
+		// Fix network debug strings having (null) instead of an IP address
 		return Hook(0x3F6F0, GetIPStringFromInAddrHook).Apply()
 			// Fix for XnAddrToInAddr to try checking syslink-menu data for XnAddr->InAddr mapping before consulting XNet
 			&& Hook(0x30B6C, XnAddrToInAddrHook, HookFlags::IsCall).Apply()
@@ -681,9 +581,9 @@ namespace AnvilEldorado
 			// Hook the join request handler to check the user's IP address against the ban list
 			&& Hook(0x9D0F7, Network_Session_HandleJoinRequest_Hook, HookFlags::IsCall).Apply()
 			// Hook c_life_cycle_state_handler_end_game_write_stats's vftable ::entry method
-			&& HookVirtualMethod(0x16183A0, Network_State_EndGame_WriteStatsEnter_Hook)
+			&& Hook(0x16183A0, Network_State_EndGame_WriteStatsEnter_Hook, HookFlags::IsVirtual).Apply()
 			// Hook c_life_cycle_state_handler_leaving's vftable ::entry method
-			&& HookVirtualMethod(0x16183BC, Network_State_LeavingEnter_Hook)
+			&& Hook(0x16183BC, Network_State_LeavingEnter_Hook, HookFlags::IsVirtual).Apply()
 			// Set the max player count to Server.MaxPlayers when hosting a lobby
 			&& Hook(0x67FA0D, Network_GetMaxPlayers_Hook, HookFlags::IsCall).Apply()
 			&& Hook(0x3BAFB, Network_GetEndpoint_Hook, HookFlags::IsCall).Apply()
@@ -697,5 +597,101 @@ namespace AnvilEldorado
 			&& Hook(0x899AF, Network_Session_ParametersClear_Hook, HookFlags::IsCall).Apply()
 			// Fix dedicated servers
 			&& Hook(0x62E6F3, DedicatedServerHook).Apply();
+	}
+
+	uint32_t Network::GetServerPort() const
+	{
+		return m_ServerPort;
+	}
+
+	void Network::SetServerPort(const uint32_t p_Port)
+	{
+		m_ServerPort = p_Port;
+	}
+
+	bool Network::StartInfoServer()
+	{
+		if (m_InfoSocketOpen)
+			return true;
+
+		/* TODO: Server::Voting::StartNewVote(); */
+
+		auto s_HWND = *reinterpret_cast<HWND *>((uint8_t *)AnvilCommon::Internal_GetModuleStorage() + 0x159C014);
+
+		if (s_HWND == 0)
+			return false;
+
+		m_InfoSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+		SOCKADDR_IN s_BindAddr;
+		s_BindAddr.sin_family = AF_INET;
+		s_BindAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+		auto s_Port = m_ServerPort;
+
+		if (s_Port == *reinterpret_cast<uint32_t *>(0x1860454)) // make sure port isn't the same as game port
+			s_Port++;
+
+		s_BindAddr.sin_port = htons((u_short)s_Port);
+
+		// open our listener socket
+		while (bind(m_InfoSocket, (PSOCKADDR)&s_BindAddr, sizeof(s_BindAddr)) != 0)
+		{
+			s_Port++;
+
+			if (s_Port == *reinterpret_cast<uint32_t *>(0x1860454)) // make sure port isn't the same as game port
+				s_Port++;
+
+			s_BindAddr.sin_port = htons((u_short)s_Port);
+
+			if (s_Port > (m_ServerPort + 10))
+				return false; // tried 10 ports, lets give up
+		}
+
+		m_ServerPort = s_Port;
+
+		/* TODO: Setup UPnP
+		if (Modules::ModuleUPnP::Instance().VarUPnPEnabled->ValueInt)
+		{
+		Modules::ModuleUPnP::Instance().UPnPForwardPort(true, port, port, "ElDewrito InfoServer");
+		Modules::ModuleUPnP::Instance().UPnPForwardPort(false, Pointer(0x1860454).Read<uint32_t>(), Pointer(0x1860454).Read<uint32_t>(), "ElDewrito Game");
+		Modules::ModuleUPnP::Instance().UPnPForwardPort(false, 9987, 9987, "ElDewrito VoIP");
+		}*/
+
+		WSAAsyncSelect(m_InfoSocket, s_HWND, WM_USER + 1338, FD_ACCEPT | FD_CLOSE);
+		listen(m_InfoSocket, 5);
+		m_InfoSocketOpen = true;
+
+		return true;
+	}
+
+	bool Network::StopInfoServer()
+	{
+		if (!m_InfoSocketOpen)
+			return true;
+
+		closesocket(m_InfoSocket);
+
+		int32_t truth = 1;
+		setsockopt(m_InfoSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&truth, sizeof(int));
+
+		// TODO: Modules::CommandMap::Instance().ExecuteCommand("Server.Unannounce");
+
+		m_InfoSocketOpen = false;
+		// TODO: lastAnnounce = 0;
+
+		return true;
+	}
+
+	void Network::OnPongReceived(const Blam::Network::NetworkAddress &p_From, const Blam::Network::PongPacket &p_Pong, uint32_t p_Latency)
+	{
+		for (auto &s_Callback : m_PongCallbacks)
+			s_Callback(p_From, p_Pong.Timestamp, p_Pong.ID, p_Latency);
+	}
+
+	void Network::OnLifeCycleStateChanged(const Blam::Network::LifeCycleState &p_NewState)
+	{
+		for (auto &s_Callback : m_LifeCycleStateChangedCallbacks)
+			s_Callback(p_NewState);
 	}
 }

@@ -9,6 +9,9 @@ namespace AnvilEldorado
 	public:
 		bool Init() override;
 
+		bool UnprotectMemory();
+		bool ApplyPatches();
+
 		bool OnTagsLoaded();
 
 		bool HasMainMenuShown() const;
@@ -16,12 +19,5 @@ namespace AnvilEldorado
 
 	private:
 		bool m_MainMenuShown = false;
-
-		bool ApplyPatches_Core();
-		bool ApplyPatches_Audio();
-		bool ApplyPatches_Network();
-		bool ApplyPatches_Content();
-		bool ApplyPatches_Scoreboard();
-		bool ApplyPatches_VirtualKeyboard();
 	};
 }

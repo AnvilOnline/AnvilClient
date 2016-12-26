@@ -1,6 +1,6 @@
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
-#include "Engine.hpp"
+#include "Audio.hpp"
 
 namespace AnvilEldorado
 {
@@ -32,7 +32,7 @@ namespace AnvilEldorado
 		}
 	}
 
-	bool Engine::ApplyPatches_Audio()
+	bool Audio::Init()
 	{
 		using AnvilCommon::Utils::Hook;
 		using AnvilCommon::Utils::Patch;

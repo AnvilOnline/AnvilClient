@@ -85,7 +85,7 @@ namespace AnvilEldorado
 		bool BindKeyboardAction(const Blam::Input::GameAction &p_GameAction, const Blam::Input::KeyCode &p_PrimaryKey, const Blam::Input::KeyCode &p_SecondaryKey = Blam::Input::eKeyCode_None);
 		bool BindMouseAction(const Blam::Input::GameAction &p_GameAction, const Blam::Input::MouseButton &p_PrimaryButton, const Blam::Input::MouseButton &p_SecondaryButton = Blam::Input::eMouseButton_None);
 
-	protected:
+	private:
 		bool m_RawInputEnabled;
 		int32_t m_ControllerPort;
 		Blam::Input::BindingsTable m_Bindings;

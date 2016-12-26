@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Audio.hpp" />
     <ClInclude Include="Source\Blam\Data\DataArray.hpp" />
     <ClInclude Include="Source\Blam\Data\DataPoolBase.hpp" />
     <ClInclude Include="Source\Blam\Data\LruvCacheBase.hpp" />
@@ -33,6 +34,7 @@
     <ClInclude Include="Source\Blam\Memory\GlobalMemoryMap.hpp" />
     <ClInclude Include="Source\Blam\Data\BitStream.hpp" />
     <ClInclude Include="Source\Blam\Network\Session.hpp" />
+    <ClInclude Include="Source\Blam\Objects\ObjectData.hpp" />
     <ClInclude Include="Source\Blam\Objects\ObjectDatum.hpp" />
     <ClInclude Include="Source\Blam\Cache\StringIDCache.hpp" />
     <ClInclude Include="Source\Blam\Data\DatumBase.hpp" />
@@ -82,6 +84,7 @@
     <ClInclude Include="Source\Graphics.hpp" />
     <ClInclude Include="Source\Camera.hpp" />
     <ClInclude Include="Source\Input.hpp" />
+    <ClInclude Include="Source\Network.hpp" />
     <ClInclude Include="Source\Player.hpp" />
     <ClInclude Include="Source\UserInterface.hpp" />
   </ItemGroup>
@@ -122,8 +125,6 @@
     <ClCompile Include="Source\Blam\Network\Session.cpp" />
     <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
     <ClCompile Include="Source\Blam\Text\StringID.cpp" />
-    <ClCompile Include="Source\Content.cpp" />
-    <ClCompile Include="Source\Core.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\Forge.cpp" />
     <ClCompile Include="Source\Game.cpp" />
@@ -133,9 +134,7 @@
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Network.cpp" />
     <ClCompile Include="Source\Player.cpp" />
-    <ClCompile Include="Source\Scoreboard.cpp" />
     <ClCompile Include="Source\UserInterface.cpp" />
-    <ClCompile Include="Source\VirtualKeyboard.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F7267A5F-7009-40A3-B523-424279DEF2C7}</ProjectGuid>
