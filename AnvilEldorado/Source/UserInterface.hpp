@@ -24,7 +24,7 @@ namespace AnvilEldorado
 
 		void ApplyResolution();
 
-		bool ShowDialog(const Blam::Text::StringID &p_DialogID, const int32_t p_Arg1 = 0, const int32_t p_Flags = 4, const Blam::Text::StringID &p_ParentID = Blam::Text::StringID::Null);
+		void *ShowDialog(const Blam::Text::StringID &p_DialogID, const int32_t p_Arg1 = 0, const int32_t p_Flags = 4, const Blam::Text::StringID &p_ParentID = Blam::Text::StringID::Null);
 
 	private:
 		std::vector<CreateWindowCallback> m_CreateWindowCallbacks;
@@ -38,12 +38,5 @@ namespace AnvilEldorado
 		float m_HudMotionSensorOffsetX = 0;
 		float m_HudBottomVisorOffsetY = 0;
 		bool m_FirstResolutionChange = true;
-
-		bool m_ShowDialog;
-		Blam::Text::StringID m_DialogID = Blam::Text::StringID::Null;
-		int32_t m_DialogArg1 = 0;
-		int32_t m_DialogFlags = 4;
-		Blam::Text::StringID m_DialogParentID = Blam::Text::StringID::Null;
-		void *m_DialogData = nullptr;
 	};
 }

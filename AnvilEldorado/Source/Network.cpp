@@ -134,11 +134,11 @@ namespace AnvilEldorado
 			}*/
 
 			// TODO: give output if StartInfoServer fails
-			s_Network->StartInfoServer();
+			s_Network->StartServer();
 		}
 		else
 		{
-			s_Network->StopInfoServer();
+			s_Network->StopServer();
 			/* TODO:
 			//Stop the VoIP Server and client
 			StopTeamspeakClient();
@@ -598,19 +598,9 @@ namespace AnvilEldorado
 			&& Hook(0x62E6F3, DedicatedServerHook).Apply();
 	}
 
-	uint32_t Network::GetServerPort() const
+	bool Network::StartServer()
 	{
-		return m_ServerPort;
-	}
-
-	void Network::SetServerPort(const uint32_t p_Port)
-	{
-		m_ServerPort = p_Port;
-	}
-
-	bool Network::StartInfoServer()
-	{
-		if (m_InfoSocketOpen)
+		if (m_ServerSocketOpen)
 			return true;
 
 		/* TODO: Server::Voting::StartNewVote(); */
@@ -620,7 +610,7 @@ namespace AnvilEldorado
 		if (s_HWND == 0)
 			return false;
 
-		m_InfoSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+		m_ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 		SOCKADDR_IN s_BindAddr;
 		s_BindAddr.sin_family = AF_INET;
@@ -634,7 +624,7 @@ namespace AnvilEldorado
 		s_BindAddr.sin_port = htons((u_short)s_Port);
 
 		// open our listener socket
-		while (bind(m_InfoSocket, (PSOCKADDR)&s_BindAddr, sizeof(s_BindAddr)) != 0)
+		while (bind(m_ServerSocket, (PSOCKADDR)&s_BindAddr, sizeof(s_BindAddr)) != 0)
 		{
 			s_Port++;
 
@@ -657,40 +647,108 @@ namespace AnvilEldorado
 		Modules::ModuleUPnP::Instance().UPnPForwardPort(false, 9987, 9987, "ElDewrito VoIP");
 		}*/
 
-		WSAAsyncSelect(m_InfoSocket, s_HWND, WM_USER + 1338, FD_ACCEPT | FD_CLOSE);
-		listen(m_InfoSocket, 5);
-		m_InfoSocketOpen = true;
+		WSAAsyncSelect(m_ServerSocket, s_HWND, WM_USER + 1338, FD_ACCEPT | FD_CLOSE);
+		listen(m_ServerSocket, 5);
+		m_ServerSocketOpen = true;
 
 		return true;
 	}
 
-	bool Network::StopInfoServer()
+	bool Network::StopServer()
 	{
-		if (!m_InfoSocketOpen)
+		if (!m_ServerSocketOpen)
 			return true;
 
-		closesocket(m_InfoSocket);
+		closesocket(m_ServerSocket);
 
 		int32_t truth = 1;
-		setsockopt(m_InfoSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&truth, sizeof(int));
+		setsockopt(m_ServerSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&truth, sizeof(int));
 
 		// TODO: Modules::CommandMap::Instance().ExecuteCommand("Server.Unannounce");
 
-		m_InfoSocketOpen = false;
+		m_ServerSocketOpen = false;
 		// TODO: lastAnnounce = 0;
 
 		return true;
 	}
 
+	std::string Network::GetServerName() const
+	{
+		return m_ServerName;
+	}
+
+	void Network::SetServerName(const std::string &p_ServerName)
+	{
+		m_ServerName = p_ServerName;
+	}
+
+	std::string Network::GetServerMessage() const
+	{
+		return m_ServerMessage;
+	}
+
+	void Network::SetServerMessage(const std::string &p_ServerMessage)
+	{
+		m_ServerMessage = p_ServerMessage;
+	}
+
+	std::string Network::GetServerPassword() const
+	{
+		return m_ServerPassword;
+	}
+
+	void Network::SetServerPassword(const std::string &p_ServerPassword)
+	{
+		m_ServerPassword = p_ServerPassword;
+	}
+
+	uint32_t Network::GetServerCountdown() const
+	{
+		return m_ServerCountdown;
+	}
+
+	void Network::SetServerCountdown(const uint32_t p_ServerCountdown)
+	{
+		m_ServerCountdown = p_ServerCountdown;
+	}
+
+	uint32_t Network::GetServerMaximumPlayers() const
+	{
+		return m_ServerMaximumPlayers;
+	}
+
+	void Network::SetServerMaximumPlayers(const uint32_t p_ServerMaximumPlayers)
+	{
+		m_ServerMaximumPlayers = p_ServerMaximumPlayers;
+	}
+
+	uint32_t Network::GetServerPort() const
+	{
+		return m_ServerPort;
+	}
+
+	void Network::SetServerPort(const uint32_t p_Port)
+	{
+		m_ServerPort = p_Port;
+	}
+
+	uint32_t Network::GetServerGamePort() const
+	{
+		return m_ServerGamePort;
+	}
+
+	void Network::SetServerGamePort(const uint32_t p_ServerGamePort)
+	{
+		m_ServerGamePort = p_ServerGamePort;
+	}
+
 	void Network::OnPongReceived(const Blam::Network::NetworkAddress &p_From, const Blam::Network::PongPacket &p_Pong, uint32_t p_Latency)
 	{
-		for (auto &s_Callback : m_PongCallbacks)
-			s_Callback(p_From, p_Pong.Timestamp, p_Pong.ID, p_Latency);
+		// TODO
 	}
 
 	void Network::OnLifeCycleStateChanged(const Blam::Network::LifeCycleState &p_NewState)
 	{
-		for (auto &s_Callback : m_LifeCycleStateChangedCallbacks)
-			s_Callback(p_NewState);
+		// TODO
 	}
 }

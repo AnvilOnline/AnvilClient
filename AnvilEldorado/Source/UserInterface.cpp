@@ -12,6 +12,7 @@
 
 #include "BuildInfo.hpp"
 #include "Globals.hpp"
+#include "Game.hpp"
 #include "UserInterface.hpp"
 
 namespace AnvilEldorado
@@ -30,33 +31,23 @@ namespace AnvilEldorado
 	{
 		auto *s_UserInterface = UserInterface::Instance();
 
-		return (int32_t)s_UserInterface->ShowDialog(Blam::Text::StringID(0x10084), 0, 4, Blam::Text::StringID(0x1000C));
+		return (int32_t)(s_UserInterface->ShowDialog(Blam::Text::StringID(0x10084), 0, 4, Blam::Text::StringID(0x1000C)) != nullptr);
 	}
 
-	void __fastcall MenuUpdateHook(void *a1, int32_t unused, int32_t menuIdToLoad)
+	const auto UI_MenuUpdate = reinterpret_cast<void(__thiscall *)(void *, Blam::Text::StringID)>(0xADF6E0);
+
+	void __fastcall MenuUpdateHook(void *a1, int32_t unused, Blam::Text::StringID menuIdToLoad)
 	{
-		/*auto& dorito = ElDorito::Instance();
-		if (menuIdToLoad == 0x10083)
-		dorito.OnMainMenuShown();*/
+		auto s_ShouldUpdate = *(uint32_t *)((uint8_t*)a1 + 0x10) >= 0x1E;
 
-		bool shouldUpdate = *(uint32_t *)((uint8_t*)a1 + 0x10) >= 0x1E;
-		int32_t uiData0x18Value = 1;
-		//if (menuIdToLoad == 0x100A8) // TODO1: find what 0x100A8(H3E) stringid is in HO
-		//	uiData0x18Value = 5;
+		UI_MenuUpdate(a1, menuIdToLoad);
 
-		reinterpret_cast<void(__thiscall *)(void *, int32_t)>(0xADF6E0)(a1, menuIdToLoad);
-
-		if (shouldUpdate)
+		if (s_ShouldUpdate)
 		{
-			void *UIData = reinterpret_cast<void *(__cdecl *)(int)>(0xAB4ED0)(0x3C);
+			void *s_UIData = UserInterface::Instance()->ShowDialog(menuIdToLoad, 0xFF, 4, 0x1000D);
 
-			// fill UIData with proper data
-			reinterpret_cast<void *(__thiscall *)(void *, uint32_t, int32_t, int32_t, uint32_t)>(0xA92780)(UIData, menuIdToLoad, 0xFF, 4, 0x1000D);
-
-			// post UI message
-			reinterpret_cast<int(*)(void *)>(0xA93450)(UIData);
-
-			*(uint32_t*)((char*)UIData + 0x18) = uiData0x18Value;
+			if (s_UIData != nullptr)
+				*(uint32_t*)((char*)s_UIData + 0x18) = 1;
 		}
 	}
 
@@ -77,18 +68,16 @@ namespace AnvilEldorado
 
 	const size_t MaxStringLength = 0x400;
 
-	bool LocalizedStringImpl(int32_t tagIndex, int32_t stringId, wchar_t *outputBuffer)
+	bool LocalizedStringImpl(int32_t p_TagIndex, Blam::Text::StringID p_String, wchar_t *p_Output)
 	{
-		switch (stringId)
-		{
-		case 0x1010A: // start_new_campaign
+		if (p_String == "start_new_campaign")
 		{
 			// Get the version string, convert it to uppercase UTF-16, and return it
 			auto s_BuildInfo = std::string("  ANVIL: ONLINE  ") + std::string("DEV BUILD ") + std::to_string(ANVIL_BUILD);
 			auto s_WideBuildInfo = std::wstring(s_BuildInfo.begin(), s_BuildInfo.end());
-			swprintf(outputBuffer, MaxStringLength, s_WideBuildInfo.c_str());
+			swprintf(p_Output, MaxStringLength, s_WideBuildInfo.c_str());
+			
 			return true;
-		}
 		}
 
 		return false;
@@ -121,27 +110,17 @@ namespace AnvilEldorado
 		}
 	}
 
-	const auto UI_CreateLobby = reinterpret_cast<bool(*)(int32_t)>(0xA7EE70);
-	bool MainMenuCreateLobbyHook(int32_t lobbyType)
+	const auto UI_CreateLobby = reinterpret_cast<bool(*)(GameLobbyType)>(0xA7EE70);
+	bool MainMenuCreateLobbyHook(GameLobbyType p_LobbyType)
 	{
-		// If matchmaking is selected, show the server browser instead
-		// TODO: Really need to map out the ui_game_mode enum...
-		switch (lobbyType)
-		{
-		case 1: // Matchmaking
-				//Web::Ui::ScreenLayer::Show("browser", "{}");
-			return true;
-		case 4: // Theater (rip)
-				//ShowLanBrowser();
-			return true;
-		default:
-			return UI_CreateLobby(lobbyType);
-		}
+		// TODO: Intercept creation of certain lobby types if need be...
+
+		return UI_CreateLobby(p_LobbyType);
 	}
 
 	const auto UI_Forge_ButtonPressHandler = reinterpret_cast<char(__thiscall *)(void *, void *)>(0xAE2180);
 
-	char __fastcall UI_Forge_ButtonPressHandlerHook(void *p_Arg1, int32_t p_Unused, uint8_t *p_ControllerData)
+	char __fastcall UI_Forge_ButtonPressHandlerHook(void *p_Arg1, int32_t, uint8_t *p_ControllerData)
 	{
 		auto s_ButtonCode = *(uint32_t*)(p_ControllerData + 0x1C);
 
@@ -307,17 +286,24 @@ namespace AnvilEldorado
 		}
 	}
 
-	bool UserInterface::ShowDialog(const Blam::Text::StringID &p_DialogID, const int32_t p_Arg1, const int32_t p_Flags, const Blam::Text::StringID &p_ParentID)
+	void *UserInterface::ShowDialog(const Blam::Text::StringID &p_DialogID, const int32_t p_Arg1, const int32_t p_Flags, const Blam::Text::StringID &p_ParentID)
 	{
-		m_ShowDialog = true;
-
-		m_DialogID = p_DialogID;
-		m_DialogArg1 = p_Arg1;
-		m_DialogFlags = p_Flags;
-		m_DialogParentID = p_ParentID;
-		m_DialogData = nullptr;
-
 		WriteLog("Showing ui dialog '%s'...", Blam::Cache::StringIDCache::Instance()->GetString(p_DialogID));
-		return true;
+
+		typedef void *(__cdecl * UI_AllocPtr)(int size);
+		auto UI_Alloc = reinterpret_cast<UI_AllocPtr>(0xAB4ED0);
+		auto *UIData = UI_Alloc(0x40);
+
+		// fill UIData with proper data
+		typedef void*(__thiscall * UI_OpenDialogByIdPtr)(void* a1, unsigned int dialogStringId, int a3, int dialogFlags, unsigned int parentDialogStringId);
+		auto UI_OpenDialogById = reinterpret_cast<UI_OpenDialogByIdPtr>(0xA92780);
+		UI_OpenDialogById(UIData, p_DialogID.Value, p_Arg1, p_Flags, p_ParentID.Value);
+
+		// post UI message
+		typedef int(*UI_PostMessagePtr)(void* uiDataStruct);
+		auto UI_PostMessage = reinterpret_cast<UI_PostMessagePtr>(0xA93450);
+		UI_PostMessage(UIData);
+
+		return UIData;
 	}
 }
