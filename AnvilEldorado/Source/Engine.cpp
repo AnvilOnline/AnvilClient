@@ -6,6 +6,10 @@
 #include "Utils\Patch.hpp"
 
 #include "Blam\Cache\StringIDCache.hpp"
+#include "Blam\Tags\TagInstance.hpp"
+#include "Blam\Tags\Game\CacheFileGlobalTags.hpp"
+#include "Blam\Tags\Game\Globals.hpp"
+#include "Blam\Tags\Game\MultiplayerGlobals.hpp"
 
 #include "Globals.hpp"
 #include "Graphics.hpp"
@@ -50,7 +54,17 @@ namespace AnvilEldorado
 		}
 	}
 	
+	const auto sub_838710 = reinterpret_cast<uint32_t *(*)()>(0x838710);
+	const auto sub_853FC0 = reinterpret_cast<void(*)()>(0x853FC0);
+	const auto sub_857D30 = reinterpret_cast<void *(*)()>(0x857D30);
+	const auto sub_711A60 = reinterpret_cast<void *(*)()>(0x711A60);
 	const auto Game_InitAudioSystem = reinterpret_cast<bool(*)()>(0x64E190);
+	const auto sub_8365E0 = reinterpret_cast<char(*)()>(0x8365E0);
+	const auto sub_6AC400 = reinterpret_cast<int(*)()>(0x6AC400);
+	const auto sub_8642D0 = reinterpret_cast<int(*)()>(0x8642D0);
+	const auto sub_827CE0 = reinterpret_cast<int(*)()>(0x827CE0);
+	const auto sub_81AF70 = reinterpret_cast<void *(*)()>(0x81AF70);
+	const auto sub_85B000 = reinterpret_cast<void *(*)()>(0x85B000);
 
 	void *Game_InitHalo3_Hook()
 	{
@@ -102,6 +116,7 @@ namespace AnvilEldorado
 	bool Engine::ApplyPatches()
 	{
 		using AnvilCommon::Utils::Hook;
+		using AnvilCommon::Utils::HookFlags;
 		using AnvilCommon::Utils::Patch;
 
 			//Disable Windows DPI scaling
@@ -126,9 +141,43 @@ namespace AnvilEldorado
 
 	bool Engine::OnTagsLoaded()
 	{
+		using Blam::Tags::TagInstance;
+		using Blam::Tags::Game::CacheFileGlobalTags;
+		using Blam::Tags::Game::Globals;
+		using Blam::Tags::Game::MultiplayerGlobals;
+
+		auto *s_CacheFileGlobalTags = TagInstance(0).GetDefinition<CacheFileGlobalTags>();
+		Globals *s_Globals = nullptr;
+
+		for (auto &s_GlobalTag : s_CacheFileGlobalTags->GlobalTags)
+		{
+			if (s_GlobalTag.GroupTag == 'matg')
+			{
+				s_Globals = TagInstance(s_GlobalTag.TagIndex).GetDefinition<Globals>();
+				break;
+			}
+		}
+
+		if (s_Globals == nullptr)
+		{
+			WriteLog("ERROR: Failed to locate globals tag (matg) in cache file global tags (cfgt)!");
+			return false;
+		}
+
+		auto *s_MultiplayerGlobals = TagInstance(s_Globals->MultiplayerGlobals.TagIndex).GetDefinition<MultiplayerGlobals>();
+
+		if (s_MultiplayerGlobals == nullptr)
+		{
+			WriteLog("ERROR: Failed to locate multiplayer globals tag (mulg) in globals tag (matg)!");
+			return false;
+		}
+
 		UserInterface::Instance()->ApplyResolution();
 
-		return Player::Instance()->OnTagsLoaded();
+		auto *s_Player = Player::Instance();
+
+		return s_Player->LoadArmor(s_MultiplayerGlobals)
+			&& s_Player->LoadPodiumWeapons(s_MultiplayerGlobals);
 	}
 
 	bool Engine::HasMainMenuShown() const

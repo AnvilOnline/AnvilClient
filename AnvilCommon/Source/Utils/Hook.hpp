@@ -10,7 +10,8 @@ namespace AnvilCommon::Utils
 		None,
 		IsCall = 1 << 0,
 		IsVirtual = 1 << 1,
-		IsJmpIfEqual = 1 << 2
+		IsJmpIfEqual = 1 << 2,
+		IsJmpIfNotEqual = 1 << 3
 	};
 
 	bool operator&(const HookFlags &p_A, const HookFlags &p_B);

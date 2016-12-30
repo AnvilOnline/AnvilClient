@@ -5,8 +5,6 @@
 #include "Blam\Data\DatumIndex.hpp"
 #include "Blam\Objects\ObjectData.hpp"
 #include "Blam\Tags\TagInstance.hpp"
-#include "Blam\Tags\Game\CacheFileGlobalTags.hpp"
-#include "Blam\Tags\Game\Globals.hpp"
 #include "Blam\Tags\Items\Weapon.hpp"
 #include "Blam\Tags\Scenario\Scenario.hpp"
 
@@ -18,48 +16,48 @@
 
 namespace AnvilEldorado
 {
-	void PlayerArmorExtension::BuildData(int32_t playerIndex, Blam::Game::PlayerCustomization *out)
+	void PlayerArmorExtension::BuildData(int32_t p_PlayerIndex, Blam::Game::PlayerCustomization *p_Out)
 	{
-		Player::Instance()->BuildCustomization(out);
+		Player::Instance()->BuildCustomization(p_Out);
 	}
 
-	void PlayerArmorExtension::ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const Blam::Game::PlayerCustomization &data)
+	void PlayerArmorExtension::ApplyData(int32_t p_PlayerIndex, Blam::Game::PlayerProperties *p_Properties, const Blam::Game::PlayerCustomization &p_Data)
 	{
-		auto armorSessionData = &properties->Customization;
+		auto armorSessionData = &p_Properties->Customization;
 
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Helmet] = data.Armor[(int)Blam::Game::PlayerArmor::Helmet];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Chest] = data.Armor[(int)Blam::Game::PlayerArmor::Chest];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Shoulders] = data.Armor[(int)Blam::Game::PlayerArmor::Shoulders];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Arms] = data.Armor[(int)Blam::Game::PlayerArmor::Arms];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Legs] = data.Armor[(int)Blam::Game::PlayerArmor::Legs];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Acc] = data.Armor[(int)Blam::Game::PlayerArmor::Acc];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Pelvis] = data.Armor[(int)Blam::Game::PlayerArmor::Pelvis];
+		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Helmet] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Helmet];
+		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Chest] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Chest];
+		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Shoulders] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Shoulders];
+		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Arms] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Arms];
+		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Legs] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Legs];
+		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Acc] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Acc];
+		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Pelvis] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Pelvis];
 
-		memcpy(armorSessionData->Colors, data.Colors, sizeof(data.Colors));
+		memcpy(armorSessionData->Colors, p_Data.Colors, sizeof(p_Data.Colors));
 	}
 
-	void PlayerArmorExtension::Serialize(Blam::Data::BitStream *stream, const Blam::Game::PlayerCustomization &data)
+	void PlayerArmorExtension::Serialize(Blam::Data::BitStream *p_Stream, const Blam::Game::PlayerCustomization &p_Data)
 	{
 		// Colors
 		for (int32_t i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
-			stream->WriteUnsigned<uint32_t>(data.Colors[i], 24);
+			p_Stream->WriteUnsigned<uint32_t>(p_Data.Colors[i], 24);
 
 		// Armor
 		for (int32_t i = 0; i < (int)Blam::Game::PlayerArmor::Count; i++)
-			stream->WriteUnsigned<uint8_t>(data.Armor[i], 0, UINT8_MAX);
+			p_Stream->WriteUnsigned<uint8_t>(p_Data.Armor[i], 0, UINT8_MAX);
 	}
 
-	void PlayerArmorExtension::Deserialize(Blam::Data::BitStream *stream, Blam::Game::PlayerCustomization *out)
+	void PlayerArmorExtension::Deserialize(Blam::Data::BitStream *p_Stream, Blam::Game::PlayerCustomization *p_Out)
 	{
-		memset(out, 0, sizeof(Blam::Game::PlayerCustomization));
+		memset(p_Out, 0, sizeof(Blam::Game::PlayerCustomization));
 
 		// Colors
 		for (int32_t i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
-			out->Colors[i] = stream->ReadUnsigned<uint32_t>(24);
+			p_Out->Colors[i] = p_Stream->ReadUnsigned<uint32_t>(24);
 
 		// Armor
 		for (int32_t i = 0; i < (int)Blam::Game::PlayerArmor::Count; i++)
-			out->Armor[i] = stream->ReadUnsigned<uint8_t>(0, UINT8_MAX);
+			p_Out->Armor[i] = p_Stream->ReadUnsigned<uint8_t>(0, UINT8_MAX);
 	}
 
 	__declspec(naked) void Biped_PoseWithWeapon_Hook(uint32_t p_Unit, uint32_t p_Weapon)
@@ -268,6 +266,107 @@ namespace AnvilEldorado
 		return GetEquipmentCount(p_UnitIndex, p_EquipmentIndex);
 	}
 
+	const auto Objects_Attach = reinterpret_cast<bool(__cdecl *)(Blam::Data::DatumIndex, void *)>(0xB69C50);
+
+	void EquipmentHookImpl(uint16_t p_PlayerIndex, uint16_t p_EquipmentIndex)
+	{
+		auto &s_Players = Blam::Game::GetPlayers();
+		auto &s_PlayerUnitIndex = s_Players[p_PlayerIndex].SlaveUnit;
+
+		auto &s_ObjectArray = *Blam::Objects::ObjectData::GetDataArray();
+		auto s_EquipmentTagIndex = *(uint32_t *)s_ObjectArray[Blam::Data::DatumIndex(0, p_EquipmentIndex)].Data;
+
+		// Attach the equipment to the unit
+		{
+			uint8_t s_AttachmentData[0x48];
+
+			memset(s_AttachmentData, 0, 0x48);
+			*(uint32_t *)(s_AttachmentData) = 0x3D; // object type?
+			*(uint32_t *)(s_AttachmentData + 4) = p_EquipmentIndex;
+
+			// add equipment to the player, also removes the object from gameworld
+			Objects_Attach(s_PlayerUnitIndex, s_AttachmentData); // sub_82182C48
+		}
+
+		// prints text to the HUD, taken from HO's code
+		{
+			uint8_t s_UnknownData[0x40];
+
+			typedef int(__thiscall* sub_589680Ptr)(void* thisPtr, int a2);
+			auto sub_589680 = reinterpret_cast<sub_589680Ptr>(0x589680);
+			sub_589680(&s_UnknownData, p_PlayerIndex);
+
+			typedef int32_t(__thiscall* sub_589770Ptr)(void* thisPtr);
+			auto sub_589770 = reinterpret_cast<sub_589770Ptr>(0x589770);
+			while ((unsigned __int8)sub_589770(&s_UnknownData))
+			{
+				typedef int(__thiscall* sub_589760Ptr)(void* thisPtr);
+				auto sub_589760 = reinterpret_cast<sub_589760Ptr>(0x589760);
+				int v9 = sub_589760(&s_UnknownData);
+
+				typedef int(__cdecl* sub_A95850Ptr)(unsigned int a1, short a2);
+				auto sub_A95850 = reinterpret_cast<sub_A95850Ptr>(0xA95850);
+				sub_A95850(v9, s_EquipmentTagIndex);
+			}
+		}
+
+		// unsure what these do, taken from HO code
+		{
+			const auto sub_B887B0 = reinterpret_cast<int32_t(__cdecl *)(uint16_t, uint16_t)>(0xB887B0);
+			sub_B887B0(p_PlayerIndex, s_EquipmentTagIndex); // sub_82437A08
+
+			const auto sub_4B31C0 = reinterpret_cast<void(_cdecl *)(uint16_t, uint16_t)>(0x4B31C0);
+			sub_4B31C0(s_PlayerUnitIndex.Index(), s_EquipmentTagIndex); // sub_8249A1A0
+		}
+
+		// called by powerup pickup func, deletes the item but also crashes the game when used with equipment
+		// not needed since Objects_Attach removes it from the game world
+		/*typedef int(__cdecl *Objects_DeletePtr)(int objectIndex);
+		auto Objects_Delete = reinterpret_cast<Objects_DeletePtr>(0xB57090);
+		Objects_Delete(equipmentIndex);*/
+	}
+
+	__declspec(naked) void EquipmentHook()
+	{
+		__asm
+		{
+			mov edx, 0x531D70
+			call edx
+			mov esi, [ebp + 8]
+			push edi
+			push esi
+			test al, al
+			jz DoEquipmentHook
+			mov edx, 0x4B4A20
+			call edx
+			add esp, 8
+			push 0x5397D8
+			ret
+
+		DoEquipmentHook:
+			call EquipmentHookImpl
+			add esp, 8
+			push 0x5397D8
+			ret
+		}
+	}
+
+	// replaces some check that always fails and allows you to throw equipment, as long as it still has a use remaining
+	// if you've used up all the uses and try throwing again it'll still destroy your first thrown equipment though
+	// H3E likely has this check somewhere closer to the top of the hooked func, but I couldn't find it
+	__declspec(naked) void EquipmentTestHook()
+	{
+		__asm
+		{
+			push dword ptr[ebp + 8]
+			mov edx, 0xB89190 // Equipment_GetNumRemainingUses(int16 objectIdx)
+			call edx
+			add esp, 4
+			push 0xB86CFD
+			ret
+		}
+	}
+
 	bool Player::Init()
 	{
 		using AnvilCommon::Utils::HookFlags;
@@ -293,44 +392,9 @@ namespace AnvilEldorado
 			// Equipment patches
 			&& Patch::NopFill(0x786CFF, 6)
 			&& Patch::NopFill(0x786CF7, 6)
-			&& Hook(0x7A21D4, GetEquipmentCountHook, HookFlags::IsCall).Apply();
-	}
-
-	bool Player::OnTagsLoaded()
-	{
-		using Blam::Tags::TagInstance;
-		using Blam::Tags::Game::CacheFileGlobalTags;
-		using Blam::Tags::Game::Globals;
-		using Blam::Tags::Game::MultiplayerGlobals;
-
-		auto *s_CacheFileGlobalTags = TagInstance(0).GetDefinition<CacheFileGlobalTags>();
-		Globals *s_Globals = nullptr;
-
-		for (auto &s_GlobalTag : s_CacheFileGlobalTags->GlobalTags)
-		{
-			if (s_GlobalTag.GroupTag == 'matg')
-			{
-				s_Globals = TagInstance(s_GlobalTag.TagIndex).GetDefinition<Globals>();
-				break;
-			}
-		}
-
-		if (s_Globals == nullptr)
-		{
-			WriteLog("ERROR: Failed to locate globals tag (matg) in cache file global tags (cfgt)!");
-			return false;
-		}
-
-		auto *s_MultiplayerGlobals = TagInstance(s_Globals->MultiplayerGlobals.TagIndex).GetDefinition<MultiplayerGlobals>();
-
-		if (s_MultiplayerGlobals == nullptr)
-		{
-			WriteLog("ERROR: Failed to locate multiplayer globals tag (mulg) in globals tag (matg)!");
-			return false;
-		}
-
-		return LoadArmor(s_MultiplayerGlobals)
-			&& LoadPodiumWeapons(s_MultiplayerGlobals);
+			&& Hook(0x7A21D4, GetEquipmentCountHook, HookFlags::IsCall).Apply()
+			&& Hook(0x139888, EquipmentHook, HookFlags::IsJmpIfNotEqual).Apply()
+			&& Hook(0x786CF2, EquipmentTestHook).Apply();
 	}
 
 	bool AddArmorPermutations(const Blam::Tags::Game::MultiplayerGlobals::Universal::ArmorCustomization &p_Element, std::map<std::string, uint8_t> &p_Map)

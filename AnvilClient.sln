@@ -5,6 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnvilClient", "AnvilClient\AnvilClient.vcxproj", "{15EC28EA-8932-40C4-94A9-2C6CA9957F22}"
 	ProjectSection(ProjectDependencies) = postProject
+		{F7267A5F-7009-40A3-B523-424279DEF2C7} = {F7267A5F-7009-40A3-B523-424279DEF2C7}
 		{89774CFE-D1EA-435F-B484-DC092221BE23} = {89774CFE-D1EA-435F-B484-DC092221BE23}
 	EndProjectSection
 EndProject

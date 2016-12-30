@@ -577,6 +577,10 @@ namespace AnvilEldorado
 		m_Bindings.SecondaryKeys[Blam::Input::eGameActionMoveLeft] = Blam::Input::eKeyCodeLeft;
 		m_Bindings.PrimaryKeys[Blam::Input::eGameActionMoveRight] = Blam::Input::eKeyCodeD;
 		m_Bindings.SecondaryKeys[Blam::Input::eGameActionMoveRight] = Blam::Input::eKeyCodeRight;
+		m_Bindings.PrimaryKeys[Blam::Input::eGameActionUseConsumable1] = Blam::Input::eKeyCodeNumpad0;
+		m_Bindings.PrimaryKeys[Blam::Input::eGameActionUseConsumable2] = Blam::Input::eKeyCodeNumpad1;
+		m_Bindings.PrimaryKeys[Blam::Input::eGameActionUseConsumable3] = Blam::Input::eKeyCodeNumpad2;
+		m_Bindings.PrimaryKeys[Blam::Input::eGameActionUseConsumable4] = Blam::Input::eKeyCodeNumpad3;
 
 		UpdateBindings();
 	}

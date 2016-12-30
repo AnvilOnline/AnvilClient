@@ -49,9 +49,11 @@ namespace AnvilEldorado
 		bool StartGame();
 		bool EndGame();
 		
-		int GetMapID(const std::string &p_MapName);
+		int32_t GetMapID(const std::string &p_MapName);
 
 		bool LoadMap(const std::string &p_MapName);
+		bool OnMapLoaded(void *p_Data);
+
 		bool LoadMapVariant(std::ifstream &p_File, uint8_t *out);
 		bool LoadDefaultMapVariant(const std::string &p_MapPath, uint8_t *out);
 		void SaveMapVariantToPreferences(const uint8_t *p_Data);

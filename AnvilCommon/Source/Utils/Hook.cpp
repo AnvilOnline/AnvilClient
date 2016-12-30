@@ -81,7 +81,7 @@ namespace AnvilCommon::Utils
 		DWORD temp2;
 		uint8_t tempJMP[5] = { 0xE9, 0x90, 0x90, 0x90, 0x90 };
 		uint8_t tempJE[6] = { 0x0F, 0x84, 0x90, 0x90, 0x90, 0x90 };
-		uint32_t patchSize = (p_Flags & HookFlags::IsJmpIfEqual) ? 6 : 5;
+		uint32_t patchSize = ((p_Flags & HookFlags::IsJmpIfEqual) || (p_Flags & HookFlags::IsJmpIfNotEqual)) ? 6 : 5;
 		uint32_t JMPSize = ((uint32_t)p_NewFunction - (uint32_t)p_Address - patchSize);
 
 		if (!VirtualProtect(p_Address, patchSize, PAGE_READWRITE, &temp))
@@ -92,8 +92,11 @@ namespace AnvilCommon::Utils
 			return false;
 		}
 
-		if (p_Flags & HookFlags::IsJmpIfEqual)
+		if (p_Flags & HookFlags::IsJmpIfEqual || p_Flags & HookFlags::IsJmpIfNotEqual)
 		{
+			if (p_Flags & HookFlags::IsJmpIfNotEqual)
+				tempJE[1] = 0x85;
+
 			memcpy(&tempJE[2], &JMPSize, 4);
 			memcpy(p_Address, tempJE, 6);
 		}

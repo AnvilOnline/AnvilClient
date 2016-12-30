@@ -26,9 +26,7 @@ namespace AnvilEldorado
 	{
 	public:
 		bool Init() override;
-
-		bool OnTagsLoaded();
-
+		\
 		bool LoadArmor(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGlobals);
 		bool LoadPodiumWeapons(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGlobals);
 

@@ -31,20 +31,20 @@ namespace AnvilEldorado
 	{
 		auto *s_UserInterface = UserInterface::Instance();
 
-		return (int32_t)(s_UserInterface->ShowDialog(Blam::Text::StringID(0x10084), 0, 4, Blam::Text::StringID(0x1000C)) != nullptr);
+		return (int32_t)(s_UserInterface->ShowDialog(0x10084, 0, 4, 0x1000C) != nullptr);
 	}
 
 	const auto UI_MenuUpdate = reinterpret_cast<void(__thiscall *)(void *, Blam::Text::StringID)>(0xADF6E0);
 
-	void __fastcall MenuUpdateHook(void *a1, int32_t unused, Blam::Text::StringID menuIdToLoad)
+	void __fastcall MenuUpdateHook(void *a1, int32_t unused, Blam::Text::StringID p_MenuName)
 	{
 		auto s_ShouldUpdate = *(uint32_t *)((uint8_t*)a1 + 0x10) >= 0x1E;
 
-		UI_MenuUpdate(a1, menuIdToLoad);
+		UI_MenuUpdate(a1, p_MenuName);
 
 		if (s_ShouldUpdate)
 		{
-			void *s_UIData = UserInterface::Instance()->ShowDialog(menuIdToLoad, 0xFF, 4, 0x1000D);
+			void *s_UIData = UserInterface::Instance()->ShowDialog(p_MenuName, 0xFF, 4, 0x1000D);
 
 			if (s_UIData != nullptr)
 				*(uint32_t*)((char*)s_UIData + 0x18) = 1;
@@ -118,20 +118,29 @@ namespace AnvilEldorado
 		return UI_CreateLobby(p_LobbyType);
 	}
 
-	const auto UI_Forge_ButtonPressHandler = reinterpret_cast<char(__thiscall *)(void *, void *)>(0xAE2180);
+	const auto UI_Forge_ButtonPressHandler = reinterpret_cast<bool(__thiscall *)(void *, void *)>(0xAE2180);
 
-	char __fastcall UI_Forge_ButtonPressHandlerHook(void *p_Arg1, int32_t, uint8_t *p_ControllerData)
+	bool __fastcall UI_Forge_ButtonPressHandler_Hook(void *p_Arg1, int32_t, uint8_t *p_ControllerData)
 	{
-		auto s_ButtonCode = *(uint32_t*)(p_ControllerData + 0x1C);
+		// TODO: Map out controller data structure
 
-		if (s_ButtonCode == Blam::Input::eUiButtonCodeLeft || s_ButtonCode == Blam::Input::eUiButtonCodeRight ||
-			s_ButtonCode == Blam::Input::eUiButtonCodeDpadLeft || s_ButtonCode == Blam::Input::eUiButtonCodeDpadRight)
+		auto *s_ButtonCode = &*(uint32_t*)(p_ControllerData + 0x1C);
+
+		switch (*s_ButtonCode)
 		{
-			if (s_ButtonCode == Blam::Input::eUiButtonCodeLeft || s_ButtonCode == Blam::Input::eUiButtonCodeDpadLeft) // analog left / arrow key left
-				*(uint32_t*)(p_ControllerData + 0x1C) = Blam::Input::eUiButtonCodeLB;
+			case Blam::Input::eUiButtonCodeLeft:
+			case Blam::Input::eUiButtonCodeDpadLeft:
+			{
+				*s_ButtonCode = Blam::Input::eUiButtonCodeLB;
+				break;
+			}
 
-			if (s_ButtonCode == Blam::Input::eUiButtonCodeRight || s_ButtonCode == Blam::Input::eUiButtonCodeDpadRight) // analog right / arrow key right
-				*(uint32_t*)(p_ControllerData + 0x1C) = Blam::Input::eUiButtonCodeRB;
+			case Blam::Input::eUiButtonCodeRight:
+			case Blam::Input::eUiButtonCodeDpadRight:
+			{
+				*s_ButtonCode = Blam::Input::eUiButtonCodeRB;
+				break;
+			}
 		}
 
 		return UI_Forge_ButtonPressHandler(p_Arg1, p_ControllerData);
@@ -185,7 +194,7 @@ namespace AnvilEldorado
 			// Hook UI vftable's forge menu button handler, so arrow keys can act as bumpers
 			// added side effect: analog stick left/right can also navigate through menus
 			// TODO: Move to input class?
-			&& Hook(0x129EFD8, UI_Forge_ButtonPressHandlerHook, HookFlags::IsVirtual).Apply();
+			&& Hook(0x129EFD8, UI_Forge_ButtonPressHandler_Hook, HookFlags::IsVirtual).Apply();
 	}
 
 	const auto UI_CreateGameWindow = reinterpret_cast<HWND(*)()>(0xA223F0);
@@ -286,24 +295,22 @@ namespace AnvilEldorado
 		}
 	}
 
+	const auto UI_Alloc = reinterpret_cast<void *(__cdecl *)(int32_t)>(0xAB4ED0);
+	const auto UI_OpenDialogById = reinterpret_cast<void *(__thiscall *)(void *, Blam::Text::StringID, int32_t, int32_t, Blam::Text::StringID)>(0xA92780);
+	const auto UI_PostMessage = reinterpret_cast<int(*)(void *)>(0xA93450);
+
 	void *UserInterface::ShowDialog(const Blam::Text::StringID &p_DialogID, const int32_t p_Arg1, const int32_t p_Flags, const Blam::Text::StringID &p_ParentID)
 	{
 		WriteLog("Showing ui dialog '%s'...", Blam::Cache::StringIDCache::Instance()->GetString(p_DialogID));
 
-		typedef void *(__cdecl * UI_AllocPtr)(int size);
-		auto UI_Alloc = reinterpret_cast<UI_AllocPtr>(0xAB4ED0);
-		auto *UIData = UI_Alloc(0x40);
+		auto *s_UIData = UI_Alloc(0x40);
 
-		// fill UIData with proper data
-		typedef void*(__thiscall * UI_OpenDialogByIdPtr)(void* a1, unsigned int dialogStringId, int a3, int dialogFlags, unsigned int parentDialogStringId);
-		auto UI_OpenDialogById = reinterpret_cast<UI_OpenDialogByIdPtr>(0xA92780);
-		UI_OpenDialogById(UIData, p_DialogID.Value, p_Arg1, p_Flags, p_ParentID.Value);
+		if (!s_UIData)
+			return nullptr;
 
-		// post UI message
-		typedef int(*UI_PostMessagePtr)(void* uiDataStruct);
-		auto UI_PostMessage = reinterpret_cast<UI_PostMessagePtr>(0xA93450);
-		UI_PostMessage(UIData);
+		UI_OpenDialogById(s_UIData, p_DialogID, p_Arg1, p_Flags, p_ParentID);
+		UI_PostMessage(s_UIData);
 
-		return UIData;
+		return s_UIData;
 	}
 }

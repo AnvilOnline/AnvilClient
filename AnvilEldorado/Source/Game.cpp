@@ -86,9 +86,6 @@ namespace AnvilEldorado
 		reinterpret_cast<void(*)()>(0x42E410)();
 	}
 
-	typedef std::function<void(const char *p_MapPath)> MapLoadedCallback;
-	std::vector<MapLoadedCallback> g_MapLoadedCallbacks;
-
 	const auto LoadMap = reinterpret_cast<bool(*)(void *p_Data)>(0x566EF0);
 
 	bool LoadMapHook(void *p_Data)
@@ -96,10 +93,7 @@ namespace AnvilEldorado
 		if (!LoadMap(p_Data))
 			return false;
 
-		for (auto &s_Callback : g_MapLoadedCallbacks)
-			s_Callback(static_cast<const char *>(p_Data) + 0x24); // hax
-
-		return true;
+		return Game::Instance()->OnMapLoaded(p_Data);
 	}
 
 	void EndGameHook()
@@ -288,6 +282,13 @@ namespace AnvilEldorado
 		return true;
 	}
 
+	bool Game::OnMapLoaded(void *p_Data)
+	{
+		// TODO: Do stuff after a map was loaded
+
+		return true;
+	}
+
 	const auto InitializeMapVariant = reinterpret_cast<void(__thiscall *)(uint8_t *, int32_t)>(0x581F70);
 	const auto ParseMapVariant = reinterpret_cast<bool(__thiscall *)(void *, uint8_t *, bool *)>(0x573250);
 
@@ -358,7 +359,7 @@ namespace AnvilEldorado
 
 	GameLobbyType Game::GetLobbyType() const
 	{
-		return (GameLobbyType)reinterpret_cast<int32_t(__thiscall *)()>(0x435640)();
+		return reinterpret_cast<GameLobbyType(__thiscall *)()>(0x435640)();
 	}
 
 	const std::vector<std::string> &Game::GetMaps() const
