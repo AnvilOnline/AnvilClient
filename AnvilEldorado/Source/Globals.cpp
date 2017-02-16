@@ -3,8 +3,8 @@
 
 #include <TlHelp32.h>
 
-#include "BuildInfo.hpp"
-#include "Globals.hpp"
+#include <Globals.hpp>
+#include <BuildInfo.hpp>
 
 std::string AnvilCommon::g_BuildInfo = "AnvilEldorado Client - " + std::string(__DATE__) + " - Build: " + std::to_string(ANVIL_BUILD);
 

@@ -5,8 +5,10 @@
 
 DWORD WINAPI Initialize(LPVOID)
 {
+	// Initialize the logger before anything else
 	AnvilCommon::Utils::Logger::Instance()->Init();
 
+	// Initialize the client, which will in turn initialize Eldorado or Ausar engine's
 	Anvil::Client::AnvilClient::Instance()->Init();
 
 	return 0;

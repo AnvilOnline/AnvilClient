@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Audio.hpp" />
+    <ClInclude Include="Source\Audio\Audio.hpp" />
     <ClInclude Include="Source\Blam\Data\DataArray.hpp" />
     <ClInclude Include="Source\Blam\Data\DataPoolBase.hpp" />
     <ClInclude Include="Source\Blam\Data\LruvCacheBase.hpp" />
@@ -29,7 +29,21 @@
     <ClInclude Include="Source\Blam\Game\Players.hpp" />
     <ClInclude Include="Source\Blam\Game\Stats.hpp" />
     <ClInclude Include="Source\Blam\Game\Variants.hpp" />
+    <ClInclude Include="Source\Blam\Input\ActionState.hpp" />
+    <ClInclude Include="Source\Blam\Input\ActionStateFlags.hpp" />
+    <ClInclude Include="Source\Blam\Input\BindingsPreferences.hpp" />
+    <ClInclude Include="Source\Blam\Input\BindingsTable.hpp" />
+    <ClInclude Include="Source\Blam\Input\ConfigurableAction.hpp" />
+    <ClInclude Include="Source\Blam\Input\ControllerButton.hpp" />
+    <ClInclude Include="Source\Blam\Input\GameAction.hpp" />
+    <ClInclude Include="Source\Blam\Input\InputType.hpp" />
     <ClInclude Include="Source\Blam\Input\InputTypes.hpp" />
+    <ClInclude Include="Source\Blam\Input\KeyCode.hpp" />
+    <ClInclude Include="Source\Blam\Input\KeyEvent.hpp" />
+    <ClInclude Include="Source\Blam\Input\KeyEventModifiers.hpp" />
+    <ClInclude Include="Source\Blam\Input\KeyEventType.hpp" />
+    <ClInclude Include="Source\Blam\Input\MouseButton.hpp" />
+    <ClInclude Include="Source\Blam\Input\UIButtonCode.hpp" />
     <ClInclude Include="Source\Blam\Math\Point2D.hpp" />
     <ClInclude Include="Source\Blam\Memory\GlobalMemoryMap.hpp" />
     <ClInclude Include="Source\Blam\Data\BitStream.hpp" />
@@ -83,15 +97,22 @@
     <ClInclude Include="Source\Engine.hpp" />
     <ClInclude Include="Source\Forge.hpp" />
     <ClInclude Include="Source\Game.hpp" />
-    <ClInclude Include="Source\Graphics.hpp" />
+    <ClInclude Include="Source\Game\GameLobbyType.hpp" />
+    <ClInclude Include="Source\Game\GameLocale.hpp" />
+    <ClInclude Include="Source\Rendering\Graphics.hpp" />
     <ClInclude Include="Source\Camera.hpp" />
-    <ClInclude Include="Source\Input.hpp" />
+    <ClInclude Include="Source\Rendering\Globals\Bloom.hpp" />
+    <ClInclude Include="Source\Rendering\Globals\Cinematic.hpp" />
+    <ClInclude Include="Source\Rendering\Globals\DepthOfField.h" />
+    <ClInclude Include="Source\Rendering\Globals\Graphics.hpp" />
+    <ClInclude Include="Source\Input\Input.hpp" />
+    <ClInclude Include="Source\Input\InputContext.hpp" />
     <ClInclude Include="Source\Network.hpp" />
     <ClInclude Include="Source\Player.hpp" />
-    <ClInclude Include="Source\UserInterface.hpp" />
+    <ClInclude Include="Source\Rendering\UserInterface.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Audio.cpp" />
+    <ClCompile Include="Source\Audio\Audio.cpp" />
     <ClCompile Include="Source\Blam\Data\DataPoolBase.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
     <ClCompile Include="Source\Blam\Data\LruvCacheBase.cpp" />
@@ -128,15 +149,16 @@
     <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
     <ClCompile Include="Source\Blam\Text\StringID.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
+    <ClCompile Include="Source\Engine2.cpp" />
     <ClCompile Include="Source\Forge.cpp" />
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
-    <ClCompile Include="Source\Graphics.cpp" />
-    <ClCompile Include="Source\Input.cpp" />
+    <ClCompile Include="Source\Rendering\Graphics.cpp" />
+    <ClCompile Include="Source\Input\Input.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Network.cpp" />
     <ClCompile Include="Source\Player.cpp" />
-    <ClCompile Include="Source\UserInterface.cpp" />
+    <ClCompile Include="Source\Rendering\UserInterface.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F7267A5F-7009-40A3-B523-424279DEF2C7}</ProjectGuid>
@@ -208,7 +230,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(ProjectDir)Depends\Include;$(SolutionDir)AnvilCommon\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)Depends\Include;$(SolutionDir)AnvilCommon\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>true</StringPooling>
@@ -219,10 +241,10 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <Lib>
-      <AdditionalDependencies>detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(ProjectDir)Depends\Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Depends\Library\x86\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -232,7 +254,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Depends\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -256,7 +279,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(ProjectDir)Depends\Include;$(SolutionDir)AnvilCommon\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)Depends\Include;$(SolutionDir)AnvilCommon\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>true</StringPooling>
@@ -268,10 +291,10 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(ProjectDir)Depends\Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Depends\Library\x86\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

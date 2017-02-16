@@ -34,18 +34,19 @@
     <ClCompile Include="Source\Blam\Game\Players.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
     <ClCompile Include="Source\Forge.cpp" />
-    <ClCompile Include="Source\Graphics.cpp" />
-    <ClCompile Include="Source\Input.cpp" />
     <ClCompile Include="Source\Network.cpp" />
     <ClCompile Include="Source\Player.cpp" />
-    <ClCompile Include="Source\UserInterface.cpp" />
     <ClCompile Include="Source\Blam\Network\Session.cpp" />
     <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
-    <ClCompile Include="Source\Audio.cpp" />
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Blam\Text\StringID.cpp" />
     <ClCompile Include="Source\Blam\Input\InputTypes.cpp" />
+    <ClCompile Include="Source\Input\Input.cpp" />
+    <ClCompile Include="Source\Rendering\Graphics.cpp" />
+    <ClCompile Include="Source\Rendering\UserInterface.cpp" />
+    <ClCompile Include="Source\Audio\Audio.cpp" />
+    <ClCompile Include="Source\Engine2.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -108,17 +109,38 @@
     <ClInclude Include="Source\Blam\Network\Session.hpp" />
     <ClInclude Include="Source\Blam\Tags\Game\CacheFileGlobalTags.hpp" />
     <ClInclude Include="Source\Camera.hpp" />
-    <ClInclude Include="Source\Graphics.hpp" />
     <ClInclude Include="Source\Player.hpp" />
     <ClInclude Include="Source\Game.hpp" />
-    <ClInclude Include="Source\UserInterface.hpp" />
     <ClInclude Include="Source\Forge.hpp" />
     <ClInclude Include="Source\Blam\Input\InputTypes.hpp" />
-    <ClInclude Include="Source\Input.hpp" />
-    <ClInclude Include="Source\Audio.hpp" />
     <ClInclude Include="Source\Blam\Objects\ObjectData.hpp" />
     <ClInclude Include="Source\Network.hpp" />
     <ClInclude Include="Source\Blam\Tags\UserInterface\ChudGlobalsDefinition.hpp" />
     <ClInclude Include="Source\Blam\Tags\UserInterface\ChudDefinition.hpp" />
+    <ClInclude Include="Source\Blam\Input\UIButtonCode.hpp" />
+    <ClInclude Include="Source\Blam\Input\ControllerButton.hpp" />
+    <ClInclude Include="Source\Blam\Input\KeyCode.hpp" />
+    <ClInclude Include="Source\Blam\Input\MouseButton.hpp" />
+    <ClInclude Include="Source\Blam\Input\InputType.hpp" />
+    <ClInclude Include="Source\Blam\Input\KeyEventModifiers.hpp" />
+    <ClInclude Include="Source\Blam\Input\KeyEventType.hpp" />
+    <ClInclude Include="Source\Blam\Input\KeyEvent.hpp" />
+    <ClInclude Include="Source\Blam\Input\GameAction.hpp" />
+    <ClInclude Include="Source\Blam\Input\BindingsTable.hpp" />
+    <ClInclude Include="Source\Blam\Input\BindingsPreferences.hpp" />
+    <ClInclude Include="Source\Blam\Input\ActionStateFlags.hpp" />
+    <ClInclude Include="Source\Blam\Input\ActionState.hpp" />
+    <ClInclude Include="Source\Blam\Input\ConfigurableAction.hpp" />
+    <ClInclude Include="Source\Input\InputContext.hpp" />
+    <ClInclude Include="Source\Input\Input.hpp" />
+    <ClInclude Include="Source\Game\GameLocale.hpp" />
+    <ClInclude Include="Source\Game\GameLobbyType.hpp" />
+    <ClInclude Include="Source\Rendering\Globals\Bloom.hpp" />
+    <ClInclude Include="Source\Rendering\Globals\Cinematic.hpp" />
+    <ClInclude Include="Source\Rendering\Globals\DepthOfField.h" />
+    <ClInclude Include="Source\Rendering\Globals\Graphics.hpp" />
+    <ClInclude Include="Source\Rendering\Graphics.hpp" />
+    <ClInclude Include="Source\Rendering\UserInterface.hpp" />
+    <ClInclude Include="Source\Audio\Audio.hpp" />
   </ItemGroup>
 </Project>

@@ -1,16 +1,18 @@
 #pragma once
 #include <memory>
-#include "Interfaces\IInitializable.hpp"
-#include "Utils\Singleton.hpp"
+#include <Interfaces/IEngineInitializable.hpp>
 
 namespace Anvil::Client
 {
-	class AnvilClient : AnvilCommon::IInitializable, public AnvilCommon::Singleton<AnvilClient>
+	class AnvilClient : 
+		public AnvilCommon::IInitializable
 	{
 	private:
-		std::shared_ptr<AnvilCommon::IInitializable> m_Engine;
+		std::shared_ptr<AnvilCommon::IEngineInitializable> m_Engine;
 
 	public:
+		static std::shared_ptr<AnvilClient> Instance();
+
 		virtual bool Init() override;
 	};
 }

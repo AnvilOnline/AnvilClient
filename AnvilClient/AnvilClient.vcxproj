@@ -89,7 +89,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;ANVIL_DEW;_DEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilEldorado\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilEldorado\Source;%(AdditionalIncludeDirectories);$(SolutionDir)Depends\Include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -116,7 +116,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>ANVIL_AUSAR;_DEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilAusar\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilAusar\Source;%(AdditionalIncludeDirectories);$(SolutionDir)Depends\Include</AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StringPooling>true</StringPooling>
@@ -146,7 +146,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;ANVIL_DEW;NDEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilEldorado\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilEldorado\Source;%(AdditionalIncludeDirectories);$(SolutionDir)Depends\Include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>true</StringPooling>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
@@ -176,7 +176,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>ANVIL_AUSAR;NDEBUG;_WINDOWS;_USRDLL;ANVILCLIENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilAusar\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilCommon\Depends\Include;$(SolutionDir)AnvilAusar\Source;%(AdditionalIncludeDirectories);$(SolutionDir)Depends\Include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
