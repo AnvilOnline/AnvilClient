@@ -142,5 +142,6 @@
     <ClInclude Include="Source\Rendering\Graphics.hpp" />
     <ClInclude Include="Source\Rendering\UserInterface.hpp" />
     <ClInclude Include="Source\Audio\Audio.hpp" />
+    <ClInclude Include="Source\Hooks\Hooking.hpp" />
   </ItemGroup>
 </Project>

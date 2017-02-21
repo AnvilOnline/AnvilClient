@@ -99,6 +99,7 @@
     <ClInclude Include="Source\Game.hpp" />
     <ClInclude Include="Source\Game\GameLobbyType.hpp" />
     <ClInclude Include="Source\Game\GameLocale.hpp" />
+    <ClInclude Include="Source\Hooks\Hooking.hpp" />
     <ClInclude Include="Source\Rendering\Graphics.hpp" />
     <ClInclude Include="Source\Camera.hpp" />
     <ClInclude Include="Source\Rendering\Globals\Bloom.hpp" />

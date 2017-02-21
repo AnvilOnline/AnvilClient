@@ -2,6 +2,7 @@
 #define _WIN32_MEAN_AND_LEAN
 
 #include <Interfaces/IEngineInitializable.hpp>
+#include <Hooks/Hooking.hpp>
 
 #include <memory>
 
@@ -30,23 +31,22 @@ namespace AnvilEldorado
 		/// <summary>
 		/// Create Window Hook
 		/// </summary>
-		typedef HWND(__stdcall* CreateWindowExA_t)(DWORD, LPCSTR, LPCSTR, DWORD, int, int, int, int, HWND, HMENU, HINSTANCE, LPVOID);
-		static CreateWindowExA_t o_CreateWindowExA;
-		static HWND __stdcall hk_CreateWindowExA(DWORD, LPCSTR, LPCSTR, DWORD, int, int, int, int, HWND, HMENU, HINSTANCE, LPVOID);
+		DeclareFunction(HWND, __stdcall, CreateWindowExA, DWORD, LPCSTR, LPCSTR, DWORD, int, int, int, int, HWND, HMENU, HINSTANCE, LPVOID);
 
 		/// <summary>
 		/// Bink Video Hook
 		/// </summary>
-		typedef bool(__cdecl* LoadBinkVideo_t)(void*, void*);
-		static LoadBinkVideo_t o_LoadBinkVideo;
-		static bool __cdecl hk_LoadBinkVideo(void*, void*);
+		DeclareFunction(bool, __cdecl, LoadBinkVideo, void*, void*);
 
 		/// <summary>
 		/// Saber Halo 3 initialization
 		/// </summary>
-		typedef void* (*Game_InitHalo3_t)();
-		static Game_InitHalo3_t o_Game_InitHalo3;
-		static void* hk_Game_InitHalo3();
+		DeclareFunction(void*, , Game_InitHalo3, );
+
+		/// <summary>
+		/// 
+		/// </summary>
+		DeclareFunction(int, __cdecl, OnTagsLoaded, char* p_TagType);
 
 	public:
 		Engine();

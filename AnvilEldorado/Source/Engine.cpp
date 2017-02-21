@@ -34,6 +34,7 @@ bool Engine::Init()
 	// Disable Windows DPI Scaling
 	SetProcessDPIAware();
 
+	// Create and initialize all hooks
 	CreateHooks();
 
 	return true;
@@ -55,7 +56,7 @@ uint8_t* Engine::ExecutableBase()
 
 	m_ModuleBase = s_ModuleInfo.lpBaseOfDll;
 
-	return m_ModuleBase;
+	return static_cast<uint8_t*>(m_ModuleBase);
 }
 
 size_t Engine::ExecutableSize()
@@ -85,13 +86,11 @@ void Engine::CreateHooks()
 
 	// Bink Video Hook
 	auto s_Address = ExecutableBase() + 0x200990;
-	if (MH_CreateHook(s_Address, &hk_LoadBinkVideo, reinterpret_cast<LPVOID*>(&o_LoadBinkVideo)) != MH_OK)
-		WriteLog("Could not hook LoadBinkVideo.");
+	HookFunctionOffset(s_Address, LoadBinkVideo);
 
 	// Saber initialize
 	s_Address = ExecutableBase() + 0x699120;
-	if (MH_CreateHook(s_Address, &hk_Game_InitHalo3, reinterpret_cast<LPVOID*>(&o_Game_InitHalo3)) != MH_OK)
-		WriteLog("Could not hook Game::InitHalo3.");
+	HookFunctionOffset(s_Address, Game_InitHalo3);
 
 	MH_EnableHook(MH_ALL_HOOKS);
 }
@@ -115,4 +114,9 @@ void* Engine::hk_Game_InitHalo3()
 	Game_InitAudioSystem();
 
 	return nullptr;
+}
+
+int __cdecl Engine::hk_OnTagsLoaded(char* p_TagType)
+{
+	return 1;
 }
