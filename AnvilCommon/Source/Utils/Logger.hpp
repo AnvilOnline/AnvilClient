@@ -2,7 +2,7 @@
 #include <memory>
 #include <mutex>
 #include <fstream>
-#include <Interfaces\IInitializable.hpp>
+#include <Interfaces\Initializable.hpp>
 
 #ifdef _DEBUG
 #define WriteLog(p_Format, ...) AnvilCommon::Utils::Logger::Instance()->InternalWriteLog(__FUNCTION__, __LINE__, p_Format, __VA_ARGS__);
@@ -14,7 +14,7 @@
 namespace AnvilCommon::Utils
 {
 	class Logger : 
-		public IInitializable
+		public Initializable
 	{
 	private:
 		std::mutex m_Lock;

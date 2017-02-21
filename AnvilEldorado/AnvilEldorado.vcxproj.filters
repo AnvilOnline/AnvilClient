@@ -45,12 +45,14 @@
     <ClCompile Include="Source\Input\Input.cpp" />
     <ClCompile Include="Source\Rendering\Graphics.cpp" />
     <ClCompile Include="Source\Rendering\UserInterface.cpp" />
-    <ClCompile Include="Source\Audio\Audio.cpp" />
     <ClCompile Include="Source\Engine2.cpp" />
-    <ClCompile Include="Source\Engine.cpp" />
+    <ClCompile Include="Source\Game\Hooks.cpp" />
+    <ClCompile Include="Source\EngineImpl.cpp" />
+    <ClCompile Include="Source\Audio\Hooks.cpp" />
+    <ClCompile Include="Source\Game\GameImpl.cpp" />
+    <ClCompile Include="Source\Audio\AudioImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Engine.hpp" />
     <ClInclude Include="Source\Blam\Cache\StringIDCache.hpp" />
     <ClInclude Include="Source\Blam\Math\Angle.hpp" />
     <ClInclude Include="Source\Blam\Math\Bounds.hpp" />
@@ -141,7 +143,11 @@
     <ClInclude Include="Source\Rendering\Globals\Graphics.hpp" />
     <ClInclude Include="Source\Rendering\Graphics.hpp" />
     <ClInclude Include="Source\Rendering\UserInterface.hpp" />
-    <ClInclude Include="Source\Audio\Audio.hpp" />
     <ClInclude Include="Source\Hooks\Hooking.hpp" />
+    <ClInclude Include="Source\Game\Hooks.hpp" />
+    <ClInclude Include="Source\EngineImpl.hpp" />
+    <ClInclude Include="Source\Audio\Hooks.hpp" />
+    <ClInclude Include="Source\Game\GameImpl.hpp" />
+    <ClInclude Include="Source\Audio\AudioImpl.hpp" />
   </ItemGroup>
 </Project>

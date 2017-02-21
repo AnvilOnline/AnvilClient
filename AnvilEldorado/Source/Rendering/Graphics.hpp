@@ -1,5 +1,5 @@
 #pragma once
-#include <Interfaces/IInitializable.hpp>
+#include <Interfaces/Initializable.hpp>
 #include <Blam/Math/RealColorRGB.hpp>
 
 namespace AnvilEldorado::Rendering
@@ -12,7 +12,8 @@ namespace AnvilEldorado::Rendering
 		struct Graphics;
 	}
 
-	class Graphics final : public AnvilCommon::IInitializable
+	class Graphics : 
+		public AnvilCommon::Initializable
 	{
 	protected:
 		Globals::Bloom* GetBloomGlobals();

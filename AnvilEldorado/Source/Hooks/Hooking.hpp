@@ -1,4 +1,6 @@
 #pragma once
+#include <MinHook.h>
+#include <Utils\Logger.hpp>
 
 #define DeclareFunction(returnType, callingMethod, name, ...) \
 	typedef returnType (callingMethod* name ## _t)(__VA_ARGS__); \

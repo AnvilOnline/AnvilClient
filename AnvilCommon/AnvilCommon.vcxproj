@@ -22,8 +22,9 @@
     <ClInclude Include="Depends\Include\MinHook.h" />
     <ClInclude Include="Source\BuildInfo.hpp" />
     <ClInclude Include="Source\Globals.hpp" />
-    <ClInclude Include="Source\Interfaces\IEngineInitializable.hpp" />
-    <ClInclude Include="Source\Interfaces\IInitializable.hpp" />
+    <ClInclude Include="Source\Interfaces\Client.hpp" />
+    <ClInclude Include="Source\Interfaces\Engine.hpp" />
+    <ClInclude Include="Source\Interfaces\Initializable.hpp" />
     <ClInclude Include="Source\Utils\Logger.hpp" />
     <ClInclude Include="Source\Utils\Util.hpp" />
   </ItemGroup>
@@ -114,6 +115,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(ProjectDir)Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,6 +156,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(ProjectDir)Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

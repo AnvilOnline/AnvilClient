@@ -1,9 +1,10 @@
-#include "Client.hpp"
+#include "ClientImpl.hpp"
+#include <EngineImpl.hpp>
+
 #include <Windows.h>
 #include <Utils/Util.hpp>
 #include <Utils/Logger.hpp>
 
-#include <Engine.hpp>
 #include <MinHook.h>
 
 using namespace AnvilCommon;
@@ -17,13 +18,18 @@ using namespace Anvil::Client;
 #pragma comment(lib, "AnvilAusar")
 #endif
 
-std::shared_ptr<AnvilClient> AnvilClient::Instance()
+extern std::shared_ptr<AnvilCommon::Client> GetClientInterface()
 {
-	static auto s_Instance = std::make_shared<AnvilClient>();
+	return ClientImpl::GetInstance();
+}
+
+std::shared_ptr<ClientImpl> ClientImpl::GetInstance()
+{
+	static auto s_Instance = std::make_shared<ClientImpl>();
 	return s_Instance;
 }
 
-bool AnvilClient::Init()
+bool ClientImpl::Init()
 {
 	// Initialize MinHook
 	if (MH_Initialize() != MH_OK)
@@ -34,7 +40,7 @@ bool AnvilClient::Init()
 
 #ifdef ANVIL_DEW
 	// Initialize Dewrito
-	m_Engine = std::shared_ptr<AnvilCommon::IEngineInitializable>(new AnvilEldorado::Engine);
+	m_Engine = std::shared_ptr<AnvilCommon::Engine>(new AnvilEldorado::EngineImpl);
 #endif
 
 #ifdef ANVIL_AUSAR
@@ -48,7 +54,17 @@ bool AnvilClient::Init()
 		return false;
 	}
 
+#if defined(_DEBUG) && defined(ANVIL_DEW)
+	WriteLog("Sleeping for 5s.");
+	Sleep(15000);
+#endif
+
 	Utils::Util::ResumeAllThreads();
 
 	return true;
+}
+
+std::shared_ptr<AnvilCommon::Engine> ClientImpl::GetEngine()
+{
+	return m_Engine;
 }

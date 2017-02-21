@@ -19,7 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Audio\Audio.hpp" />
+    <ClInclude Include="Source\Audio\AudioImpl.hpp" />
+    <ClInclude Include="Source\Audio\Hooks.hpp" />
     <ClInclude Include="Source\Blam\Data\DataArray.hpp" />
     <ClInclude Include="Source\Blam\Data\DataPoolBase.hpp" />
     <ClInclude Include="Source\Blam\Data\LruvCacheBase.hpp" />
@@ -94,9 +95,11 @@
     <ClInclude Include="Source\Blam\Tags\UserInterface\ChudDefinition.hpp" />
     <ClInclude Include="Source\Blam\Tags\UserInterface\ChudGlobalsDefinition.hpp" />
     <ClInclude Include="Source\Blam\Text\StringID.hpp" />
-    <ClInclude Include="Source\Engine.hpp" />
+    <ClInclude Include="Source\EngineImpl.hpp" />
     <ClInclude Include="Source\Forge.hpp" />
     <ClInclude Include="Source\Game.hpp" />
+    <ClInclude Include="Source\Game\GameImpl.hpp" />
+    <ClInclude Include="Source\Game\Hooks.hpp" />
     <ClInclude Include="Source\Game\GameLobbyType.hpp" />
     <ClInclude Include="Source\Game\GameLocale.hpp" />
     <ClInclude Include="Source\Hooks\Hooking.hpp" />
@@ -113,7 +116,8 @@
     <ClInclude Include="Source\Rendering\UserInterface.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Audio\Audio.cpp" />
+    <ClCompile Include="Source\Audio\AudioImpl.cpp" />
+    <ClCompile Include="Source\Audio\Hooks.cpp" />
     <ClCompile Include="Source\Blam\Data\DataPoolBase.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
     <ClCompile Include="Source\Blam\Data\LruvCacheBase.cpp" />
@@ -149,10 +153,12 @@
     <ClCompile Include="Source\Blam\Network\Session.cpp" />
     <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
     <ClCompile Include="Source\Blam\Text\StringID.cpp" />
-    <ClCompile Include="Source\Engine.cpp" />
+    <ClCompile Include="Source\EngineImpl.cpp" />
     <ClCompile Include="Source\Engine2.cpp" />
     <ClCompile Include="Source\Forge.cpp" />
     <ClCompile Include="Source\Game.cpp" />
+    <ClCompile Include="Source\Game\GameImpl.cpp" />
+    <ClCompile Include="Source\Game\Hooks.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\Rendering\Graphics.cpp" />
     <ClCompile Include="Source\Input\Input.cpp" />
@@ -231,12 +237,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)Depends\Include;$(SolutionDir)AnvilCommon\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)Depends\Include;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilClient\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -258,6 +265,7 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -280,11 +288,12 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)Depends\Include;$(SolutionDir)AnvilCommon\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(SolutionDir)Depends\Include;$(SolutionDir)AnvilCommon\Source;$(SolutionDir)AnvilClient\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>true</StringPooling>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -308,6 +317,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

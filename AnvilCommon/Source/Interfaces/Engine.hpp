@@ -1,11 +1,11 @@
 #pragma once
-#include "IInitializable.hpp"
+#include "Initializable.hpp"
 #include <cstdint>
 
 namespace AnvilCommon
 {
-	class IEngineInitializable :
-		public IInitializable
+	class Engine :
+		public Initializable
 	{
 	public:
 		virtual uint8_t* ExecutableBase() = 0;
