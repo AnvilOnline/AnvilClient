@@ -51,6 +51,7 @@
     <ClCompile Include="Source\Audio\Hooks.cpp" />
     <ClCompile Include="Source\Game\GameImpl.cpp" />
     <ClCompile Include="Source\Audio\AudioImpl.cpp" />
+    <ClCompile Include="Source\Game\Forge\Hooks.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Blam\Cache\StringIDCache.hpp" />
@@ -149,5 +150,6 @@
     <ClInclude Include="Source\Audio\Hooks.hpp" />
     <ClInclude Include="Source\Game\GameImpl.hpp" />
     <ClInclude Include="Source\Audio\AudioImpl.hpp" />
+    <ClInclude Include="Source\Game\Forge\Hooks.hpp" />
   </ItemGroup>
 </Project>

@@ -98,6 +98,7 @@
     <ClInclude Include="Source\EngineImpl.hpp" />
     <ClInclude Include="Source\Forge.hpp" />
     <ClInclude Include="Source\Game.hpp" />
+    <ClInclude Include="Source\Game\Forge\Hooks.hpp" />
     <ClInclude Include="Source\Game\GameImpl.hpp" />
     <ClInclude Include="Source\Game\Hooks.hpp" />
     <ClInclude Include="Source\Game\GameLobbyType.hpp" />
@@ -157,6 +158,7 @@
     <ClCompile Include="Source\Engine2.cpp" />
     <ClCompile Include="Source\Forge.cpp" />
     <ClCompile Include="Source\Game.cpp" />
+    <ClCompile Include="Source\Game\Forge\Hooks.cpp" />
     <ClCompile Include="Source\Game\GameImpl.cpp" />
     <ClCompile Include="Source\Game\Hooks.cpp" />
     <ClCompile Include="Source\Globals.cpp" />

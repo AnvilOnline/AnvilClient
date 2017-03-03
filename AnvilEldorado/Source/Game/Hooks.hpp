@@ -23,7 +23,9 @@ namespace AnvilEldorado::Game
 		/// </summary>
 		DeclareFunction(int, __cdecl, Game_TagsLoaded, char* p_TagType);
 
+		DeclareFunction(void, __fastcall, sub_591290, void* th);
+
 	public:
-		virtual bool Init() override;
+		virtual bool Init();
 	};
 }

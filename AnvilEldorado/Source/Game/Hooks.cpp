@@ -39,6 +39,16 @@ int __cdecl Hooks::hk_Game_TagsLoaded(char* p_TagType)
 	return o_Game_TagsLoaded(p_TagType);
 }
 
+void __fastcall Hooks::hk_sub_591290(void* th)
+{
+	WriteLog("ESP: %p.", th);
+
+	o_sub_591290(th);
+
+	WriteLog("ESP2: %p.", th);
+}
+
 Hooks::Game_VerifyMapSignature_t Hooks::o_Game_VerifyMapSignature = nullptr;
 Hooks::Game_InitHalo3_t Hooks::o_Game_InitHalo3 = nullptr;
 Hooks::Game_TagsLoaded_t Hooks::o_Game_TagsLoaded = nullptr;
+Hooks::sub_591290_t Hooks::o_sub_591290 = nullptr;
