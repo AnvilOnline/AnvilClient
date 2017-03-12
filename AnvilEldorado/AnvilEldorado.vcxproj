@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -96,13 +96,13 @@
     <ClInclude Include="Source\Blam\Tags\UserInterface\ChudGlobalsDefinition.hpp" />
     <ClInclude Include="Source\Blam\Text\StringID.hpp" />
     <ClInclude Include="Source\EngineImpl.hpp" />
-    <ClInclude Include="Source\Forge.hpp" />
     <ClInclude Include="Source\Game.hpp" />
     <ClInclude Include="Source\Game\Forge\Hooks.hpp" />
     <ClInclude Include="Source\Game\GameImpl.hpp" />
     <ClInclude Include="Source\Game\Hooks.hpp" />
     <ClInclude Include="Source\Game\GameLobbyType.hpp" />
     <ClInclude Include="Source\Game\GameLocale.hpp" />
+    <ClInclude Include="Source\Game\Networking\Hooks.hpp" />
     <ClInclude Include="Source\Hooks\Hooking.hpp" />
     <ClInclude Include="Source\Rendering\Graphics.hpp" />
     <ClInclude Include="Source\Camera.hpp" />
@@ -115,6 +115,9 @@
     <ClInclude Include="Source\Network.hpp" />
     <ClInclude Include="Source\Player.hpp" />
     <ClInclude Include="Source\Rendering\UserInterface.hpp" />
+    <ClInclude Include="Source\Sdk\Networking\XnAddr.hpp" />
+    <ClInclude Include="Source\Sdk\Networking\XnKey.hpp" />
+    <ClInclude Include="Source\Sdk\Networking\XnKid.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Audio\AudioImpl.cpp" />
@@ -156,11 +159,11 @@
     <ClCompile Include="Source\Blam\Text\StringID.cpp" />
     <ClCompile Include="Source\EngineImpl.cpp" />
     <ClCompile Include="Source\Engine2.cpp" />
-    <ClCompile Include="Source\Forge.cpp" />
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\Game\Forge\Hooks.cpp" />
     <ClCompile Include="Source\Game\GameImpl.cpp" />
     <ClCompile Include="Source\Game\Hooks.cpp" />
+    <ClCompile Include="Source\Game\Networking\Hooks.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\Rendering\Graphics.cpp" />
     <ClCompile Include="Source\Input\Input.cpp" />
@@ -179,26 +182,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>

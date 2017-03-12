@@ -20,6 +20,7 @@ bool Hooks::Init()
 	s_Address = s_Base + 0xE97D0;
 	HookFunctionOffset(s_Address, PushBarriersGetStructureDesign);
 
+	// the first looks like it's ignoring the ticks for the up key/num pad 8 and the second is noping the instruction that sets the handled flag
 	// TODO: Figure out what these do, and if we can install proper hooks for these
 	//		return Patch(0x19F17F, 0x75).Apply()
 	//			&& Patch::NopFill(0x19F198, 4)

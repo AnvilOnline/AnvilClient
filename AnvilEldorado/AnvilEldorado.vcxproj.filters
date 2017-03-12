@@ -33,7 +33,6 @@
     <ClCompile Include="Source\Blam\Data\DataArray.cpp" />
     <ClCompile Include="Source\Blam\Game\Players.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
-    <ClCompile Include="Source\Forge.cpp" />
     <ClCompile Include="Source\Network.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\Blam\Network\Session.cpp" />
@@ -52,6 +51,7 @@
     <ClCompile Include="Source\Game\GameImpl.cpp" />
     <ClCompile Include="Source\Audio\AudioImpl.cpp" />
     <ClCompile Include="Source\Game\Forge\Hooks.cpp" />
+    <ClCompile Include="Source\Game\Networking\Hooks.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Blam\Cache\StringIDCache.hpp" />
@@ -114,7 +114,6 @@
     <ClInclude Include="Source\Camera.hpp" />
     <ClInclude Include="Source\Player.hpp" />
     <ClInclude Include="Source\Game.hpp" />
-    <ClInclude Include="Source\Forge.hpp" />
     <ClInclude Include="Source\Blam\Input\InputTypes.hpp" />
     <ClInclude Include="Source\Blam\Objects\ObjectData.hpp" />
     <ClInclude Include="Source\Network.hpp" />
@@ -151,5 +150,9 @@
     <ClInclude Include="Source\Game\GameImpl.hpp" />
     <ClInclude Include="Source\Audio\AudioImpl.hpp" />
     <ClInclude Include="Source\Game\Forge\Hooks.hpp" />
+    <ClInclude Include="Source\Game\Networking\Hooks.hpp" />
+    <ClInclude Include="Source\Sdk\Networking\XnAddr.hpp" />
+    <ClInclude Include="Source\Sdk\Networking\XnKid.hpp" />
+    <ClInclude Include="Source\Sdk\Networking\XnKey.hpp" />
   </ItemGroup>
 </Project>
