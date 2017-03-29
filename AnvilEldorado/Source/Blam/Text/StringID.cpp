@@ -1,4 +1,4 @@
-#include "Blam\Cache\StringIDCache.hpp"
+#include "Blam\Cache\StringIDCacheHeader.hpp"
 #include "StringID.hpp"
 
 namespace Blam::Text

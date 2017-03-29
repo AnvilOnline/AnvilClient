@@ -1,7 +1,7 @@
 #include <codecvt>
 #include <map>
 
-#include "Blam\Cache\StringIDCache.hpp"
+#include "Blam\Cache\StringIDCacheHeader.hpp"
 #include "Blam\Data\DatumIndex.hpp"
 #include "Blam\Objects\ObjectData.hpp"
 #include "Blam\Tags\TagInstance.hpp"

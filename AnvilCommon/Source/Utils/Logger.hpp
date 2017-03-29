@@ -4,12 +4,7 @@
 #include <fstream>
 #include <Interfaces\Initializable.hpp>
 
-#ifdef _DEBUG
 #define WriteLog(p_Format, ...) AnvilCommon::Utils::Logger::GetInstance()->InternalWriteLog(__FUNCTION__, __LINE__, p_Format, __VA_ARGS__);
-#else
-#pragma warning(disable : 4390)
-#define WriteLog(p_Format, ...)
-#endif
 
 namespace AnvilCommon::Utils
 {

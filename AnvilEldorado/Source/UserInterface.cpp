@@ -4,7 +4,7 @@
 #include "Utils\Hook.hpp"
 #include "Utils\Patch.hpp"
 
-#include "Blam\Cache\StringIDCache.hpp"
+#include "Blam\Cache\StringIDCacheHeader.hpp"
 #include "Blam\Input\InputTypes.hpp"
 #include "Blam\Tags\TagInstance.hpp"
 #include "Blam\Tags\UserInterface\ChudDefinition.hpp"
