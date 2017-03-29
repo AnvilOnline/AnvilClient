@@ -1,12 +1,10 @@
 #pragma once
-
-#include "Interfaces\IInitializable.hpp"
-
-#include "Utils\Singleton.hpp"
+#include <Interfaces\Initializable.hpp>
 
 namespace AnvilEldorado
 {
-	class Engine final : public AnvilCommon::IInitializable, public AnvilCommon::Singleton<Engine>
+	class Engine : 
+		public AnvilCommon::Initializable
 	{
 	public:
 		bool Init() override;

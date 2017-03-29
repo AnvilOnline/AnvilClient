@@ -82,7 +82,8 @@ namespace Blam::Game
 
 		if (size == 0)
 		{
-			size_t extensionSize = PlayerPropertiesExtender::Instance()->GetTotalSize();
+			// TODO: Fix
+			size_t extensionSize = 0; // PlayerPropertiesExtender::Instance()->GetTotalSize();
 			size = PlayerPropertiesPacketHeaderSize + PlayerPropertiesSize + extensionSize + PlayerPropertiesPacketFooterSize;
 		}
 

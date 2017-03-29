@@ -3,9 +3,7 @@
 #include <stack>
 #include <vector>
 
-#include "Interfaces\IInitializable.hpp"
-
-#include "Utils\Singleton.hpp"
+#include <Interfaces\Initializable.hpp>
 
 #include "Blam\Input\InputTypes.hpp"
 
@@ -40,7 +38,7 @@ namespace AnvilEldorado
 		virtual bool UiInputTick() = 0;
 	};
 
-	class Input final : public AnvilCommon::IInitializable, public AnvilCommon::Singleton<Input>
+	class Input : public AnvilCommon::Initializable
 	{
 	public:
 		bool Init() override;

@@ -19,7 +19,8 @@ namespace AnvilEldorado
 
 	void UpdateInputHook()
 	{
-		auto *s_Input = Input::Instance();
+		// TODO: Fix
+		auto *s_Input = (Input*)nullptr; // Input::Instance();
 
 		// If the current context is done, pop it off
 		if (s_Input->IsContextDone())
@@ -52,7 +53,8 @@ namespace AnvilEldorado
 
 	void UiInputTick()
 	{
-		auto *s_Input = Input::Instance();
+		// TODO: Fix
+		auto *s_Input = (Input*)nullptr; // Input::Instance();
 		auto &s_ContextStack = s_Input->GetContextStack();
 
 		if (s_ContextStack.empty())
@@ -89,7 +91,8 @@ namespace AnvilEldorado
 
 	void BlockInputHook(Blam::Input::InputType p_Type, bool p_Blocked)
 	{
-		auto *s_Input = Input::Instance();
+		// TODO: Fix
+		auto *s_Input = (Input*)nullptr; // Input::Instance();
 		auto &s_ContextStack = s_Input->GetContextStack();
 
 		// If a context isn't active, then block input normally,
@@ -102,26 +105,30 @@ namespace AnvilEldorado
 
 	void InitBindingsHook(Blam::Input::BindingsTable *p_Bindings)
 	{
-		*p_Bindings = Input::Instance()->GetBindings();
+		// TODO: Fix
+		//*p_Bindings = nullptr; //Input::Instance()->GetBindings();
 	}
 
 	// Hook to redirect keybind preference reads to ModuleInput
 	Blam::Input::BindingsPreferences* PreferencesGetKeyBindingsHook(Blam::Input::BindingsPreferences *p_Result)
 	{
-		auto s_Bindings = Input::Instance()->GetBindings();
+		// TODO: Fix
+		return nullptr;
+		//auto s_Bindings = (Input*)nullptr; //Input::Instance()->GetBindings();
 
-		memcpy(p_Result->PrimaryKeys, s_Bindings.PrimaryKeys, sizeof(p_Result->PrimaryKeys));
-		memcpy(p_Result->PrimaryMouseButtons, s_Bindings.PrimaryMouseButtons, sizeof(p_Result->PrimaryMouseButtons));
-		memcpy(p_Result->SecondaryKeys, s_Bindings.SecondaryKeys, sizeof(p_Result->SecondaryKeys));
-		memcpy(p_Result->SecondaryMouseButtons, s_Bindings.SecondaryMouseButtons, sizeof(p_Result->SecondaryMouseButtons));
+		//memcpy(p_Result->PrimaryKeys, s_Bindings.PrimaryKeys, sizeof(p_Result->PrimaryKeys));
+		//memcpy(p_Result->PrimaryMouseButtons, s_Bindings.PrimaryMouseButtons, sizeof(p_Result->PrimaryMouseButtons));
+		//memcpy(p_Result->SecondaryKeys, s_Bindings.SecondaryKeys, sizeof(p_Result->SecondaryKeys));
+		//memcpy(p_Result->SecondaryMouseButtons, s_Bindings.SecondaryMouseButtons, sizeof(p_Result->SecondaryMouseButtons));
 
-		return p_Result;
+		//return p_Result;
 	}
 
 	// Hook to redirect keybind preference writes to ModuleInput
 	void PreferencesSetKeyBindingsHook(Blam::Input::BindingsPreferences p_NewBindings)
 	{
-		auto *s_Input = Input::Instance();
+		// TODO: Fix
+		/*auto *s_Input = Input::Instance();
 		auto s_Bindings = s_Input->GetBindings();
 
 		memcpy(s_Bindings.PrimaryKeys, p_NewBindings.PrimaryKeys, sizeof(s_Bindings.PrimaryKeys));
@@ -129,7 +136,7 @@ namespace AnvilEldorado
 		memcpy(s_Bindings.SecondaryKeys, p_NewBindings.SecondaryKeys, sizeof(s_Bindings.SecondaryKeys));
 		memcpy(s_Bindings.SecondaryMouseButtons, p_NewBindings.SecondaryMouseButtons, sizeof(s_Bindings.SecondaryMouseButtons));
 
-		s_Input->UpdateBindings();
+		s_Input->UpdateBindings();*/
 		
 		// TODO: Modules::CommandMap::Instance().ExecuteCommand("WriteConfig");
 	}
@@ -137,7 +144,8 @@ namespace AnvilEldorado
 	// Hook to prevent the game from resetting keybindings when we don't want it to
 	void GetDefaultBindingsHook(int32_t p_Type, Blam::Input::BindingsTable *p_Result)
 	{
-		*p_Result = Input::Instance()->GetBindings();
+		// TODO: Fix
+		/**p_Result = Input::Instance()->GetBindings();*/
 	}
 
 	Blam::Input::InputType g_ActionInputTypes[Blam::Input::eGameAction_KeyboardMouseCount] =
@@ -227,14 +235,18 @@ namespace AnvilEldorado
 
 	char GetControllerStateHook(int32_t p_UserIndex, int32_t p_Arg2, void *p_Arg3)
 	{
-		return GetControllerState(Input::Instance()->GetControllerPort(), p_Arg2, p_Arg3);
+		// TODO: Fix
+		return 0;
+		//return GetControllerState(Input::Instance()->GetControllerPort(), p_Arg2, p_Arg3);
 	}
 
 	const auto SetControllerVibration = reinterpret_cast<int8_t(*)(int32_t, int32_t, int8_t)>(0x65F220);
 
 	uint32_t SetControllerVibrationHook(int32_t p_UserIndex, int32_t p_Arg2, int8_t p_Arg3)
 	{
-		return SetControllerVibration(Input::Instance()->GetControllerPort(), p_Arg2, p_Arg3);
+		// TODO: Fix
+		return 0;
+		//return SetControllerVibration(Input::Instance()->GetControllerPort(), p_Arg2, p_Arg3);
 	}
 
 	const auto EngineProcessKeyBindings = reinterpret_cast<void(*)(const Blam::Input::BindingsTable &, Blam::Input::ActionState *)>(0x60C4A0);

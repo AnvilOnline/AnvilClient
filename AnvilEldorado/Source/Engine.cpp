@@ -29,18 +29,19 @@ namespace AnvilEldorado
 	{
 		WriteLog("Tags loaded successfully.");
 
-		if (!Blam::Cache::StringIDCache::Instance()->Load("maps\\string_ids.dat"))
-		{
-			WriteLog("Failed to load 'maps\\string_ids.dat'!");
-			// TODO: Exit game?
-			return;
-		}
+		// TODO: Fix
+		//if (!Blam::Cache::StringIDCache::Instance()->Load("maps\\string_ids.dat"))
+		//{
+		//	WriteLog("Failed to load 'maps\\string_ids.dat'!");
+		//	// TODO: Exit game?
+		//	return;
+		//}
 
-		if (!Engine::Instance()->OnTagsLoaded())
-		{
-			WriteLog("ERROR: Failed to apply changes after tags were loaded!");
-			// TODO: Exit game?
-		}
+		//if (!Engine::Instance()->OnTagsLoaded())
+		//{
+		//	WriteLog("ERROR: Failed to apply changes after tags were loaded!");
+		//	// TODO: Exit game?
+		//}
 	}
 
 	__declspec(naked) void OnTagsLoaded_Hook()
@@ -81,7 +82,9 @@ namespace AnvilEldorado
 
 	bool Engine::Init()
 	{
-		return ApplyPatches()
+		// TODO: Fix
+		return false;
+		/*return ApplyPatches()
 			&& Graphics::Instance()->Init()
 			&& Audio::Instance()->Init()
 			&& Input::Instance()->Init()
@@ -90,7 +93,7 @@ namespace AnvilEldorado
 			&& UserInterface::Instance()->Init()
 			&& Game::Instance()->Init()
 			&& Player::Instance()->Init()
-			&& Forge::Instance()->Init();
+			&& Forge::Instance()->Init();*/
 	}
 
 	bool Engine::UnprotectMemory()
@@ -172,12 +175,13 @@ namespace AnvilEldorado
 			return false;
 		}
 
-		UserInterface::Instance()->ApplyResolution();
+		// TODO: Fix
+		/*UserInterface::Instance()->ApplyResolution();
 
 		auto *s_Player = Player::Instance();
 
 		return s_Player->LoadArmor(s_MultiplayerGlobals)
-			&& s_Player->LoadPodiumWeapons(s_MultiplayerGlobals);
+			&& s_Player->LoadPodiumWeapons(s_MultiplayerGlobals);*/
 	}
 
 	bool Engine::HasMainMenuShown() const

@@ -1,17 +1,16 @@
 #pragma once
-
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-#include "Interfaces\IInitializable.hpp"
-
-#include "Utils\Singleton.hpp"
+#include <Interfaces\Initializable.hpp>
+#include <functional>
 
 #include "Blam\Text\StringID.hpp"
 
 namespace AnvilEldorado
 {
-	class UserInterface final : public AnvilCommon::IInitializable, public AnvilCommon::Singleton<UserInterface>
+	class UserInterface : 
+		public AnvilCommon::Initializable
 	{
 	public:
 		bool Init() override;

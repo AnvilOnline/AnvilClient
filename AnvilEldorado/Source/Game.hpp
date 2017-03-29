@@ -4,9 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "Interfaces\IInitializable.hpp"
-
-#include "Utils\Singleton.hpp"
+#include <Interfaces\Initializable.hpp>
 
 #include "Blam\Game\Variants.hpp"
 
@@ -36,7 +34,8 @@ namespace AnvilEldorado
 		Forge
 	};
 
-	class Game final : public AnvilCommon::IInitializable, public AnvilCommon::Singleton<Game>
+	class Game : 
+		public AnvilCommon::Initializable
 	{
 	public:
 		bool Init() override;

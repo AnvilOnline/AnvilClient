@@ -1,7 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <vector>
-#include "Utils\Singleton.hpp"
+#include <memory>
+
 #include "Blam\Data\BitStream.hpp"
 #include "Blam\Data\DatumBase.hpp"
 #include "Blam\Data\DatumIndex.hpp"
@@ -149,7 +150,7 @@ namespace Blam::Game
 
 	// Singleton object which lets the player-properties packet be extended with custom data
 	// TODO: Make this more generic and not so specific to player-properties
-	class PlayerPropertiesExtender : public AnvilCommon::Singleton<PlayerPropertiesExtender>
+	class PlayerPropertiesExtender
 	{
 	public:
 		// Adds an extension to the player-properties packet.

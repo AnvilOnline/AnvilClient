@@ -18,7 +18,8 @@ namespace AnvilEldorado
 {
 	void PlayerArmorExtension::BuildData(int32_t p_PlayerIndex, Blam::Game::PlayerCustomization *p_Out)
 	{
-		Player::Instance()->BuildCustomization(p_Out);
+		// TODO: Fix
+		//Player::Instance()->BuildCustomization(p_Out);
 	}
 
 	void PlayerArmorExtension::ApplyData(int32_t p_PlayerIndex, Blam::Game::PlayerProperties *p_Properties, const Blam::Game::PlayerCustomization &p_Data)
@@ -81,7 +82,9 @@ namespace AnvilEldorado
 
 	void UiPlayerModelArmorHook()
 	{
-		auto *s_Player = Player::Instance();
+		// TODO: Fix
+		auto s_Player = (Player*)nullptr;
+		//auto *s_Player = Player::Instance();
 
 		// This function runs every tick, so only update if necessary
 		if (!s_Player->NeedsArmorUpdate())
@@ -106,7 +109,9 @@ namespace AnvilEldorado
 
 	void ScoreboardPlayerModelArmorHook()
 	{
-		auto *s_Player = Player::Instance();
+		// TODO: Fix
+		auto s_Player = (Player*)nullptr;
+		//auto *s_Player = Player::Instance();
 
 		auto s_ScoreboardBiped = GetScoreboardPlayerBiped();
 
@@ -373,7 +378,8 @@ namespace AnvilEldorado
 		using AnvilCommon::Utils::Hook;
 		using AnvilCommon::Utils::Patch;
 
-		Blam::Game::PlayerPropertiesExtender::Instance()->Add(std::make_shared<PlayerArmorExtension>());
+		// TODO: Fix
+		//Blam::Game::PlayerPropertiesExtender::Instance()->Add(std::make_shared<PlayerArmorExtension>());
 
 		return Hook(0x20086D, UiPlayerModelArmorHook, HookFlags::IsCall).Apply()
 			&& Patch::NopFill(0x435DAB, 0x50)
@@ -399,7 +405,8 @@ namespace AnvilEldorado
 
 	bool AddArmorPermutations(const Blam::Tags::Game::MultiplayerGlobals::Universal::ArmorCustomization &p_Element, std::map<std::string, uint8_t> &p_Map)
 	{
-		auto *s_StringIDs = Blam::Cache::StringIDCache::Instance();
+		// TODO: Fix
+		/*auto *s_StringIDs = Blam::Cache::StringIDCache::Instance();
 
 		for (auto i = 0; i < p_Element.Permutations.Count; i++)
 		{
@@ -409,16 +416,17 @@ namespace AnvilEldorado
 				continue;
 
 			p_Map.emplace(std::string(s_StringIDs->GetString(s_Permutation.Name)), i);
-		}
+		}*/
 
 		return true;
 	}
 
 	bool Player::LoadArmor(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGlobals)
 	{
-		auto *s_StringIDs = Blam::Cache::StringIDCache::Instance();
+		// TODO: Fix
+		//auto *s_StringIDs = (Game::Cache::StringCache*)nullptr; // Blam::Cache::StringIDCache::Instance();
 
-		for (auto &s_Customization : p_MultiplayerGlobals->Universal->SpartanArmorCustomization)
+		/*for (auto &s_Customization : p_MultiplayerGlobals->Universal->SpartanArmorCustomization)
 		{
 			auto s_PieceRegion = std::string(s_StringIDs->GetString(s_Customization.PieceRegion));
 
@@ -441,7 +449,7 @@ namespace AnvilEldorado
 				WriteLog("ERROR: Invalid armor piece region: %s", s_PieceRegion.c_str());
 				return false;
 			}
-		}
+		}*/
 
 		m_ArmorPrimaryColor = 0xFFFFFF;
 		m_ArmorSecondaryColor = 0xFFFFFF;
@@ -464,7 +472,8 @@ namespace AnvilEldorado
 
 	bool Player::LoadPodiumWeapons(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGlobals)
 	{
-		auto *s_StringIDs = Blam::Cache::StringIDCache::Instance();
+		// TODO: Fix
+		/*auto *s_StringIDs = Blam::Cache::StringIDCache::Instance();
 
 		for (auto &s_Variant : p_MultiplayerGlobals->Universal->GameVariantWeapons)
 		{
@@ -473,7 +482,7 @@ namespace AnvilEldorado
 
 			if (s_Index != 0xFFFF)
 				m_PodiumWeaponIndices.emplace(s_Name, s_Index);
-		}
+		}*/
 
 		return true;
 	}

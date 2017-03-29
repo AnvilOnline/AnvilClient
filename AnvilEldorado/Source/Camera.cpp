@@ -30,7 +30,8 @@ namespace AnvilEldorado
 	// determine which camera definitions are editable based on the current camera mode
 	bool __stdcall IsCameraDefinitionEditable(const CameraDefinitionType &definition)
 	{
-		auto *s_Camera = Camera::Instance();
+		// TODO: Fix
+		auto *s_Camera = (Camera*)nullptr; //Camera::Instance();
 		auto s_CameraMode = s_Camera->GetCameraMode();
 
 		if (s_CameraMode != CameraMode::FirstPerson || s_CameraMode != CameraMode::Following)

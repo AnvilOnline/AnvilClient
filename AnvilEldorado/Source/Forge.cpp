@@ -11,7 +11,8 @@ namespace AnvilEldorado
 
 	bool CheckKillTriggersHook(int32_t a0, void *a1)
 	{
-		auto *s_Forge = Forge::Instance();
+		// TODO: Fix
+		auto *s_Forge = (Forge*)nullptr; // Forge::Instance();
 
 		if (!s_Forge->KillBarriersEnabled())
 			return false;
@@ -23,7 +24,8 @@ namespace AnvilEldorado
 
 	bool ObjectSafeZoneHook(void *a0)
 	{
-		auto *s_Forge = Forge::Instance();
+		// TODO: Fix
+		auto *s_Forge = (Forge*)nullptr; //Forge::Instance();
 
 		s_Forge->UpdateBarriersEnabled();
 
@@ -37,7 +39,8 @@ namespace AnvilEldorado
 
 	void *PushBarriersGetStructureDesignHook(int32_t index)
 	{
-		auto *s_Forge = Forge::Instance();
+		// TODO: Fix
+		auto *s_Forge = (Forge*)nullptr; // Forge::Instance();
 
 		s_Forge->UpdateBarriersEnabled();
 

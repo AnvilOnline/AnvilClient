@@ -1,14 +1,12 @@
 #pragma once
-
-#include "Interfaces\IInitializable.hpp"
-
-#include "Utils\Singleton.hpp"
+#include <Interfaces\Initializable.hpp>
 
 namespace AnvilEldorado
 {
-	class Audio final : public AnvilCommon::IInitializable, public AnvilCommon::Singleton<Audio>
+	class Audio : 
+		public AnvilCommon::Initializable
 	{
 	public:
-		bool Init() override;
+		virtual bool Init();
 	};
 }

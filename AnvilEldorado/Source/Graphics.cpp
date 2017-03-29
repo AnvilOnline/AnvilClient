@@ -15,7 +15,8 @@ namespace AnvilEldorado
 	{
 		ApplyResolutionChange();
 
-		UserInterface::Instance()->ApplyResolution();
+		// TODO: Fix
+		//UserInterface::Instance()->ApplyResolution();
 	}
 
 	double AspectRatioHook()

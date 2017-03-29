@@ -3,9 +3,8 @@
 #include <cstdint>
 #include <map>
 
-#include "Interfaces\IInitializable.hpp"
+#include <Interfaces\Initializable.hpp>
 
-#include "Utils\Singleton.hpp"
 
 #include "Blam\Data\DatumIndex.hpp"
 #include "Blam\Game\Players.hpp"
@@ -22,7 +21,8 @@ namespace AnvilEldorado
 		void Deserialize(Blam::Data::BitStream *stream, Blam::Game::PlayerCustomization *out) override;
 	};
 
-	class Player final : public AnvilCommon::IInitializable, public AnvilCommon::Singleton<Player>
+	class Player : 
+		public AnvilCommon::Initializable
 	{
 	public:
 		bool Init() override;

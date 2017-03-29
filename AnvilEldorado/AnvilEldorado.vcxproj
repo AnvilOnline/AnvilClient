@@ -83,8 +83,10 @@
     <ClInclude Include="Source\Engine.hpp" />
     <ClInclude Include="Source\Forge.hpp" />
     <ClInclude Include="Source\Game.hpp" />
+    <ClInclude Include="Source\Game\Cache\StringIdCache.hpp" />
     <ClInclude Include="Source\Graphics.hpp" />
     <ClInclude Include="Source\Camera.hpp" />
+    <ClInclude Include="Source\Hooking\Hooking.hpp" />
     <ClInclude Include="Source\Input.hpp" />
     <ClInclude Include="Source\Network.hpp" />
     <ClInclude Include="Source\Player.hpp" />
@@ -101,7 +103,6 @@
     <ClCompile Include="Source\Blam\Math\Point2D.cpp" />
     <ClCompile Include="Source\Blam\Memory\GlobalMemoryMap.cpp" />
     <ClCompile Include="Source\Blam\Data\BitStream.cpp" />
-    <ClCompile Include="Source\Blam\Cache\StringIDCache.cpp" />
     <ClCompile Include="Source\Blam\Data\DataArray.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumIndex.cpp" />
     <ClCompile Include="Source\Blam\Math\Angle.cpp" />
@@ -130,6 +131,7 @@
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\Forge.cpp" />
     <ClCompile Include="Source\Game.cpp" />
+    <ClCompile Include="Source\Game\Cache\StringIdCache.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\Graphics.cpp" />
     <ClCompile Include="Source\Input.cpp" />
@@ -219,7 +221,7 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <Lib>
-      <AdditionalDependencies>detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(ProjectDir)Depends\Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -268,7 +270,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(ProjectDir)Depends\Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

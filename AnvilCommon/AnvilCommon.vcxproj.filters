@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="Source\Interfaces\IInitializable.hpp" />
     <ClInclude Include="Source\Utils\Util.hpp" />
     <ClInclude Include="Source\Utils\Logger.hpp" />
     <ClInclude Include="Source\BuildInfo.hpp" />
     <ClInclude Include="Source\Globals.hpp" />
-    <ClInclude Include="Source\Utils\Singleton.hpp" />
     <ClInclude Include="Depends\Include\MinHook.h" />
     <ClInclude Include="Source\Utils\Hook.hpp" />
     <ClInclude Include="Source\Utils\Patch.hpp" />
+    <ClInclude Include="Source\Interfaces\Initializable.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utils\Util.cpp" />

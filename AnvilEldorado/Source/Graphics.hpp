@@ -1,8 +1,5 @@
 #pragma once
-
-#include "Interfaces\IInitializable.hpp"
-
-#include "Utils\Singleton.hpp"
+#include <Interfaces\Initializable.hpp>
 
 #include "Blam\Math\RealColorRGB.hpp"
 
@@ -33,7 +30,8 @@ namespace AnvilEldorado
 		int32_t LetterboxEnabled;
 	};
 
-	class Graphics final : public AnvilCommon::IInitializable, public AnvilCommon::Singleton<Graphics>
+	class Graphics : 
+		public AnvilCommon::Initializable
 	{
 	public:
 		static GraphicsGlobals *GetGraphicsGlobals();

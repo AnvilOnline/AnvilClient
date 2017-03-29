@@ -47,7 +47,9 @@ namespace Blam::Text
 
 	bool StringID::operator==(const std::string &p_Other) const
 	{
-		return p_Other == Cache::StringIDCache::Instance()->GetString(*this);
+		return false;
+		// TODO: Implement
+		//return p_Other == Cache::StringIDCache::Instance()->GetString(*this);
 	}
 
 	bool StringID::operator!=(const std::string &p_Other) const
@@ -57,7 +59,9 @@ namespace Blam::Text
 
 	StringID::operator std::string() const
 	{
-		return Cache::StringIDCache::Instance()->GetString(*this);
+		return std::string();
+		// TODO: Implement
+		//return Cache::StringIDCache::Instance()->GetString(*this);
 	}
 
 	StringID::operator uint32_t() const

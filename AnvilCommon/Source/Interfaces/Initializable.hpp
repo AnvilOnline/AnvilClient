@@ -2,10 +2,10 @@
 
 namespace AnvilCommon
 {
-	class IInitializable
+	class Initializable
 	{
 	public:
 		virtual bool Init() = 0;
-		virtual ~IInitializable() { }
+		virtual ~Initializable() { }
 	};
 }

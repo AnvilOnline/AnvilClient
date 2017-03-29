@@ -93,7 +93,8 @@ namespace AnvilEldorado
 		if (!LoadMap(p_Data))
 			return false;
 
-		return Game::Instance()->OnMapLoaded(p_Data);
+		// TODO: Fix
+		return false;// Game::Instance()->OnMapLoaded(p_Data);
 	}
 
 	void EndGameHook()

@@ -1,8 +1,5 @@
 #pragma once
-
-#include "Interfaces\IInitializable.hpp"
-
-#include "Utils\Singleton.hpp"
+#include <Interfaces\Initializable.hpp>
 
 #include "Blam\Math\RealPoint3D.hpp"
 #include "Blam\Math\RealVector2D.hpp"
@@ -42,12 +39,13 @@ namespace AnvilEldorado
 		Blam::Math::RealVector2D Up;
 	};
 
-	class Camera final : public AnvilCommon::IInitializable, public AnvilCommon::Singleton<Camera>
+	class Camera : 
+		public AnvilCommon::Initializable
 	{
 	public:
 		static CameraGlobals *GetCameraGlobals();
 
-		bool Init() override;
+		virtual bool Init();
 
 		CameraMode GetCameraMode() const;
 		void SetCameraMode(const CameraMode &p_Mode);

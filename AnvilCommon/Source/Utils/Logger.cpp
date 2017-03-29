@@ -8,6 +8,12 @@
 
 using namespace AnvilCommon::Utils;
 
+std::shared_ptr<Logger> Logger::GetInstance()
+{
+	static auto s_Instance = std::make_shared<Logger>();
+	return s_Instance;
+}
+
 bool Logger::Init()
 {
 	auto s_Version = AnvilCommon::g_BuildInfo;

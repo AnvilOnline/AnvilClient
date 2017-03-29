@@ -22,11 +22,10 @@
     <ClInclude Include="Depends\Include\MinHook.h" />
     <ClInclude Include="Source\BuildInfo.hpp" />
     <ClInclude Include="Source\Globals.hpp" />
-    <ClInclude Include="Source\Interfaces\IInitializable.hpp" />
+    <ClInclude Include="Source\Interfaces\Initializable.hpp" />
     <ClInclude Include="Source\Utils\Hook.hpp" />
     <ClInclude Include="Source\Utils\Logger.hpp" />
     <ClInclude Include="Source\Utils\Patch.hpp" />
-    <ClInclude Include="Source\Utils\Singleton.hpp" />
     <ClInclude Include="Source\Utils\Util.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,15 +1,13 @@
 #pragma once
-
-#include "Interfaces\IInitializable.hpp"
-
-#include "Utils\Singleton.hpp"
+#include <Interfaces\Initializable.hpp>
 
 namespace AnvilEldorado
 {
-	class Forge final : public AnvilCommon::IInitializable, public AnvilCommon::Singleton<Forge>
+	class Forge : 
+		public AnvilCommon::Initializable
 	{
 	public:
-		bool Init() override;
+		virtual bool Init();
 		
 		void UpdateBarriersEnabled();
 

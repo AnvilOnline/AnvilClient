@@ -106,7 +106,7 @@ namespace AnvilEldorado
 	const auto Network_ManagedSession_CreateSessionInternal = reinterpret_cast<DWORD(__cdecl *)(int32_t, int32_t)>(0x481550);
 	DWORD __cdecl Network_ManagedSession_CreateSessionInternal_Hook(int32_t a1, int32_t a2)
 	{
-		auto *s_Network = Network::Instance();
+		auto *s_Network = (Network*)nullptr; // TODO: Fix Network::Instance();
 
 		DWORD isOnline = *(DWORD*)a2;
 		bool isHost = (*(uint16_t *)(a2 + 284) & 1);
@@ -211,7 +211,8 @@ namespace AnvilEldorado
 		ApplyPlayerProperties(thisPtr, playerIndex, arg4, arg8, data, arg10);
 
 		// Apply the extended properties
-		Blam::Game::PlayerPropertiesExtender::Instance()->ApplyData(playerIndex, properties, data + Blam::Game::PlayerPropertiesSize);
+		// TODO: Fix
+		//Blam::Game::PlayerPropertiesExtender::Instance()->ApplyData(playerIndex, properties, data + Blam::Game::PlayerPropertiesSize);
 		//Server::Voting::PlayerJoinedVoteInProgress(playerIndex); //TODO find somewhere else to put this.
 	}
 
@@ -233,7 +234,8 @@ namespace AnvilEldorado
 		auto extendedSize = packetSize - Blam::Game::PlayerPropertiesPacketHeaderSize - Blam::Game::PlayerPropertiesPacketFooterSize;
 		auto extendedProperties = std::make_unique<uint8_t[]>(extendedSize);
 		memcpy(&extendedProperties[0], properties, Blam::Game::PlayerPropertiesSize);
-		Blam::Game::PlayerPropertiesExtender::Instance()->BuildData(playerIndex, &extendedProperties[Blam::Game::PlayerPropertiesSize]);
+		// TODO: Fix
+		//Blam::Game::PlayerPropertiesExtender::Instance()->BuildData(playerIndex, &extendedProperties[Blam::Game::PlayerPropertiesSize]);
 
 		if (thisPtr->Type == 6 || thisPtr->Type == 7)
 		{
@@ -289,7 +291,8 @@ namespace AnvilEldorado
 		SerializePlayerProperties(stream, buffer, flag);
 
 		// Serialize extended data
-		Blam::Game::PlayerPropertiesExtender::Instance()->SerializeData(stream, buffer + Blam::Game::PlayerPropertiesSize);
+		// TODO: Fix
+		//Blam::Game::PlayerPropertiesExtender::Instance()->SerializeData(stream, buffer + Blam::Game::PlayerPropertiesSize);
 	}
 
 	const auto DeserializePlayerProperties = reinterpret_cast<bool(*)(Blam::Data::BitStream *, uint8_t *, bool)>(0x4432E0);
@@ -301,8 +304,9 @@ namespace AnvilEldorado
 		bool succeeded = DeserializePlayerProperties(stream, buffer, flag);
 
 		// Deserialize extended data
-		if (succeeded)
-			Blam::Game::PlayerPropertiesExtender::Instance()->DeserializeData(stream, buffer + Blam::Game::PlayerPropertiesSize);
+		// TODO: Fix
+		/*if (succeeded)
+			Blam::Game::PlayerPropertiesExtender::Instance()->DeserializeData(stream, buffer + Blam::Game::PlayerPropertiesSize);*/
 
 		return succeeded;
 	}
@@ -332,7 +336,8 @@ namespace AnvilEldorado
 
 	void PongReceivedImpl(const Blam::Network::NetworkAddress &p_From, const Blam::Network::PongPacket &p_Pong, uint32_t p_Latency)
 	{
-		Network::Instance()->OnPongReceived(p_From, p_Pong, p_Latency);
+		// TODO: Fix
+		//Network::Instance()->OnPongReceived(p_From, p_Pong, p_Latency);
 	}
 
 	__declspec(naked) void PongReceivedHook()
@@ -351,7 +356,8 @@ namespace AnvilEldorado
 
 	void LifeCycleStateChangedImpl(Blam::Network::LifeCycleState p_NewState)
 	{
-		Network::Instance()->OnLifeCycleStateChanged(p_NewState);
+		// TODO: Fix
+		//Network::Instance()->OnLifeCycleStateChanged(p_NewState);
 	}
 
 	__declspec(naked) void LifeCycleStateChangedHook()
@@ -434,7 +440,7 @@ namespace AnvilEldorado
 
 	bool __fastcall Network_GetEndpoint_Hook(uint8_t *p_Data, void *p_Unused)
 	{
-		auto *s_Network = Network::Instance();
+		auto *s_Network = (Network*)nullptr; // TODO: Fix Network::Instance();
 
 		auto *s_Socket = p_Data + 12;
 		auto s_Port = s_Network->GetServerPort();

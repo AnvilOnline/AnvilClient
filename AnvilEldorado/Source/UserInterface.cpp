@@ -19,7 +19,7 @@ namespace AnvilEldorado
 {
 	HWND CreateGameWindowHook()
 	{
-		return UserInterface::Instance()->CreateGameWindow();
+		return nullptr; // TODO: Fix UserInterface::Instance()->CreateGameWindow();
 	}
 
 	void WindowTitleSprintfHook(char *p_DestBuf, char *p_Format, char *p_Version)
@@ -29,9 +29,11 @@ namespace AnvilEldorado
 
 	int32_t ShowHalo3PauseMenuHook(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, uint32_t a5)
 	{
-		auto *s_UserInterface = UserInterface::Instance();
+		// TODO: Fix
+		/*auto *s_UserInterface = UserInterface::Instance();
 
-		return (int32_t)(s_UserInterface->ShowDialog(0x10084, 0, 4, 0x1000C) != nullptr);
+		return (int32_t)(s_UserInterface->ShowDialog(0x10084, 0, 4, 0x1000C) != nullptr);*/
+		return 0;
 	}
 
 	const auto UI_MenuUpdate = reinterpret_cast<void(__thiscall *)(void *, Blam::Text::StringID)>(0xADF6E0);
@@ -42,13 +44,14 @@ namespace AnvilEldorado
 
 		UI_MenuUpdate(a1, p_MenuName);
 
-		if (s_ShouldUpdate)
+		// TODO: Fix
+		/*if (s_ShouldUpdate)
 		{
 			void *s_UIData = UserInterface::Instance()->ShowDialog(p_MenuName, 0xFF, 4, 0x1000D);
 
 			if (s_UIData != nullptr)
 				*(uint32_t*)((char*)s_UIData + 0x18) = 1;
-		}
+		}*/
 	}
 
 	__declspec(naked) void LobbyMenuButtonHandlerHook()
@@ -301,7 +304,8 @@ namespace AnvilEldorado
 
 	void *UserInterface::ShowDialog(const Blam::Text::StringID &p_DialogID, const int32_t p_Arg1, const int32_t p_Flags, const Blam::Text::StringID &p_ParentID)
 	{
-		WriteLog("Showing ui dialog '%s'...", Blam::Cache::StringIDCache::Instance()->GetString(p_DialogID));
+		// TODO: Fix
+		//WriteLog("Showing ui dialog '%s'...", Blam::Cache::StringIDCache::Instance()->GetString(p_DialogID));
 
 		auto *s_UIData = UI_Alloc(0x40);
 

@@ -1,16 +1,13 @@
 #pragma once
-
 #include <WinSock2.h>
+#include <Interfaces\Initializable.hpp>
 
-#include "Interfaces\IInitializable.hpp"
-
-#include "Utils\Singleton.hpp"
-
-#include "Blam\Network\Session.hpp"
+#include <Blam\Network\Session.hpp>
 
 namespace AnvilEldorado
 {
-	class Network final : public AnvilCommon::IInitializable, public AnvilCommon::Singleton<Network>
+	class Network : 
+		public AnvilCommon::Initializable
 	{
 	public:
 		bool Init() override;
