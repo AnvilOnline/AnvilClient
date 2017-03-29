@@ -36,7 +36,7 @@
     <ClInclude Include="Source\Blam\Network\Session.hpp" />
     <ClInclude Include="Source\Blam\Objects\ObjectData.hpp" />
     <ClInclude Include="Source\Blam\Objects\ObjectDatum.hpp" />
-    <ClInclude Include="Source\Blam\Cache\StringIDCache.hpp" />
+    <ClInclude Include="Source\Blam\Cache\StringIDCacheHeader.hpp" />
     <ClInclude Include="Source\Blam\Data\DatumBase.hpp" />
     <ClInclude Include="Source\Blam\Data\DatumIndex.hpp" />
     <ClInclude Include="Source\Blam\Math\Angle.hpp" />

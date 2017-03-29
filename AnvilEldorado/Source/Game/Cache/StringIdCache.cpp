@@ -4,7 +4,7 @@
 
 #include <Utils\Logger.hpp>
 
-#include <Blam\Cache\StringIDCache.hpp>
+#include <Blam\Cache\StringIDCacheHeader.hpp>
 
 using namespace AnvilEldorado::Game::Cache;
 

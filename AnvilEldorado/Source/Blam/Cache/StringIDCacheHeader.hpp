@@ -1,7 +1,5 @@
 #pragma once
 #include <cstdint>
-#include <string>
-#include "Blam\Text\StringID.hpp"
 
 namespace Blam::Cache
 {

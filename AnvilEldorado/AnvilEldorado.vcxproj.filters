@@ -52,7 +52,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
-    <ClInclude Include="Source\Blam\Cache\StringIDCache.hpp" />
     <ClInclude Include="Source\Blam\Math\Angle.hpp" />
     <ClInclude Include="Source\Blam\Math\Bounds.hpp" />
     <ClInclude Include="Source\Blam\Math\ColorARGB.hpp" />
@@ -129,5 +128,6 @@
     <ClInclude Include="Source\Game\Networking\XnAddr.hpp" />
     <ClInclude Include="Source\Game\Networking\Hooks.hpp" />
     <ClInclude Include="Source\EngineImpl.hpp" />
+    <ClInclude Include="Source\Blam\Cache\StringIDCacheHeader.hpp" />
   </ItemGroup>
 </Project>
