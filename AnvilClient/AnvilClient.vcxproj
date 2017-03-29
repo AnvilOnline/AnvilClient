@@ -200,11 +200,11 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Client\Client.cpp" />
+    <ClCompile Include="Source\Client\ClientImpl.cpp" />
     <ClCompile Include="Source\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Client\Client.hpp" />
+    <ClInclude Include="Source\Client\ClientImpl.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PreBuild.bat" />

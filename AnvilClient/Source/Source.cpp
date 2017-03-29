@@ -1,13 +1,15 @@
 #include <Windows.h>
-#include <Client/Client.hpp>
+#include <Client\ClientImpl.hpp>
 
 #include <Utils/Logger.hpp>
 
 DWORD WINAPI Initialize(LPVOID)
 {
+	// Initialize the logger before anything else
 	AnvilCommon::Utils::Logger::GetInstance()->Init();
 
-	Anvil::Client::AnvilClient::GetInstance()->Init();
+	// Initialize the client, which will in turn initialize Eldorado or Ausar engine's
+	Anvil::Client::ClientImpl::GetInstance()->Init();
 
 	return 0;
 }

@@ -2,12 +2,12 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Source\Source.cpp" />
-    <ClCompile Include="Source\Client\Client.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Source\Client\Client.hpp" />
+    <ClCompile Include="Source\Client\ClientImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PreBuild.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Client\ClientImpl.hpp" />
   </ItemGroup>
 </Project>

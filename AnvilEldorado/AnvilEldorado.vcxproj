@@ -81,9 +81,14 @@
     <ClInclude Include="Source\Blam\Tags\UserInterface\ChudGlobalsDefinition.hpp" />
     <ClInclude Include="Source\Blam\Text\StringID.hpp" />
     <ClInclude Include="Source\Engine.hpp" />
+    <ClInclude Include="Source\EngineImpl.hpp" />
     <ClInclude Include="Source\Forge.hpp" />
     <ClInclude Include="Source\Game.hpp" />
     <ClInclude Include="Source\Game\Cache\StringIdCache.hpp" />
+    <ClInclude Include="Source\Game\Networking\Hooks.hpp" />
+    <ClInclude Include="Source\Game\Networking\XnAddr.hpp" />
+    <ClInclude Include="Source\Game\Networking\XnKey.hpp" />
+    <ClInclude Include="Source\Game\Networking\XnKid.hpp" />
     <ClInclude Include="Source\Graphics.hpp" />
     <ClInclude Include="Source\Camera.hpp" />
     <ClInclude Include="Source\Hooking\Hooking.hpp" />
@@ -129,9 +134,11 @@
     <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
     <ClCompile Include="Source\Blam\Text\StringID.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
+    <ClCompile Include="Source\EngineImpl.cpp" />
     <ClCompile Include="Source\Forge.cpp" />
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\Game\Cache\StringIdCache.cpp" />
+    <ClCompile Include="Source\Game\Networking\Hooks.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\Graphics.cpp" />
     <ClCompile Include="Source\Input.cpp" />

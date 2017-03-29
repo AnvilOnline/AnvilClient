@@ -47,6 +47,8 @@
     <ClCompile Include="Source\Blam\Input\InputTypes.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\Game\Cache\StringIdCache.cpp" />
+    <ClCompile Include="Source\Game\Networking\Hooks.cpp" />
+    <ClCompile Include="Source\EngineImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -122,5 +124,10 @@
     <ClInclude Include="Source\Blam\Tags\UserInterface\ChudDefinition.hpp" />
     <ClInclude Include="Source\Hooking\Hooking.hpp" />
     <ClInclude Include="Source\Game\Cache\StringIdCache.hpp" />
+    <ClInclude Include="Source\Game\Networking\XnKid.hpp" />
+    <ClInclude Include="Source\Game\Networking\XnKey.hpp" />
+    <ClInclude Include="Source\Game\Networking\XnAddr.hpp" />
+    <ClInclude Include="Source\Game\Networking\Hooks.hpp" />
+    <ClInclude Include="Source\EngineImpl.hpp" />
   </ItemGroup>
 </Project>

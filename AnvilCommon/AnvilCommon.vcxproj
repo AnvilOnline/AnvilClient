@@ -22,6 +22,8 @@
     <ClInclude Include="Depends\Include\MinHook.h" />
     <ClInclude Include="Source\BuildInfo.hpp" />
     <ClInclude Include="Source\Globals.hpp" />
+    <ClInclude Include="Source\Interfaces\Client.hpp" />
+    <ClInclude Include="Source\Interfaces\Engine.hpp" />
     <ClInclude Include="Source\Interfaces\Initializable.hpp" />
     <ClInclude Include="Source\Utils\Hook.hpp" />
     <ClInclude Include="Source\Utils\Logger.hpp" />
