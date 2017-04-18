@@ -13,6 +13,8 @@ namespace AnvilEldorado::Game::UI
 	protected:
 		DeclareFunction(bool, __cdecl, LocalizeString, int p_TagIndex, Blam::Text::StringID p_StringId, wchar_t* p_Output);
 
+		DeclareFunction(void, __fastcall, MainMenuUpdate, int that, void* unused, Blam::Text::StringID p_MenuName);
+
 	public:
 		virtual bool Init();
 	};

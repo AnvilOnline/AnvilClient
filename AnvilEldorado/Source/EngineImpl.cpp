@@ -12,6 +12,8 @@
 #include <Game\Players\PlayerImpl.hpp>
 #include <Game\UI\UIImpl.hpp>
 
+#include <Utils\Patch.hpp>
+
 using namespace AnvilEldorado;
 
 EngineImpl::EngineImpl() :
@@ -124,22 +126,54 @@ void EngineImpl::CreateHooks()
 		WriteLog("Could not hook CreateWindowExA.");
 
 	// Bink Video Hook
-	/*auto s_Address = ExecutableBase() + 0x200990;
-	HookFunctionOffset(s_Address, LoadBinkVideo);*/
+	auto s_Address = ExecutableBase() + 0x699120;
+	HookFunctionOffset(s_Address, LoadBinkVideo);
+
+	// Tag Cache Validation Hook
+	s_Address = ExecutableBase() + 0x102210;
+	HookFunctionOffset(s_Address, ValidateTagCache);
+
+	// Account Processing Hook
+	s_Address = ExecutableBase() + 0x4372E0;
+	HookFunctionOffset(s_Address, ProcessAccountInfo);
+
+	// Account verification hook
+	s_Address = ExecutableBase() + 0x437360;
+	HookFunctionOffset(s_Address, VerifyAccountAndLoadAnticheat);
+
+	AnvilCommon::Utils::Patch::NopFill(0x102874, 2); //TODO: sub_52CCC0 == *v10 true
+
+	//TODO: Is this needed?
+	//AnvilCommon::Utils::Patch::NopFill(0x1030AA, 2); //TODO: sub_508F80 return true
+
+	AnvilCommon::Utils::Patch(0x2333FD, 0).Apply();
 }
 
-HWND __stdcall EngineImpl::hk_CreateWindowExA(DWORD p_ExStyle, LPCSTR p_ClassName, LPCSTR p_WindowName, DWORD p_Style, int p_X, int p_Y, int p_Width, int p_Height, HWND p_Parent, HMENU p_Menu, HINSTANCE p_Instance, LPVOID p_Param)
+DeclareDetouredFunction(EngineImpl, HWND, __stdcall, CreateWindowExA, DWORD p_ExStyle, LPCSTR p_ClassName, LPCSTR p_WindowName, DWORD p_Style, int p_X, int p_Y, int p_Width, int p_Height, HWND p_Parent, HMENU p_Menu, HINSTANCE p_Instance, LPVOID p_Param)
 {
 	return o_CreateWindowExA(p_ExStyle, p_ClassName, AnvilCommon::g_BuildInfo.c_str(), p_Style, p_X, p_Y, p_Width, p_Height, p_Parent, p_Menu, p_Instance, p_Param);
 }
 
-bool __cdecl EngineImpl::hk_LoadBinkVideo(void*, void*)
+DeclareDetouredFunction(EngineImpl, bool, __cdecl, LoadBinkVideo, int p_VideoID, char *p_DestBuf)
 {
 	// Disable bink videos
 	return false;
 }
 
+DeclareDetouredFunction(EngineImpl, char, __cdecl, ValidateTagCache, void *a1)
+{
+	// Automatically pass actual validation
+	return true;
+}
 
+DeclareDetouredFunction(EngineImpl, char*, __cdecl, ProcessAccountInfo)
+{
+	// Ignore authentication
+	return nullptr;
+}
 
-EngineImpl::CreateWindowExA_t EngineImpl::o_CreateWindowExA = nullptr;
-EngineImpl::LoadBinkVideo_t EngineImpl::o_LoadBinkVideo = nullptr;
+DeclareDetouredFunction(EngineImpl, char, __cdecl, VerifyAccountAndLoadAnticheat)
+{
+	// Ignore authentication
+	return false;
+}
