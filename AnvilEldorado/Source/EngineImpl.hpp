@@ -31,12 +31,12 @@ namespace AnvilEldorado
 		/// <summary>
 		/// Create Window Hook
 		/// </summary>
-		DeclareFunction(HWND, __stdcall, CreateWindowExA, DWORD, LPCSTR, LPCSTR, DWORD, int, int, int, int, HWND, HMENU, HINSTANCE, LPVOID);
+		DeclareFunction(HWND, __stdcall, CreateWindowExA, DWORD p_ExStyle, LPCSTR p_ClassName, LPCSTR p_WindowName, DWORD p_Style, int p_X, int p_Y, int p_Width, int p_Height, HWND p_Parent, HMENU p_Menu, HINSTANCE p_Instance, LPVOID p_Param);
 
 		/// <summary>
 		/// Bink Video Hook
 		/// </summary>
-		DeclareFunction(bool, __cdecl, LoadBinkVideo, void*, void*);
+		DeclareFunction(bool, __cdecl, LoadBinkVideo, int p_VideoID, char *p_DestBuf);
 
 	public:
 		EngineImpl();

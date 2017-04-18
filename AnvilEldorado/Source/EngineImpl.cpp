@@ -124,22 +124,17 @@ void EngineImpl::CreateHooks()
 		WriteLog("Could not hook CreateWindowExA.");
 
 	// Bink Video Hook
-	/*auto s_Address = ExecutableBase() + 0x200990;
-	HookFunctionOffset(s_Address, LoadBinkVideo);*/
+	auto s_Address = ExecutableBase() + 0x699120;
+	HookFunctionOffset(s_Address, LoadBinkVideo);
 }
 
-HWND __stdcall EngineImpl::hk_CreateWindowExA(DWORD p_ExStyle, LPCSTR p_ClassName, LPCSTR p_WindowName, DWORD p_Style, int p_X, int p_Y, int p_Width, int p_Height, HWND p_Parent, HMENU p_Menu, HINSTANCE p_Instance, LPVOID p_Param)
+DeclareDetouredFunction(EngineImpl, HWND, __stdcall, CreateWindowExA, DWORD p_ExStyle, LPCSTR p_ClassName, LPCSTR p_WindowName, DWORD p_Style, int p_X, int p_Y, int p_Width, int p_Height, HWND p_Parent, HMENU p_Menu, HINSTANCE p_Instance, LPVOID p_Param)
 {
 	return o_CreateWindowExA(p_ExStyle, p_ClassName, AnvilCommon::g_BuildInfo.c_str(), p_Style, p_X, p_Y, p_Width, p_Height, p_Parent, p_Menu, p_Instance, p_Param);
 }
 
-bool __cdecl EngineImpl::hk_LoadBinkVideo(void*, void*)
+DeclareDetouredFunction(EngineImpl, bool, __cdecl, LoadBinkVideo, int p_VideoID, char *p_DestBuf)
 {
 	// Disable bink videos
 	return false;
 }
-
-
-
-EngineImpl::CreateWindowExA_t EngineImpl::o_CreateWindowExA = nullptr;
-EngineImpl::LoadBinkVideo_t EngineImpl::o_LoadBinkVideo = nullptr;
