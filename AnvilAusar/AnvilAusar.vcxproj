@@ -19,12 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Engine.cpp" />
+    <ClCompile Include="Source\EngineImpl.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\Hooks\Windows.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Engine.hpp" />
+    <ClInclude Include="Source\EngineImpl.hpp" />
     <ClInclude Include="Source\Hooks\Windows.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

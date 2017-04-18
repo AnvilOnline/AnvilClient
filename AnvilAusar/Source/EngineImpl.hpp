@@ -1,10 +1,11 @@
 #pragma once
-#include <Interfaces/IInitializable.hpp>
+#include <Interfaces/Engine.hpp>
 #include <string>
 
 namespace AnvilAusar
 {
-	class Engine : public AnvilCommon::IInitializable
+	class EngineImpl : 
+		public AnvilCommon::Engine
 	{
 	private:
 		std::string m_LocalAppDataPath;
@@ -14,6 +15,9 @@ namespace AnvilAusar
 		bool InitializeDirectories();
 
 	public:
-		virtual bool Init() override;
+		virtual bool Init();
+
+		virtual uint8_t* ExecutableBase();
+		virtual size_t ExecutableSize();
 	};
 }

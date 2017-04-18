@@ -2,11 +2,11 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Source\Globals.cpp" />
-    <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\Hooks\Windows.cpp" />
+    <ClCompile Include="Source\EngineImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Engine.hpp" />
     <ClInclude Include="Source\Hooks\Windows.hpp" />
+    <ClInclude Include="Source\EngineImpl.hpp" />
   </ItemGroup>
 </Project>

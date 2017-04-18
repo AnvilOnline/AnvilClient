@@ -1,4 +1,4 @@
-#include "Engine.hpp"
+#include "EngineImpl.hpp"
 #include <Windows.h>
 #include <KnownFolders.h>
 #include <ShlObj.h>
@@ -7,7 +7,7 @@
 
 using namespace AnvilAusar;
 
-bool Engine::Init()
+bool EngineImpl::Init()
 {
 	if (!InitializeDirectories())
 		return false;
@@ -15,7 +15,7 @@ bool Engine::Init()
 	return true;
 }
 
-bool Engine::InitializeDirectories()
+bool EngineImpl::InitializeDirectories()
 {
 	PWSTR s_LocalAppDataPath = nullptr;
 
@@ -33,4 +33,14 @@ bool Engine::InitializeDirectories()
 	WriteLog("Local Application Data Path: %s.", m_LocalAppDataPath.c_str());
 
 	return true;
+}
+
+uint8_t* EngineImpl::ExecutableBase()
+{
+	return nullptr;
+}
+
+size_t EngineImpl::ExecutableSize()
+{
+	return 0;
 }

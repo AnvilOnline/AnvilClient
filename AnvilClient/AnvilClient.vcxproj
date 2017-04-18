@@ -103,7 +103,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)Debug;$(SolutionDir)AnvilCommon\Depends\Library\x86\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>call $(ProjectDir)PreBuild.bat</Command>
+      <Command>call "$(ProjectDir)PreBuild.bat"</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>Incrementing Build Number</Message>
@@ -131,7 +131,7 @@
       <AdditionalDependencies>AnvilCommon.lib;libMinHook.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>call $(ProjectDir)PreBuild.bat</Command>
+      <Command>call "$(ProjectDir)PreBuild.bat"</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>Incrementing Build Number</Message>
@@ -162,7 +162,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)Release;$(SolutionDir)AnvilCommon\Depends\Library\x86\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>call $(ProjectDir)PreBuild.bat</Command>
+      <Command>call "$(ProjectDir)PreBuild.bat"</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>Incrementing Build Number</Message>
@@ -193,7 +193,7 @@
       <AdditionalDependencies>AnvilCommon.lib;libMinHook.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>call $(ProjectDir)PreBuild.bat</Command>
+      <Command>call "$(ProjectDir)PreBuild.bat"</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>Incrementing Build Number</Message>

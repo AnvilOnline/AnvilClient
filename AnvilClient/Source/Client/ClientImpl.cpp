@@ -1,4 +1,5 @@
 #include "ClientImpl.hpp"
+
 #include <EngineImpl.hpp>
 
 #include <Windows.h>
@@ -45,7 +46,7 @@ bool ClientImpl::Init()
 
 #ifdef ANVIL_AUSAR
 	// Initialize Ausar
-	m_Engine = std::shared_ptr<AnvilCommon::IEngineInitializable>(new AnvilAusar::Engine);
+	m_Engine = std::shared_ptr<AnvilCommon::Engine>(new AnvilAusar::EngineImpl);
 #endif
 
 	if (!m_Engine->Init())
