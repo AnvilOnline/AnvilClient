@@ -11,8 +11,6 @@
 
 #include "Network.hpp"
 
-#include <Blam\Game\Players.hpp>
-
 namespace AnvilEldorado
 {
 	char *GetIPStringFromInAddrHook(void *p_InAddr)
@@ -222,57 +220,59 @@ namespace AnvilEldorado
 	// Editing the existing function doesn't allow for a lot of flexibility
 	bool __fastcall PeerRequestPlayerDesiredPropertiesUpdateHook(Blam::Network::Session *thisPtr, void *unused, uint32_t arg0, uint32_t arg4, void *properties, uint32_t argC)
 	{
-		if (thisPtr->Type == 3)
-			return false;
-
-		// Ensure that there is a player associated with the local peer
-		auto membership = &thisPtr->MembershipInfo;
-		auto playerIndex = thisPtr->MembershipInfo.GetPeerPlayer(membership->LocalPeerIndex);
-		if (playerIndex == -1)
-			return false;
-
-		// Copy the player properties to a new array and add the extension data
-		auto packetSize = Blam::Game::GetPlayerPropertiesPacketSize();
-		auto extendedSize = packetSize - Blam::Game::PlayerPropertiesPacketHeaderSize - Blam::Game::PlayerPropertiesPacketFooterSize;
-		auto extendedProperties = std::make_unique<uint8_t[]>(extendedSize);
-		memcpy(&extendedProperties[0], properties, Blam::Game::PlayerPropertiesSize);
 		// TODO: Fix
-		//Blam::Game::PlayerPropertiesExtender::Instance()->BuildData(playerIndex, &extendedProperties[Blam::Game::PlayerPropertiesSize]);
+		return false;
+		//if (thisPtr->Type == 3)
+		//	return false;
 
-		if (thisPtr->Type == 6 || thisPtr->Type == 7)
-		{
-			// Apply player properties locally
-			ApplyPlayerPropertiesExtendedHook(membership, nullptr, playerIndex, arg0, arg4, &extendedProperties[0], argC);
-		}
-		else
-		{
-			// Send player properties across the network
-			auto hostPeer = membership->HostPeerIndex;
-			auto channelIndex = membership->PeerChannels[hostPeer].ChannelIndex;
-			if (channelIndex == -1)
-				return true;
+		//// Ensure that there is a player associated with the local peer
+		//auto membership = &thisPtr->MembershipInfo;
+		//auto playerIndex = thisPtr->MembershipInfo.GetPeerPlayer(membership->LocalPeerIndex);
+		//if (playerIndex == -1)
+		//	return false;
 
-			// Allocate the packet
-			auto packet = std::make_unique<uint8_t[]>(packetSize);
-			memset(&packet[0], 0, packetSize);
+		//// Copy the player properties to a new array and add the extension data
+		//auto packetSize = Blam::Game::GetPlayerPropertiesPacketSize();
+		//auto extendedSize = packetSize - Blam::Game::PlayerPropertiesPacketHeaderSize - Blam::Game::PlayerPropertiesPacketFooterSize;
+		//auto extendedProperties = std::make_unique<uint8_t[]>(extendedSize);
+		//memcpy(&extendedProperties[0], properties, Blam::Game::PlayerPropertiesSize);
+		//// TODO: Fix
+		////Blam::Game::PlayerPropertiesExtender::Instance()->BuildData(playerIndex, &extendedProperties[Blam::Game::PlayerPropertiesSize]);
 
-			// Initialize it
-			typedef void(*InitPacketPtr)(int32_t id, void *packet);
-			InitPacketPtr InitPacket = reinterpret_cast<InitPacketPtr>(0x482040);
-			InitPacket(thisPtr->AddressIndex, &packet[0]);
+		//if (thisPtr->Type == 6 || thisPtr->Type == 7)
+		//{
+		//	// Apply player properties locally
+		//	ApplyPlayerPropertiesExtendedHook(membership, nullptr, playerIndex, arg0, arg4, &extendedProperties[0], argC);
+		//}
+		//else
+		//{
+		//	// Send player properties across the network
+		//	auto hostPeer = membership->HostPeerIndex;
+		//	auto channelIndex = membership->PeerChannels[hostPeer].ChannelIndex;
+		//	if (channelIndex == -1)
+		//		return true;
 
-			// Set up the header and footer
-			*reinterpret_cast<int*>(&packet[0x10]) = arg0;
-			*reinterpret_cast<uint32_t*>(&packet[0x14]) = arg4;
-			*reinterpret_cast<uint32_t*>(&packet[packetSize - Blam::Game::PlayerPropertiesPacketFooterSize]) = argC;
+		//	// Allocate the packet
+		//	auto packet = std::make_unique<uint8_t[]>(packetSize);
+		//	memset(&packet[0], 0, packetSize);
 
-			// Copy the player properties structure in
-			memcpy(&packet[Blam::Game::PlayerPropertiesPacketHeaderSize], &extendedProperties[0], extendedSize);
+		//	// Initialize it
+		//	typedef void(*InitPacketPtr)(int32_t id, void *packet);
+		//	InitPacketPtr InitPacket = reinterpret_cast<InitPacketPtr>(0x482040);
+		//	InitPacket(thisPtr->AddressIndex, &packet[0]);
 
-			// Send!
-			thisPtr->Observer->ObserverChannelSendMessage(thisPtr->Unknown10, channelIndex, 0, 0x1A, packetSize, &packet[0]);
-		}
-		return true;
+		//	// Set up the header and footer
+		//	*reinterpret_cast<int*>(&packet[0x10]) = arg0;
+		//	*reinterpret_cast<uint32_t*>(&packet[0x14]) = arg4;
+		//	*reinterpret_cast<uint32_t*>(&packet[packetSize - Blam::Game::PlayerPropertiesPacketFooterSize]) = argC;
+
+		//	// Copy the player properties structure in
+		//	memcpy(&packet[Blam::Game::PlayerPropertiesPacketHeaderSize], &extendedProperties[0], extendedSize);
+
+		//	// Send!
+		//	thisPtr->Observer->ObserverChannelSendMessage(thisPtr->Unknown10, channelIndex, 0, 0x1A, packetSize, &packet[0]);
+		//}
+		//return true;
 	}
 
 	const auto RegisterPacket = reinterpret_cast<void(__thiscall *)(void *, int32_t, const char *, int32_t, int32_t, int32_t, void *, void *, int32_t, int32_t)>(0x4801B0);
@@ -280,8 +280,9 @@ namespace AnvilEldorado
 	// Changes the size of the player-properties packet to include extension data
 	void __fastcall RegisterPlayerPropertiesPacketHook(void *thisPtr, void *unused, int32_t packetId, const char *packetName, int32_t arg8, int32_t size1, int32_t size2, void *serializeFunc, void *deserializeFunc, int32_t arg1C, int32_t arg20)
 	{
-		size_t newSize = Blam::Game::GetPlayerPropertiesPacketSize();
-		RegisterPacket(thisPtr, packetId, packetName, arg8, newSize, newSize, serializeFunc, deserializeFunc, arg1C, arg20);
+		// TODO: Fix
+		/*size_t newSize = Blam::Game::GetPlayerPropertiesPacketSize();
+		RegisterPacket(thisPtr, packetId, packetName, arg8, newSize, newSize, serializeFunc, deserializeFunc, arg1C, arg20);*/
 	}
 
 	const auto SerializePlayerProperties = reinterpret_cast<void(*)(Blam::Data::BitStream *, uint8_t *, bool)>(0x4433C0);

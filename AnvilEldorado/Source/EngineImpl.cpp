@@ -6,6 +6,8 @@
 #include <Psapi.h>
 #include <MinHook.h>
 
+#include <Game\Players\PlayerImpl.hpp>
+
 using namespace AnvilEldorado;
 
 EngineImpl::EngineImpl() :
@@ -46,6 +48,10 @@ bool EngineImpl::Init()
 	//m_Audio = std::make_shared<Audio::AudioImpl>();
 	//if (!m_Audio->Init())
 	//	WriteLog("Could not initialize AudioImpl.");
+
+	m_Player = std::make_shared<Game::Players::PlayerImpl>();
+	if (!m_Player->Init())
+		WriteLog("Could not initialize PlayerImpl.");
 
 	// Enable all hooked functions
 	MH_EnableHook(MH_ALL_HOOKS);

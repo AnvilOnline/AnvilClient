@@ -30,7 +30,6 @@
     <ClCompile Include="Source\Blam\Data\BitStream.cpp" />
     <ClCompile Include="Source\Blam\Game\Stats.cpp" />
     <ClCompile Include="Source\Blam\Data\DataArray.cpp" />
-    <ClCompile Include="Source\Blam\Game\Players.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
     <ClCompile Include="Source\Forge.cpp" />
     <ClCompile Include="Source\Graphics.cpp" />
@@ -50,6 +49,7 @@
     <ClCompile Include="Source\EngineImpl.cpp" />
     <ClCompile Include="Source\Game\Players\PlayerPropertiesExtender.cpp" />
     <ClCompile Include="Source\GameImpl.cpp" />
+    <ClCompile Include="Source\Game\Players\PlayerImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -92,7 +92,6 @@
     <ClInclude Include="Source\Blam\Tags\Tag.hpp" />
     <ClInclude Include="Source\Blam\Game\Variants.hpp" />
     <ClInclude Include="Source\Blam\Game\Events.hpp" />
-    <ClInclude Include="Source\Blam\Game\Players.hpp" />
     <ClInclude Include="Source\Blam\Tags\TagBlock.hpp" />
     <ClInclude Include="Source\Blam\Tags\TagData.hpp" />
     <ClInclude Include="Source\Blam\Tags\TagInstance.hpp" />
@@ -157,5 +156,6 @@
     <ClInclude Include="Source\Blam\Input\ActionStateFlags.hpp" />
     <ClInclude Include="Source\Blam\Input\ActionState.hpp" />
     <ClInclude Include="Source\Blam\Input\ConfigurableAction.hpp" />
+    <ClInclude Include="Source\Game\Players\PlayerImpl.hpp" />
   </ItemGroup>
 </Project>

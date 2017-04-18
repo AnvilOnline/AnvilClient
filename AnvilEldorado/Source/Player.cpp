@@ -121,40 +121,41 @@ namespace AnvilEldorado
 
 	void GrenadeLoadoutHookImpl(uint8_t *p_UnitData)
 	{
-		// Based off of 0x8227B48C in H3 non-TU
+		// TODO: Fix
+		//// Based off of 0x8227B48C in H3 non-TU
 
-		// TODO: Clean this up, hardcoded offsets are hacky
-		const size_t s_GrenadeCountOffset = 0x320;
-		const size_t s_ControllingPlayerOffset = 0x198;
-		auto *s_GrenadeCounts = p_UnitData + s_GrenadeCountOffset; // 0 = frag, 1 = plasma, 2 = spike, 3 = firebomb
-		auto s_PlayerIndex = *reinterpret_cast<int16_t *>(p_UnitData + s_ControllingPlayerOffset);
-		if (s_PlayerIndex < 0)
-		{
-			memset(s_GrenadeCounts, 0, 4);
-			return;
-		}
+		//// TODO: Clean this up, hardcoded offsets are hacky
+		//const size_t s_GrenadeCountOffset = 0x320;
+		//const size_t s_ControllingPlayerOffset = 0x198;
+		//auto *s_GrenadeCounts = p_UnitData + s_GrenadeCountOffset; // 0 = frag, 1 = plasma, 2 = spike, 3 = firebomb
+		//auto s_PlayerIndex = *reinterpret_cast<int16_t *>(p_UnitData + s_ControllingPlayerOffset);
+		//if (s_PlayerIndex < 0)
+		//{
+		//	memset(s_GrenadeCounts, 0, 4);
+		//	return;
+		//}
 
-		// Get the player's grenade setting
-		auto &s_Players = Blam::Game::GetPlayers();
-		auto s_GrenadeSetting = s_Players[s_PlayerIndex].SpawnGrenadeSetting;
+		//// Get the player's grenade setting
+		//auto &s_Players = Blam::Game::GetPlayers();
+		//auto s_GrenadeSetting = s_Players[s_PlayerIndex].SpawnGrenadeSetting;
 
-		// Get the current scenario tag
-		auto *s_Scenario = Blam::Tags::Scenario::GetCurrentScenario();
+		//// Get the current scenario tag
+		//auto *s_Scenario = Blam::Tags::Scenario::GetCurrentScenario();
 
-		// If the setting is none (2) or the scenario has invalid starting
-		// profile data, set the grenade counts to 0 and return
-		if (s_GrenadeSetting == 2 || !s_Scenario->StartingProfile)
-		{
-			memset(s_GrenadeCounts, 0, 4);
-			return;
-		}
+		//// If the setting is none (2) or the scenario has invalid starting
+		//// profile data, set the grenade counts to 0 and return
+		//if (s_GrenadeSetting == 2 || !s_Scenario->StartingProfile)
+		//{
+		//	memset(s_GrenadeCounts, 0, 4);
+		//	return;
+		//}
 
-		// Load the grenade counts from the scenario tag
-		auto *s_Profile = &s_Scenario->StartingProfile[0];
-		s_GrenadeCounts[0] = s_Profile->FragGrenades;
-		s_GrenadeCounts[1] = s_Profile->PlasmaGrenades;
-		s_GrenadeCounts[2] = s_Profile->SpikeGrenades;
-		s_GrenadeCounts[3] = s_Profile->FirebombGrenades;
+		//// Load the grenade counts from the scenario tag
+		//auto *s_Profile = &s_Scenario->StartingProfile[0];
+		//s_GrenadeCounts[0] = s_Profile->FragGrenades;
+		//s_GrenadeCounts[1] = s_Profile->PlasmaGrenades;
+		//s_GrenadeCounts[2] = s_Profile->SpikeGrenades;
+		//s_GrenadeCounts[3] = s_Profile->FirebombGrenades;
 	}
 
 	__declspec(naked) void GrenadeLoadoutHook()
@@ -205,19 +206,24 @@ namespace AnvilEldorado
 
 	bool PlayerIsDualWielding(Blam::Data::DatumIndex p_PlayerIndex)
 	{
-		auto &s_Players = Blam::Game::GetPlayers();
+		// TODO: Fix
+		return false;
+		/*auto &s_Players = Blam::Game::GetPlayers();
 
-		return UnitIsDualWielding(s_Players[p_PlayerIndex].SlaveUnit);
+		return UnitIsDualWielding(s_Players[p_PlayerIndex].SlaveUnit);*/
 	}
 
 	bool LocalPlayerIsDualWielding()
 	{
-		auto s_LocalPlayer = Blam::Game::GetLocalPlayer(0);
+		// TODO: Fix
+		return false;
+
+		/*auto s_LocalPlayer = Blam::Game::GetLocalPlayer(0);
 
 		if (s_LocalPlayer == Blam::Data::DatumIndex::Null)
 			return false;
 
-		return PlayerIsDualWielding(s_LocalPlayer);
+		return PlayerIsDualWielding(s_LocalPlayer);*/
 	}
 
 	__declspec(naked) void SprintInputHook()
@@ -275,60 +281,61 @@ namespace AnvilEldorado
 
 	void EquipmentHookImpl(uint16_t p_PlayerIndex, uint16_t p_EquipmentIndex)
 	{
-		auto &s_Players = Blam::Game::GetPlayers();
-		auto &s_PlayerUnitIndex = s_Players[p_PlayerIndex].SlaveUnit;
+		// TODO: Fix
+		//auto &s_Players = Blam::Game::GetPlayers();
+		//auto &s_PlayerUnitIndex = s_Players[p_PlayerIndex].SlaveUnit;
 
-		auto &s_ObjectArray = *Blam::Objects::ObjectData::GetDataArray();
-		auto s_EquipmentTagIndex = *(uint32_t *)s_ObjectArray[Blam::Data::DatumIndex(0, p_EquipmentIndex)].Data;
+		//auto &s_ObjectArray = *Blam::Objects::ObjectData::GetDataArray();
+		//auto s_EquipmentTagIndex = *(uint32_t *)s_ObjectArray[Blam::Data::DatumIndex(0, p_EquipmentIndex)].Data;
 
-		// Attach the equipment to the unit
-		{
-			uint8_t s_AttachmentData[0x48];
+		//// Attach the equipment to the unit
+		//{
+		//	uint8_t s_AttachmentData[0x48];
 
-			memset(s_AttachmentData, 0, 0x48);
-			*(uint32_t *)(s_AttachmentData) = 0x3D; // object type?
-			*(uint32_t *)(s_AttachmentData + 4) = p_EquipmentIndex;
+		//	memset(s_AttachmentData, 0, 0x48);
+		//	*(uint32_t *)(s_AttachmentData) = 0x3D; // object type?
+		//	*(uint32_t *)(s_AttachmentData + 4) = p_EquipmentIndex;
 
-			// add equipment to the player, also removes the object from gameworld
-			Objects_Attach(s_PlayerUnitIndex, s_AttachmentData); // sub_82182C48
-		}
+		//	// add equipment to the player, also removes the object from gameworld
+		//	Objects_Attach(s_PlayerUnitIndex, s_AttachmentData); // sub_82182C48
+		//}
 
-		// prints text to the HUD, taken from HO's code
-		{
-			uint8_t s_UnknownData[0x40];
+		//// prints text to the HUD, taken from HO's code
+		//{
+		//	uint8_t s_UnknownData[0x40];
 
-			typedef int(__thiscall* sub_589680Ptr)(void* thisPtr, int a2);
-			auto sub_589680 = reinterpret_cast<sub_589680Ptr>(0x589680);
-			sub_589680(&s_UnknownData, p_PlayerIndex);
+		//	typedef int(__thiscall* sub_589680Ptr)(void* thisPtr, int a2);
+		//	auto sub_589680 = reinterpret_cast<sub_589680Ptr>(0x589680);
+		//	sub_589680(&s_UnknownData, p_PlayerIndex);
 
-			typedef int32_t(__thiscall* sub_589770Ptr)(void* thisPtr);
-			auto sub_589770 = reinterpret_cast<sub_589770Ptr>(0x589770);
-			while ((unsigned __int8)sub_589770(&s_UnknownData))
-			{
-				typedef int(__thiscall* sub_589760Ptr)(void* thisPtr);
-				auto sub_589760 = reinterpret_cast<sub_589760Ptr>(0x589760);
-				int v9 = sub_589760(&s_UnknownData);
+		//	typedef int32_t(__thiscall* sub_589770Ptr)(void* thisPtr);
+		//	auto sub_589770 = reinterpret_cast<sub_589770Ptr>(0x589770);
+		//	while ((unsigned __int8)sub_589770(&s_UnknownData))
+		//	{
+		//		typedef int(__thiscall* sub_589760Ptr)(void* thisPtr);
+		//		auto sub_589760 = reinterpret_cast<sub_589760Ptr>(0x589760);
+		//		int v9 = sub_589760(&s_UnknownData);
 
-				typedef int(__cdecl* sub_A95850Ptr)(unsigned int a1, short a2);
-				auto sub_A95850 = reinterpret_cast<sub_A95850Ptr>(0xA95850);
-				sub_A95850(v9, s_EquipmentTagIndex);
-			}
-		}
+		//		typedef int(__cdecl* sub_A95850Ptr)(unsigned int a1, short a2);
+		//		auto sub_A95850 = reinterpret_cast<sub_A95850Ptr>(0xA95850);
+		//		sub_A95850(v9, s_EquipmentTagIndex);
+		//	}
+		//}
 
-		// unsure what these do, taken from HO code
-		{
-			const auto sub_B887B0 = reinterpret_cast<int32_t(__cdecl *)(uint16_t, uint16_t)>(0xB887B0);
-			sub_B887B0(p_PlayerIndex, s_EquipmentTagIndex); // sub_82437A08
+		//// unsure what these do, taken from HO code
+		//{
+		//	const auto sub_B887B0 = reinterpret_cast<int32_t(__cdecl *)(uint16_t, uint16_t)>(0xB887B0);
+		//	sub_B887B0(p_PlayerIndex, s_EquipmentTagIndex); // sub_82437A08
 
-			const auto sub_4B31C0 = reinterpret_cast<void(_cdecl *)(uint16_t, uint16_t)>(0x4B31C0);
-			sub_4B31C0(s_PlayerUnitIndex.Index(), s_EquipmentTagIndex); // sub_8249A1A0
-		}
+		//	const auto sub_4B31C0 = reinterpret_cast<void(_cdecl *)(uint16_t, uint16_t)>(0x4B31C0);
+		//	sub_4B31C0(s_PlayerUnitIndex.Index(), s_EquipmentTagIndex); // sub_8249A1A0
+		//}
 
-		// called by powerup pickup func, deletes the item but also crashes the game when used with equipment
-		// not needed since Objects_Attach removes it from the game world
-		/*typedef int(__cdecl *Objects_DeletePtr)(int objectIndex);
-		auto Objects_Delete = reinterpret_cast<Objects_DeletePtr>(0xB57090);
-		Objects_Delete(equipmentIndex);*/
+		//// called by powerup pickup func, deletes the item but also crashes the game when used with equipment
+		//// not needed since Objects_Attach removes it from the game world
+		///*typedef int(__cdecl *Objects_DeletePtr)(int objectIndex);
+		//auto Objects_Delete = reinterpret_cast<Objects_DeletePtr>(0xB57090);
+		//Objects_Delete(equipmentIndex);*/
 	}
 
 	__declspec(naked) void EquipmentHook()

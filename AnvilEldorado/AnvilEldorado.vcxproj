@@ -26,7 +26,6 @@
     <ClInclude Include="Source\Blam\Game\Damage.hpp" />
     <ClInclude Include="Source\Blam\Game\Events.hpp" />
     <ClInclude Include="Source\Blam\Game\Medals.hpp" />
-    <ClInclude Include="Source\Blam\Game\Players.hpp" />
     <ClInclude Include="Source\Blam\Game\Players\ClientPlayerProperties.hpp" />
     <ClInclude Include="Source\Blam\Game\Players\PlayerCustomization.hpp" />
     <ClInclude Include="Source\Blam\Game\Players\PlayerArmor.hpp" />
@@ -113,6 +112,7 @@
     <ClInclude Include="Source\Game\Networking\XnAddr.hpp" />
     <ClInclude Include="Source\Game\Networking\XnKey.hpp" />
     <ClInclude Include="Source\Game\Networking\XnKid.hpp" />
+    <ClInclude Include="Source\Game\Players\PlayerImpl.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerPropertiesExtender.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerPropertiesExtension.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerPropertiesExtensionBase.hpp" />
@@ -129,7 +129,6 @@
     <ClCompile Include="Source\Blam\Data\DataPoolBase.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
     <ClCompile Include="Source\Blam\Data\LruvCacheBase.cpp" />
-    <ClCompile Include="Source\Blam\Game\Players.cpp" />
     <ClCompile Include="Source\Blam\Game\Stats.cpp" />
     <ClCompile Include="Source\Blam\Input\InputTypes.cpp" />
     <ClCompile Include="Source\Blam\Math\Point2D.cpp" />
@@ -166,6 +165,7 @@
     <ClCompile Include="Source\GameImpl.cpp" />
     <ClCompile Include="Source\Game\Cache\StringIdCache.cpp" />
     <ClCompile Include="Source\Game\Networking\Hooks.cpp" />
+    <ClCompile Include="Source\Game\Players\PlayerImpl.cpp" />
     <ClCompile Include="Source\Game\Players\PlayerPropertiesExtender.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\Graphics.cpp" />

@@ -1,17 +1,13 @@
 #pragma once
-
-#include <cstdint>
-#include <map>
-
 #include <Interfaces\Initializable.hpp>
 
-
 #include <Blam\Data\DatumIndex.hpp>
-#include <Blam\Game\Players.hpp>
+#include <Blam\Game\Players\PlayerCustomization.hpp>
 #include <Blam\Tags\Game\MultiplayerGlobals.hpp>
 
-#include <Blam\Game\Players\PlayerCustomization.hpp>
 #include <Game\Players\PlayerPropertiesExtension.hpp>
+
+#include <map>
 
 namespace AnvilEldorado
 {
