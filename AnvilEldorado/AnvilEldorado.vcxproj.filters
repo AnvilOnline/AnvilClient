@@ -42,7 +42,6 @@
     <ClCompile Include="Source\Audio.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Blam\Text\StringID.cpp" />
-    <ClCompile Include="Source\Blam\Input\InputTypes.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\Game\Cache\StringIdCache.cpp" />
     <ClCompile Include="Source\Game\Networking\Hooks.cpp" />
@@ -50,6 +49,7 @@
     <ClCompile Include="Source\Game\Players\PlayerPropertiesExtender.cpp" />
     <ClCompile Include="Source\GameImpl.cpp" />
     <ClCompile Include="Source\Game\Players\PlayerImpl.cpp" />
+    <ClCompile Include="Source\Game\Input\InputImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -113,7 +113,6 @@
     <ClInclude Include="Source\Player.hpp" />
     <ClInclude Include="Source\UserInterface.hpp" />
     <ClInclude Include="Source\Forge.hpp" />
-    <ClInclude Include="Source\Blam\Input\InputTypes.hpp" />
     <ClInclude Include="Source\Input.hpp" />
     <ClInclude Include="Source\Audio.hpp" />
     <ClInclude Include="Source\Blam\Objects\ObjectData.hpp" />
@@ -157,5 +156,6 @@
     <ClInclude Include="Source\Blam\Input\ActionState.hpp" />
     <ClInclude Include="Source\Blam\Input\ConfigurableAction.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerImpl.hpp" />
+    <ClInclude Include="Source\Game\Input\InputImpl.hpp" />
   </ItemGroup>
 </Project>

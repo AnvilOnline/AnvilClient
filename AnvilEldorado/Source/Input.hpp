@@ -4,9 +4,17 @@
 #include <vector>
 
 #include <Interfaces\Initializable.hpp>
-
-#include <Blam\Input\InputTypes.hpp>
+#include <Blam\Input\BindingsTable.hpp>
 #include <Blam\Input\ConfigurableAction.hpp>
+#include <Blam\Input\InputType.hpp>
+#include <Blam\Input\KeyCode.hpp>
+#include <Blam\Input\MouseButton.hpp>
+
+namespace Blam::Input
+{
+	enum ControllerButton : uint8_t;
+	enum GameAction : uint8_t;
+}
 
 namespace AnvilEldorado
 {

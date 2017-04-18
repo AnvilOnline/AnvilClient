@@ -6,6 +6,7 @@
 #include "Input.hpp"
 
 #include <Blam\Input\BindingsPreferences.hpp>
+#include <Blam\Input\ActionState.hpp>
 #include <Blam\Input\ActionStateFlags.hpp>
 
 namespace AnvilEldorado
@@ -95,15 +96,15 @@ namespace AnvilEldorado
 	void BlockInputHook(Blam::Input::InputType p_Type, bool p_Blocked)
 	{
 		// TODO: Fix
-		auto *s_Input = (Input*)nullptr; // Input::Instance();
-		auto &s_ContextStack = s_Input->GetContextStack();
+		//auto *s_Input = (Input*)nullptr; // Input::Instance();
+		//auto &s_ContextStack = s_Input->GetContextStack();
 
-		// If a context isn't active, then block input normally,
-		// otherwise save the value for when the contexts are done
-		if (s_ContextStack.empty())
-			BlockInput(p_Type, p_Blocked);
+		//// If a context isn't active, then block input normally,
+		//// otherwise save the value for when the contexts are done
+		//if (s_ContextStack.empty())
+		//	BlockInput(p_Type, p_Blocked);
 
-		s_Input->SetInputTypeBlocked(p_Type, p_Blocked);
+		//s_Input->SetInputTypeBlocked(p_Type, p_Blocked);
 	}
 
 	void InitBindingsHook(Blam::Input::BindingsTable *p_Bindings)
@@ -316,39 +317,41 @@ namespace AnvilEldorado
 
 	void Input::PushContext(std::shared_ptr<InputContext> p_Context)
 	{
-		if (m_ContextStack.empty())
-		{
-			// Block all input, unacquiring the mouse in the process
-			for (auto i = 0; i < Blam::Input::eInputType_Count; i++)
-				BlockInput(static_cast<Blam::Input::InputType>(i), true);
-		}
-		else
-		{
-			// Deactivate the current context
-			m_ContextStack.top()->Deactivated();
-		}
+		// TODO: Fix
+		//if (m_ContextStack.empty())
+		//{
+		//	// Block all input, unacquiring the mouse in the process
+		//	for (auto i = 0; i < Blam::Input::eInputType_Count; i++)
+		//		BlockInput(static_cast<Blam::Input::InputType>(i), true);
+		//}
+		//else
+		//{
+		//	// Deactivate the current context
+		//	m_ContextStack.top()->Deactivated();
+		//}
 
-		// Push and activate the new context
-		m_ContextStack.push(p_Context);
-		p_Context->Activated();
+		//// Push and activate the new context
+		//m_ContextStack.push(p_Context);
+		//p_Context->Activated();
 	}
 
 	void Input::PopContext()
 	{
-		m_ContextStack.top()->Deactivated();
-		m_ContextStack.pop();
+		// TODO: Fix
+		//m_ContextStack.top()->Deactivated();
+		//m_ContextStack.pop();
 
-		if (!m_ContextStack.empty())
-		{
-			// Activate the previous context
-			m_ContextStack.top()->Activated();
-		}
-		else
-		{
-			// Restore the game's input block states
-			for (auto i = 0; i < Blam::Input::eInputType_Count; i++)
-				BlockInput(static_cast<Blam::Input::InputType>(i), m_BlockStates[i]);
-		}
+		//if (!m_ContextStack.empty())
+		//{
+		//	// Activate the previous context
+		//	m_ContextStack.top()->Activated();
+		//}
+		//else
+		//{
+		//	// Restore the game's input block states
+		//	for (auto i = 0; i < Blam::Input::eInputType_Count; i++)
+		//		BlockInput(static_cast<Blam::Input::InputType>(i), m_BlockStates[i]);
+		//}
 	}
 
 	bool Input::IsContextDone() const
@@ -602,8 +605,9 @@ namespace AnvilEldorado
 
 	void Input::UpdateBindings()
 	{
-		CopyBinding(Blam::Input::eGameActionUse, Blam::Input::eGameActionVehicleExit);
-		Blam::Input::SetBindings(0, m_Bindings);
+		// TODO: Fix
+		/*CopyBinding(Blam::Input::eGameActionUse, Blam::Input::eGameActionVehicleExit);
+		Blam::Input::SetBindings(0, m_Bindings);*/
 	}
 
 	void Input::CopyBinding(const Blam::Input::GameAction &p_SourceAction, const Blam::Input::GameAction &p_DestAction)

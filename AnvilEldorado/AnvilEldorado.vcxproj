@@ -46,7 +46,6 @@
     <ClInclude Include="Source\Blam\Input\ControllerButton.hpp" />
     <ClInclude Include="Source\Blam\Input\GameAction.hpp" />
     <ClInclude Include="Source\Blam\Input\InputType.hpp" />
-    <ClInclude Include="Source\Blam\Input\InputTypes.hpp" />
     <ClInclude Include="Source\Blam\Input\KeyCode.hpp" />
     <ClInclude Include="Source\Blam\Input\KeyEvent.hpp" />
     <ClInclude Include="Source\Blam\Input\KeyEventModifiers.hpp" />
@@ -108,6 +107,7 @@
     <ClInclude Include="Source\Forge.hpp" />
     <ClInclude Include="Source\GameImpl.hpp" />
     <ClInclude Include="Source\Game\Cache\StringIdCache.hpp" />
+    <ClInclude Include="Source\Game\Input\InputImpl.hpp" />
     <ClInclude Include="Source\Game\Networking\Hooks.hpp" />
     <ClInclude Include="Source\Game\Networking\XnAddr.hpp" />
     <ClInclude Include="Source\Game\Networking\XnKey.hpp" />
@@ -130,7 +130,6 @@
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
     <ClCompile Include="Source\Blam\Data\LruvCacheBase.cpp" />
     <ClCompile Include="Source\Blam\Game\Stats.cpp" />
-    <ClCompile Include="Source\Blam\Input\InputTypes.cpp" />
     <ClCompile Include="Source\Blam\Math\Point2D.cpp" />
     <ClCompile Include="Source\Blam\Memory\GlobalMemoryMap.cpp" />
     <ClCompile Include="Source\Blam\Data\BitStream.cpp" />
@@ -164,6 +163,7 @@
     <ClCompile Include="Source\Forge.cpp" />
     <ClCompile Include="Source\GameImpl.cpp" />
     <ClCompile Include="Source\Game\Cache\StringIdCache.cpp" />
+    <ClCompile Include="Source\Game\Input\InputImpl.cpp" />
     <ClCompile Include="Source\Game\Networking\Hooks.cpp" />
     <ClCompile Include="Source\Game\Players\PlayerImpl.cpp" />
     <ClCompile Include="Source\Game\Players\PlayerPropertiesExtender.cpp" />
