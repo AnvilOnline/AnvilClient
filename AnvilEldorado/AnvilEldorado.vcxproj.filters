@@ -41,7 +41,6 @@
     <ClCompile Include="Source\Blam\Network\Session.cpp" />
     <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
     <ClCompile Include="Source\Audio.cpp" />
-    <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Blam\Text\StringID.cpp" />
     <ClCompile Include="Source\Blam\Input\InputTypes.cpp" />
@@ -49,6 +48,8 @@
     <ClCompile Include="Source\Game\Cache\StringIdCache.cpp" />
     <ClCompile Include="Source\Game\Networking\Hooks.cpp" />
     <ClCompile Include="Source\EngineImpl.cpp" />
+    <ClCompile Include="Source\Game\Players\PlayerPropertiesExtender.cpp" />
+    <ClCompile Include="Source\GameImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -111,7 +112,6 @@
     <ClInclude Include="Source\Camera.hpp" />
     <ClInclude Include="Source\Graphics.hpp" />
     <ClInclude Include="Source\Player.hpp" />
-    <ClInclude Include="Source\Game.hpp" />
     <ClInclude Include="Source\UserInterface.hpp" />
     <ClInclude Include="Source\Forge.hpp" />
     <ClInclude Include="Source\Blam\Input\InputTypes.hpp" />
@@ -129,5 +129,15 @@
     <ClInclude Include="Source\Game\Networking\Hooks.hpp" />
     <ClInclude Include="Source\EngineImpl.hpp" />
     <ClInclude Include="Source\Blam\Cache\StringIDCacheHeader.hpp" />
+    <ClInclude Include="Source\Blam\Game\Players\PlayerColor.hpp" />
+    <ClInclude Include="Source\Blam\Game\Players\PlayerArmor.hpp" />
+    <ClInclude Include="Source\Blam\Game\Players\ClientPlayerProperties.hpp" />
+    <ClInclude Include="Source\Blam\Game\Players\PlayerProperties.hpp" />
+    <ClInclude Include="Source\Blam\Game\Players\PlayerCustomization.hpp" />
+    <ClInclude Include="Source\Blam\Game\Players\PlayerDatum.hpp" />
+    <ClInclude Include="Source\Game\Players\PlayerPropertiesExtension.hpp" />
+    <ClInclude Include="Source\Game\Players\PlayerPropertiesExtender.hpp" />
+    <ClInclude Include="Source\Game\Players\PlayerPropertiesExtensionBase.hpp" />
+    <ClInclude Include="Source\GameImpl.hpp" />
   </ItemGroup>
 </Project>

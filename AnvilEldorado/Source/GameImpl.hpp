@@ -34,7 +34,7 @@ namespace AnvilEldorado
 		Forge
 	};
 
-	class Game : 
+	class GameImpl : 
 		public AnvilCommon::Initializable
 	{
 	public:

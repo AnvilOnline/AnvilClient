@@ -6,19 +6,23 @@
 #include <Interfaces\Initializable.hpp>
 
 
-#include "Blam\Data\DatumIndex.hpp"
-#include "Blam\Game\Players.hpp"
-#include "Blam\Tags\Game\MultiplayerGlobals.hpp"
+#include <Blam\Data\DatumIndex.hpp>
+#include <Blam\Game\Players.hpp>
+#include <Blam\Tags\Game\MultiplayerGlobals.hpp>
+
+#include <Blam\Game\Players\PlayerCustomization.hpp>
+#include <Game\Players\PlayerPropertiesExtension.hpp>
 
 namespace AnvilEldorado
 {
-	class PlayerArmorExtension : public Blam::Game::PlayerPropertiesExtension<Blam::Game::PlayerCustomization>
+	class PlayerArmorExtension : 
+		public Game::Players::PlayerPropertiesExtension<Blam::Game::Players::PlayerCustomization>
 	{
 	protected:
-		void BuildData(int32_t playerIndex, Blam::Game::PlayerCustomization *out) override;
-		void ApplyData(int32_t playerIndex, Blam::Game::PlayerProperties *properties, const Blam::Game::PlayerCustomization &data) override;
-		void Serialize(Blam::Data::BitStream *stream, const Blam::Game::PlayerCustomization &data) override;
-		void Deserialize(Blam::Data::BitStream *stream, Blam::Game::PlayerCustomization *out) override;
+		void BuildData(int32_t playerIndex, Blam::Game::Players::PlayerCustomization *out) override;
+		void ApplyData(int32_t playerIndex, Blam::Game::Players::PlayerProperties *properties, const Blam::Game::Players::PlayerCustomization &data) override;
+		void Serialize(Blam::Data::BitStream *stream, const Blam::Game::Players::PlayerCustomization &data) override;
+		void Deserialize(Blam::Data::BitStream *stream, Blam::Game::Players::PlayerCustomization *out) override;
 	};
 
 	class Player : 
@@ -32,7 +36,7 @@ namespace AnvilEldorado
 
 		Blam::Data::DatumIndex GetPodiumBiped() const;
 
-		void BuildCustomization(Blam::Game::PlayerCustomization *p_Customization) const;
+		void BuildCustomization(Blam::Game::Players::PlayerCustomization *p_Customization) const;
 		void CustomizeBiped(const Blam::Data::DatumIndex &p_BipedIndex);
 
 		std::wstring GetUserName() const;

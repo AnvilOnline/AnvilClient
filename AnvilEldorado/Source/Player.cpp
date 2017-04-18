@@ -1,63 +1,63 @@
 #include <codecvt>
 #include <map>
 
-#include "Blam\Cache\StringIDCacheHeader.hpp"
-#include "Blam\Data\DatumIndex.hpp"
-#include "Blam\Objects\ObjectData.hpp"
-#include "Blam\Tags\TagInstance.hpp"
-#include "Blam\Tags\Items\Weapon.hpp"
-#include "Blam\Tags\Scenario\Scenario.hpp"
+#include <Blam\Cache\StringIDCacheHeader.hpp>
+#include <Blam\Data\DatumIndex.hpp>
+#include <Blam\Objects\ObjectData.hpp>
+#include <Blam\Tags\TagInstance.hpp>
+#include <Blam\Tags\Items\Weapon.hpp>
+#include <Blam\Tags\Scenario\Scenario.hpp>
 
-#include "Utils\Logger.hpp"
-#include "Utils\Hook.hpp"
-#include "Utils\Patch.hpp"
+#include <Utils\Logger.hpp>
+#include <Utils\Hook.hpp>
+#include <Utils\Patch.hpp>
 
 #include "Player.hpp"
 
 namespace AnvilEldorado
 {
-	void PlayerArmorExtension::BuildData(int32_t p_PlayerIndex, Blam::Game::PlayerCustomization *p_Out)
+	void PlayerArmorExtension::BuildData(int32_t p_PlayerIndex, Blam::Game::Players::PlayerCustomization *p_Out)
 	{
 		// TODO: Fix
 		//Player::Instance()->BuildCustomization(p_Out);
 	}
 
-	void PlayerArmorExtension::ApplyData(int32_t p_PlayerIndex, Blam::Game::PlayerProperties *p_Properties, const Blam::Game::PlayerCustomization &p_Data)
+	void PlayerArmorExtension::ApplyData(int32_t p_PlayerIndex, Blam::Game::Players::PlayerProperties *p_Properties, const Blam::Game::Players::PlayerCustomization &p_Data)
 	{
 		auto armorSessionData = &p_Properties->Customization;
 
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Helmet] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Helmet];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Chest] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Chest];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Shoulders] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Shoulders];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Arms] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Arms];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Legs] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Legs];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Acc] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Acc];
-		armorSessionData->Armor[(int)Blam::Game::PlayerArmor::Pelvis] = p_Data.Armor[(int)Blam::Game::PlayerArmor::Pelvis];
+		armorSessionData->Armor[(int)Blam::Game::Players::PlayerArmor::Helmet] = p_Data.Armor[(int)Blam::Game::Players::PlayerArmor::Helmet];
+		armorSessionData->Armor[(int)Blam::Game::Players::PlayerArmor::Chest] = p_Data.Armor[(int)Blam::Game::Players::PlayerArmor::Chest];
+		armorSessionData->Armor[(int)Blam::Game::Players::PlayerArmor::Shoulders] = p_Data.Armor[(int)Blam::Game::Players::PlayerArmor::Shoulders];
+		armorSessionData->Armor[(int)Blam::Game::Players::PlayerArmor::Arms] = p_Data.Armor[(int)Blam::Game::Players::PlayerArmor::Arms];
+		armorSessionData->Armor[(int)Blam::Game::Players::PlayerArmor::Legs] = p_Data.Armor[(int)Blam::Game::Players::PlayerArmor::Legs];
+		armorSessionData->Armor[(int)Blam::Game::Players::PlayerArmor::Acc] = p_Data.Armor[(int)Blam::Game::Players::PlayerArmor::Acc];
+		armorSessionData->Armor[(int)Blam::Game::Players::PlayerArmor::Pelvis] = p_Data.Armor[(int)Blam::Game::Players::PlayerArmor::Pelvis];
 
 		memcpy(armorSessionData->Colors, p_Data.Colors, sizeof(p_Data.Colors));
 	}
 
-	void PlayerArmorExtension::Serialize(Blam::Data::BitStream *p_Stream, const Blam::Game::PlayerCustomization &p_Data)
+	void PlayerArmorExtension::Serialize(Blam::Data::BitStream *p_Stream, const Blam::Game::Players::PlayerCustomization &p_Data)
 	{
 		// Colors
-		for (int32_t i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
+		for (int32_t i = 0; i < (int)Blam::Game::Players::PlayerColor::Count; i++)
 			p_Stream->WriteUnsigned<uint32_t>(p_Data.Colors[i], 24);
 
 		// Armor
-		for (int32_t i = 0; i < (int)Blam::Game::PlayerArmor::Count; i++)
+		for (int32_t i = 0; i < (int)Blam::Game::Players::PlayerArmor::Count; i++)
 			p_Stream->WriteUnsigned<uint8_t>(p_Data.Armor[i], 0, UINT8_MAX);
 	}
 
-	void PlayerArmorExtension::Deserialize(Blam::Data::BitStream *p_Stream, Blam::Game::PlayerCustomization *p_Out)
+	void PlayerArmorExtension::Deserialize(Blam::Data::BitStream *p_Stream, Blam::Game::Players::PlayerCustomization *p_Out)
 	{
-		memset(p_Out, 0, sizeof(Blam::Game::PlayerCustomization));
+		memset(p_Out, 0, sizeof(Blam::Game::Players::PlayerCustomization));
 
 		// Colors
-		for (int32_t i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
+		for (int32_t i = 0; i < (int)Blam::Game::Players::PlayerColor::Count; i++)
 			p_Out->Colors[i] = p_Stream->ReadUnsigned<uint32_t>(24);
 
 		// Armor
-		for (int32_t i = 0; i < (int)Blam::Game::PlayerArmor::Count; i++)
+		for (int32_t i = 0; i < (int)Blam::Game::Players::PlayerArmor::Count; i++)
 			p_Out->Armor[i] = p_Stream->ReadUnsigned<uint8_t>(0, UINT8_MAX);
 	}
 
@@ -499,42 +499,42 @@ namespace AnvilEldorado
 		return Blam::Data::DatumIndex(*reinterpret_cast<uint32_t *>((uint8_t *)AnvilCommon::Internal_GetModuleStorage() + 0x4BE67A0));
 	}
 
-	void Player::BuildCustomization(Blam::Game::PlayerCustomization *p_Customization) const
+	void Player::BuildCustomization(Blam::Game::Players::PlayerCustomization *p_Customization) const
 	{
-		memset(p_Customization, 0, sizeof(Blam::Game::PlayerCustomization));
+		memset(p_Customization, 0, sizeof(Blam::Game::Players::PlayerCustomization));
 
 		memset(p_Customization->Colors, 0, 5 * sizeof(uint32_t));
 
-		p_Customization->Colors[(int)Blam::Game::PlayerColor::Primary] = m_ArmorPrimaryColor;
-		p_Customization->Colors[(int)Blam::Game::PlayerColor::Secondary] = m_ArmorSecondaryColor;
-		p_Customization->Colors[(int)Blam::Game::PlayerColor::Visor] = m_ArmorVisorColor;
-		p_Customization->Colors[(int)Blam::Game::PlayerColor::Lights] = m_ArmorLightsColor;
-		p_Customization->Colors[(int)Blam::Game::PlayerColor::Holo] = m_ArmorHoloColor;
+		p_Customization->Colors[(int)Blam::Game::Players::PlayerColor::Primary] = m_ArmorPrimaryColor;
+		p_Customization->Colors[(int)Blam::Game::Players::PlayerColor::Secondary] = m_ArmorSecondaryColor;
+		p_Customization->Colors[(int)Blam::Game::Players::PlayerColor::Visor] = m_ArmorVisorColor;
+		p_Customization->Colors[(int)Blam::Game::Players::PlayerColor::Lights] = m_ArmorLightsColor;
+		p_Customization->Colors[(int)Blam::Game::Players::PlayerColor::Holo] = m_ArmorHoloColor;
 
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Helmet] = GetArmorIndex(m_ArmorHelmet, m_ArmorHelmetIndices);
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Chest] = GetArmorIndex(m_ArmorChest, m_ArmorChestIndices);
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Shoulders] = GetArmorIndex(m_ArmorShoulders, m_ArmorShouldersIndices);
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Arms] = GetArmorIndex(m_ArmorArms, m_ArmorArmsIndices);
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Legs] = GetArmorIndex(m_ArmorLegs, m_ArmorLegsIndices);
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Acc] = GetArmorIndex(m_ArmorAccessory, m_ArmorAccessoryIndices);
-		p_Customization->Armor[(int)Blam::Game::PlayerArmor::Pelvis] = GetArmorIndex(m_ArmorPelvis, m_ArmorPelvisIndices);
+		p_Customization->Armor[(int)Blam::Game::Players::PlayerArmor::Helmet] = GetArmorIndex(m_ArmorHelmet, m_ArmorHelmetIndices);
+		p_Customization->Armor[(int)Blam::Game::Players::PlayerArmor::Chest] = GetArmorIndex(m_ArmorChest, m_ArmorChestIndices);
+		p_Customization->Armor[(int)Blam::Game::Players::PlayerArmor::Shoulders] = GetArmorIndex(m_ArmorShoulders, m_ArmorShouldersIndices);
+		p_Customization->Armor[(int)Blam::Game::Players::PlayerArmor::Arms] = GetArmorIndex(m_ArmorArms, m_ArmorArmsIndices);
+		p_Customization->Armor[(int)Blam::Game::Players::PlayerArmor::Legs] = GetArmorIndex(m_ArmorLegs, m_ArmorLegsIndices);
+		p_Customization->Armor[(int)Blam::Game::Players::PlayerArmor::Acc] = GetArmorIndex(m_ArmorAccessory, m_ArmorAccessoryIndices);
+		p_Customization->Armor[(int)Blam::Game::Players::PlayerArmor::Pelvis] = GetArmorIndex(m_ArmorPelvis, m_ArmorPelvisIndices);
 	}
 
-	const auto Biped_ApplyArmor = reinterpret_cast<void(*)(Blam::Game::PlayerCustomization *, uint32_t)>(0x5A4430);
+	const auto Biped_ApplyArmor = reinterpret_cast<void(*)(Blam::Game::Players::PlayerCustomization *, uint32_t)>(0x5A4430);
 	const auto Biped_ApplyArmorColor = reinterpret_cast<void(*)(uint32_t, int32_t, float *)>(0xB328F0);
 	const auto Biped_UpdateArmorColors = reinterpret_cast<void(*)(uint32_t)>(0x5A2FA0);
 
 	void Player::CustomizeBiped(const Blam::Data::DatumIndex &p_BipedIndex)
 	{
 		// Generate customization data
-		Blam::Game::PlayerCustomization customization;
+		Blam::Game::Players::PlayerCustomization customization;
 		BuildCustomization(&customization);
 
 		// Apply armor to the biped
 		Biped_ApplyArmor(&customization, p_BipedIndex.Value);
 
 		// Apply each color
-		for (int32_t i = 0; i < (int)Blam::Game::PlayerColor::Count; i++)
+		for (int32_t i = 0; i < (int)Blam::Game::Players::PlayerColor::Count; i++)
 		{
 			// Convert the color data from RGB to float3
 			float colorData[3];

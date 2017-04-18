@@ -11,6 +11,8 @@
 
 #include "Network.hpp"
 
+#include <Blam\Game\Players.hpp>
+
 namespace AnvilEldorado
 {
 	char *GetIPStringFromInAddrHook(void *p_InAddr)

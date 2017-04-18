@@ -18,7 +18,7 @@
 #include "Network.hpp"
 #include "Camera.hpp"
 #include "UserInterface.hpp"
-#include "Game.hpp"
+#include "GameImpl.hpp"
 #include "Player.hpp"
 #include "Forge.hpp"
 #include "Engine.hpp"

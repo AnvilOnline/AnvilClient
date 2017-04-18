@@ -1,6 +1,5 @@
 #include "DatumIndex.hpp"
 
-namespace Blam::Data
-{
-	const DatumIndex DatumIndex::Null = { 0xFFFFFFFF };
-}
+using namespace Blam::Data;
+
+const DatumIndex DatumIndex::Null = { 0xFFFFFFFF };

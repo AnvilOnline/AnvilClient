@@ -1,9 +1,8 @@
 #include "DataPoolBase.hpp"
 
-namespace Blam::Data
+using namespace Blam::Data;
+
+DataPoolBase::DataPoolBase()
+	: Allocator(nullptr)
 {
-	DataPoolBase::DataPoolBase()
-		: Allocator(nullptr)
-	{
-	}
 }

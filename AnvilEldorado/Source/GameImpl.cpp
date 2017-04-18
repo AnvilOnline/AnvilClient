@@ -1,11 +1,12 @@
-#include "Globals.hpp"
-#include "Utils\Logger.hpp"
-#include "Utils\Hook.hpp"
-#include "Utils\Patch.hpp"
-#include "Blam\Tags\Tag.hpp"
-#include "Blam\Network\Session.hpp"
-#include "Engine.hpp"
-#include "Game.hpp"
+#include "GameImpl.hpp"
+#include <Globals.hpp>
+
+#include <Blam\Network\Session.hpp>
+#include <Blam\Tags\Tag.hpp>
+
+#include <Utils\Hook.hpp>
+#include <Utils\Patch.hpp>
+#include <Utils\Logger.hpp>
 
 namespace AnvilEldorado
 {
@@ -110,7 +111,7 @@ namespace AnvilEldorado
 			Blam::Network::LeaveGame();
 	}
 
-	bool Game::Init()
+	bool GameImpl::Init()
 	{
 		using AnvilCommon::Utils::HookFlags;
 		using AnvilCommon::Utils::Hook;
@@ -140,26 +141,26 @@ namespace AnvilEldorado
 			&& Patch(0x1536F0, 3).Apply(); // team notification
 	}
 
-	GameLocale Game::GetGameLocale() const
+	GameLocale GameImpl::GetGameLocale() const
 	{
 		return *(GameLocale *)((uint8_t *)AnvilCommon::Internal_GetModuleStorage() + 0x2333FD);
 	}
 
-	bool Game::SetGameLocale(const GameLocale &p_Language)
+	bool GameImpl::SetGameLocale(const GameLocale &p_Language)
 	{
 		using AnvilCommon::Utils::Patch;
 
 		return Patch(0x2333FD, (uint8_t)p_Language).Apply();
 	}
 	
-	void Game::Shutdown()
+	void GameImpl::Shutdown()
 	{
 		// TODO: Call pre-shutdown callbacks...
 
 		std::exit(0);
 	}
 
-	bool Game::StartGame()
+	bool GameImpl::StartGame()
 	{
 		auto *s_Session = Blam::Network::Session::Current();
 
@@ -173,7 +174,7 @@ namespace AnvilEldorado
 		return true;
 	}
 
-	bool Game::EndGame()
+	bool GameImpl::EndGame()
 	{
 		auto *s_Session = Blam::Network::Session::Current();
 
@@ -187,7 +188,7 @@ namespace AnvilEldorado
 		return true;
 	}
 
-	int32_t Game::GetMapID(const std::string &p_MapName)
+	int32_t GameImpl::GetMapID(const std::string &p_MapName)
 	{
 		//
 		// Open the .map file
@@ -232,7 +233,7 @@ namespace AnvilEldorado
 
 	const auto Game_LoadMap = reinterpret_cast<bool(*)(uint8_t *, void *)>(0xA83AF0);
 
-	bool Game::LoadMap(const std::string &p_MapName)
+	bool GameImpl::LoadMap(const std::string &p_MapName)
 	{
 		auto s_LobbyType = GetLobbyType();
 
@@ -283,7 +284,7 @@ namespace AnvilEldorado
 		return true;
 	}
 
-	bool Game::OnMapLoaded(void *p_Data)
+	bool GameImpl::OnMapLoaded(void *p_Data)
 	{
 		// TODO: Do stuff after a map was loaded
 
@@ -293,7 +294,7 @@ namespace AnvilEldorado
 	const auto InitializeMapVariant = reinterpret_cast<void(__thiscall *)(uint8_t *, int32_t)>(0x581F70);
 	const auto ParseMapVariant = reinterpret_cast<bool(__thiscall *)(void *, uint8_t *, bool *)>(0x573250);
 
-	bool Game::LoadMapVariant(std::ifstream &p_File, uint8_t *out)
+	bool GameImpl::LoadMapVariant(std::ifstream &p_File, uint8_t *out)
 	{
 		if (!p_File.is_open())
 			return false;
@@ -316,7 +317,7 @@ namespace AnvilEldorado
 		return ParseMapVariant(s_BLFData, out, nullptr);
 	}
 
-	bool Game::LoadDefaultMapVariant(const std::string &p_MapName, uint8_t *out)
+	bool GameImpl::LoadDefaultMapVariant(const std::string &p_MapName, uint8_t *out)
 	{
 		int s_MapID = GetMapID(p_MapName);
 
@@ -332,7 +333,7 @@ namespace AnvilEldorado
 		return (firstMapId == s_MapID && secondMapId == s_MapID);
 	}
 
-	void Game::SaveMapVariantToPreferences(const uint8_t *data)
+	void GameImpl::SaveMapVariantToPreferences(const uint8_t *data)
 	{
 		size_t s_VariantOffset;
 
@@ -358,17 +359,17 @@ namespace AnvilEldorado
 		*reinterpret_cast<bool *>(0x22C0129) = true;
 	}
 
-	GameLobbyType Game::GetLobbyType() const
+	GameLobbyType GameImpl::GetLobbyType() const
 	{
 		return reinterpret_cast<GameLobbyType(__thiscall *)()>(0x435640)();
 	}
 
-	const std::vector<std::string> &Game::GetMaps() const
+	const std::vector<std::string> &GameImpl::GetMaps() const
 	{
 		return m_Maps;
 	}
 
-	const std::vector<std::string> &Game::GetMapVariants() const
+	const std::vector<std::string> &GameImpl::GetMapVariants() const
 	{
 		return m_MapVariants;
 	}

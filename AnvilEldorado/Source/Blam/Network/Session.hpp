@@ -1,9 +1,10 @@
 #pragma once
 #include <cstdint>
 #include <string>
-#include "Blam\Game\Players.hpp"
-#include "Blam\Game\Variants.hpp"
-#include "Blam\Data\BitStream.hpp"
+
+#include <Blam\Data\BitStream.hpp>
+#include <Blam\Game\Players\PlayerProperties.hpp>
+#include <Blam\Game\Variants.hpp>
 
 namespace Blam::Network
 {
@@ -59,7 +60,7 @@ namespace Blam::Network
 		uint32_t Unknown14;
 		uint32_t Unknown18;
 		uint32_t Unknown1C;
-		Game::PlayerProperties Properties;
+		Game::Players::PlayerProperties Properties;
 		uint32_t Unknown1640;
 		uint32_t Unknown1644;
 	};

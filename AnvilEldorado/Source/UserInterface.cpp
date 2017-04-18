@@ -12,7 +12,7 @@
 
 #include "BuildInfo.hpp"
 #include "Globals.hpp"
-#include "Game.hpp"
+#include "GameImpl.hpp"
 #include "UserInterface.hpp"
 
 namespace AnvilEldorado
