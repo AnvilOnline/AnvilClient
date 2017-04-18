@@ -10,6 +10,8 @@
 #include "Blam\Tags\UserInterface\ChudDefinition.hpp"
 #include "Blam\Tags\UserInterface\ChudGlobalsDefinition.hpp"
 
+#include <Blam\Input\UIButtonCode.hpp>
+
 #include "BuildInfo.hpp"
 #include "Globals.hpp"
 #include "GameImpl.hpp"

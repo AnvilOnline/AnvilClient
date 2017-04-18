@@ -5,6 +5,9 @@
 #include "Globals.hpp"
 #include "Input.hpp"
 
+#include <Blam\Input\BindingsPreferences.hpp>
+#include <Blam\Input\ActionStateFlags.hpp>
+
 namespace AnvilEldorado
 {
 	void QuickBlockInput()

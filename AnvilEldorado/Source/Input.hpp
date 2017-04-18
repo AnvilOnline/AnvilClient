@@ -5,7 +5,8 @@
 
 #include <Interfaces\Initializable.hpp>
 
-#include "Blam\Input\InputTypes.hpp"
+#include <Blam\Input\InputTypes.hpp>
+#include <Blam\Input\ConfigurableAction.hpp>
 
 namespace AnvilEldorado
 {

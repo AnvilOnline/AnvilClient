@@ -17,13 +17,13 @@ namespace Blam::Game
 		return reinterpret_cast<int(*)(Data::DatumIndex)>(0x5504E0)(p_Player);
 	}
 
-	PlayerStats GetStats(const size_t p_PlayerIndex)
+	Stats::PlayerStats GetStats(const size_t p_PlayerIndex)
 	{
-		return *reinterpret_cast<PlayerStats *>(0x23F1718 + (p_PlayerIndex * sizeof(PlayerStats)));
+		return *reinterpret_cast<Stats::PlayerStats *>(0x23F1718 + (p_PlayerIndex * sizeof(Stats::PlayerStats)));
 	}
 
-	PlayerKilledPlayerStats GetPVPStats(const size_t p_PlayerIndex)
+	Stats::PlayerKilledPlayerStats GetPVPStats(const size_t p_PlayerIndex)
 	{
-		return *reinterpret_cast<PlayerKilledPlayerStats *>(0x23F5A98 + (p_PlayerIndex * sizeof(PlayerKilledPlayerStats)));
+		return *reinterpret_cast<Stats::PlayerKilledPlayerStats *>(0x23F5A98 + (p_PlayerIndex * sizeof(Stats::PlayerKilledPlayerStats)));
 	}
 }

@@ -139,5 +139,23 @@
     <ClInclude Include="Source\Game\Players\PlayerPropertiesExtender.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerPropertiesExtensionBase.hpp" />
     <ClInclude Include="Source\GameImpl.hpp" />
+    <ClInclude Include="Source\Blam\Game\Stats\PlayerVsStats.hpp" />
+    <ClInclude Include="Source\Blam\Game\Stats\PlayerKilledPlayerStats.hpp" />
+    <ClInclude Include="Source\Blam\Game\Stats\WeaponStats.hpp" />
+    <ClInclude Include="Source\Blam\Game\Stats\PlayerStats.hpp" />
+    <ClInclude Include="Source\Blam\Input\UIButtonCode.hpp" />
+    <ClInclude Include="Source\Blam\Input\ControllerButton.hpp" />
+    <ClInclude Include="Source\Blam\Input\KeyCode.hpp" />
+    <ClInclude Include="Source\Blam\Input\MouseButton.hpp" />
+    <ClInclude Include="Source\Blam\Input\InputType.hpp" />
+    <ClInclude Include="Source\Blam\Input\KeyEventModifiers.hpp" />
+    <ClInclude Include="Source\Blam\Input\KeyEventType.hpp" />
+    <ClInclude Include="Source\Blam\Input\KeyEvent.hpp" />
+    <ClInclude Include="Source\Blam\Input\GameAction.hpp" />
+    <ClInclude Include="Source\Blam\Input\BindingsTable.hpp" />
+    <ClInclude Include="Source\Blam\Input\BindingsPreferences.hpp" />
+    <ClInclude Include="Source\Blam\Input\ActionStateFlags.hpp" />
+    <ClInclude Include="Source\Blam\Input\ActionState.hpp" />
+    <ClInclude Include="Source\Blam\Input\ConfigurableAction.hpp" />
   </ItemGroup>
 </Project>
