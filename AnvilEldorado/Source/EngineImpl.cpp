@@ -133,6 +133,10 @@ void EngineImpl::CreateHooks()
 	s_Address = ExecutableBase() + 0x102210;
 	HookFunctionOffset(s_Address, ValidateTagCache);
 
+	// Account Processing Hook
+	s_Address = ExecutableBase() + 0x4372E0;
+	HookFunctionOffset(s_Address, ProcessAccountInfo);
+
 	// Account verification hook
 	s_Address = ExecutableBase() + 0x437360;
 	HookFunctionOffset(s_Address, VerifyAccountAndLoadAnticheat);
@@ -160,6 +164,12 @@ DeclareDetouredFunction(EngineImpl, char, __cdecl, ValidateTagCache, void *a1)
 {
 	// Automatically pass actual validation
 	return true;
+}
+
+DeclareDetouredFunction(EngineImpl, char*, __cdecl, ProcessAccountInfo)
+{
+	// Ignore authentication
+	return nullptr;
 }
 
 DeclareDetouredFunction(EngineImpl, char, __cdecl, VerifyAccountAndLoadAnticheat)

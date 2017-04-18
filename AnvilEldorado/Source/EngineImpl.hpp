@@ -44,6 +44,11 @@ namespace AnvilEldorado
 		DeclareFunction(char, __cdecl, ValidateTagCache, void *a1);
 
 		/// <summary>
+		/// Account Processing Hook
+		/// </summary>
+		DeclareFunction(char*, __cdecl, ProcessAccountInfo);
+
+		/// <summary>
 		/// Account Verification Hook
 		/// </summary>
 		DeclareFunction(char, __cdecl, VerifyAccountAndLoadAnticheat);
