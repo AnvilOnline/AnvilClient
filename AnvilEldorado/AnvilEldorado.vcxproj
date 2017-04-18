@@ -116,6 +116,8 @@
     <ClInclude Include="Source\Game\Players\PlayerPropertiesExtender.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerPropertiesExtension.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerPropertiesExtensionBase.hpp" />
+    <ClInclude Include="Source\Game\UI\Hooks.hpp" />
+    <ClInclude Include="Source\Game\UI\UIImpl.hpp" />
     <ClInclude Include="Source\Graphics.hpp" />
     <ClInclude Include="Source\Camera.hpp" />
     <ClInclude Include="Source\Hooking\Hooking.hpp" />
@@ -167,6 +169,8 @@
     <ClCompile Include="Source\Game\Networking\Hooks.cpp" />
     <ClCompile Include="Source\Game\Players\PlayerImpl.cpp" />
     <ClCompile Include="Source\Game\Players\PlayerPropertiesExtender.cpp" />
+    <ClCompile Include="Source\Game\UI\Hooks.cpp" />
+    <ClCompile Include="Source\Game\UI\UIImpl.cpp" />
     <ClCompile Include="Source\Globals.cpp" />
     <ClCompile Include="Source\Graphics.cpp" />
     <ClCompile Include="Source\Input.cpp" />

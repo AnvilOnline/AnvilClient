@@ -37,7 +37,7 @@ bool StringIdCache::ParseStringIds(const std::string p_Path)
 	s_Stream.read(reinterpret_cast<char*>(&s_Header), sizeof(s_Header));
 
 	// Create new data to hold our offsets
-	auto s_Offsets = std::shared_ptr<uint32_t>(new uint32_t[s_Header.Count], std::default_delete<uint32_t[]>());
+	auto s_Offsets = std::shared_ptr<int32_t>(new int32_t[s_Header.Count], std::default_delete<int32_t[]>());
 	// TODO: Determine if we need to set everything to -1?
 
 	// Create memory to hold all of our strings
@@ -45,7 +45,7 @@ bool StringIdCache::ParseStringIds(const std::string p_Path)
 	std::memset(s_Strings.get(), 0, s_Header.Size + 1);
 
 	// Read all of our offsets
-	s_Stream.read(reinterpret_cast<char*>(s_Offsets.get()), sizeof(uint32_t) * s_Header.Count);
+	s_Stream.read(reinterpret_cast<char*>(s_Offsets.get()), sizeof(int32_t) * s_Header.Count);
 
 	// Read all of our strings
 	s_Stream.read(reinterpret_cast<char*>(s_Strings.get()), s_Header.Size);

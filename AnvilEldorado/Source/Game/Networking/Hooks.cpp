@@ -20,7 +20,7 @@ bool Hooks::Init()
 	return true;
 }
 
-char* __cdecl Hooks::hk_GetIPStringFromInAddr(XNADDR* p_InAddr)
+DeclareDetouredFunction(Hooks, char*, __cdecl, GetIPStringFromInAddr, XNADDR* p_InAddr)
 {
 	static char s_IpAddr[64];
 	std::memset(s_IpAddr, 0, sizeof(s_IpAddr));
@@ -34,7 +34,7 @@ char* __cdecl Hooks::hk_GetIPStringFromInAddr(XNADDR* p_InAddr)
 	return s_IpAddr;
 }
 
-bool __cdecl Hooks::hk_XnAddrToInAddr(XNADDR* p_XnAddr, XNKID* p_XnKid, IN_ADDR* p_InAddr)
+DeclareDetouredFunction(Hooks, bool, __cdecl, XnAddrToInAddr, XNADDR* p_XnAddr, XNKID* p_XnKid, IN_ADDR* p_InAddr)
 {
 	// TODO: What in wizardy magic was in this function???
 	// Why tf are we even hooking here

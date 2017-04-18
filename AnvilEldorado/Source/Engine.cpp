@@ -182,6 +182,7 @@ namespace AnvilEldorado
 
 		return s_Player->LoadArmor(s_MultiplayerGlobals)
 			&& s_Player->LoadPodiumWeapons(s_MultiplayerGlobals);*/
+		return true;
 	}
 
 	bool Engine::HasMainMenuShown() const

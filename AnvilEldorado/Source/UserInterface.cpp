@@ -70,50 +70,6 @@ namespace AnvilEldorado
 		}
 	}
 
-	const size_t MaxStringLength = 0x400;
-
-	bool LocalizedStringImpl(int32_t p_TagIndex, Blam::Text::StringID p_String, wchar_t *p_Output)
-	{
-		if (p_String == "start_new_campaign")
-		{
-			// Get the version string, convert it to uppercase UTF-16, and return it
-			auto s_BuildInfo = std::string("  ANVIL: ONLINE  ") + std::string("DEV BUILD ") + std::to_string(ANVIL_BUILD);
-			auto s_WideBuildInfo = std::wstring(s_BuildInfo.begin(), s_BuildInfo.end());
-			swprintf(p_Output, MaxStringLength, s_WideBuildInfo.c_str());
-			
-			return true;
-		}
-
-		return false;
-	}
-
-	__declspec(naked) void LocalizedStringHook()
-	{
-		__asm
-		{
-			// Run the hook implementation function and fallback to the original if it returned false
-			push ebp
-			mov ebp, esp
-			push[ebp + 0x10]
-			push[ebp + 0xC]
-			push[ebp + 0x8]
-			call LocalizedStringImpl
-			add esp, 0xC
-			test al, al
-			jz fallback
-
-			// Don't run the original function
-			mov esp, ebp
-			pop ebp
-			ret
-
-		fallback: // Execute replaced code and jump back to original function
-			sub esp, 0x800
-			mov edx, 0x51E049
-			jmp edx
-		}
-	}
-
 	const auto UI_CreateLobby = reinterpret_cast<bool(*)(GameLobbyType)>(0xA7EE70);
 	bool MainMenuCreateLobbyHook(GameLobbyType p_LobbyType)
 	{
@@ -185,8 +141,6 @@ namespace AnvilEldorado
 			&& Patch::NopFill(0x723DFF, 3)
 			&& Patch(0x723E07, 0x00).Apply()
 			&& Patch(0x723E1C, 0x00).Apply()
-			// Localized string override hook
-			&& Hook(0x11E040, LocalizedStringHook).Apply()
 			// Remove "BUILT IN" text when choosing map/game variants by feeding the UI_SetVisiblityOfElement func a nonexistant string ID for the element (0x202E8 instead of 0x102E8)
 			// TODO: find way to fix this text instead of removing it, since the 0x102E8 element (subitem_edit) is used for other things like editing/viewing map variant metadata
 			&& Patch(0x705D6F, 0x02).Apply()

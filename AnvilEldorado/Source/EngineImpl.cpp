@@ -8,6 +8,7 @@
 
 #include <Game\Input\InputImpl.hpp>
 #include <Game\Players\PlayerImpl.hpp>
+#include <Game\UI\UIImpl.hpp>
 
 using namespace AnvilEldorado;
 
@@ -57,6 +58,10 @@ bool EngineImpl::Init()
 	m_Input = std::make_shared<Game::Input::InputImpl>();
 	if (!m_Input->Init())
 		WriteLog("Could not initialize InputImpl.");
+
+	m_UI = std::make_shared<Game::UI::UIImpl>();
+	if (!m_UI->Init())
+		WriteLog("Could not initialize UIImpl.");
 
 	// Enable all hooked functions
 	MH_EnableHook(MH_ALL_HOOKS);
