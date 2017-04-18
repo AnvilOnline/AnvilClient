@@ -38,6 +38,16 @@ namespace AnvilEldorado
 		/// </summary>
 		DeclareFunction(bool, __cdecl, LoadBinkVideo, int p_VideoID, char *p_DestBuf);
 
+		/// <summary>
+		/// Tag Cache Validation Hook
+		/// </summary>
+		DeclareFunction(char, __cdecl, ValidateTagCache, void *a1);
+
+		/// <summary>
+		/// Account Verification Hook
+		/// </summary>
+		DeclareFunction(char, __cdecl, VerifyAccountAndLoadAnticheat);
+
 	public:
 		EngineImpl();
 		~EngineImpl();

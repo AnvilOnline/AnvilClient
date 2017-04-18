@@ -12,6 +12,8 @@
 #include <Game\Players\PlayerImpl.hpp>
 #include <Game\UI\UIImpl.hpp>
 
+#include <Utils\Patch.hpp>
+
 using namespace AnvilEldorado;
 
 EngineImpl::EngineImpl() :
@@ -126,6 +128,21 @@ void EngineImpl::CreateHooks()
 	// Bink Video Hook
 	auto s_Address = ExecutableBase() + 0x699120;
 	HookFunctionOffset(s_Address, LoadBinkVideo);
+
+	// Tag Cache Validation Hook
+	s_Address = ExecutableBase() + 0x102210;
+	HookFunctionOffset(s_Address, ValidateTagCache);
+
+	// Account verification hook
+	s_Address = ExecutableBase() + 0x437360;
+	HookFunctionOffset(s_Address, VerifyAccountAndLoadAnticheat);
+
+	AnvilCommon::Utils::Patch::NopFill(0x102874, 2); //TODO: sub_52CCC0 == *v10 true
+
+	//TODO: Is this needed?
+	//AnvilCommon::Utils::Patch::NopFill(0x1030AA, 2); //TODO: sub_508F80 return true
+
+	AnvilCommon::Utils::Patch(0x2333FD, 0).Apply();
 }
 
 DeclareDetouredFunction(EngineImpl, HWND, __stdcall, CreateWindowExA, DWORD p_ExStyle, LPCSTR p_ClassName, LPCSTR p_WindowName, DWORD p_Style, int p_X, int p_Y, int p_Width, int p_Height, HWND p_Parent, HMENU p_Menu, HINSTANCE p_Instance, LPVOID p_Param)
@@ -136,5 +153,17 @@ DeclareDetouredFunction(EngineImpl, HWND, __stdcall, CreateWindowExA, DWORD p_Ex
 DeclareDetouredFunction(EngineImpl, bool, __cdecl, LoadBinkVideo, int p_VideoID, char *p_DestBuf)
 {
 	// Disable bink videos
+	return false;
+}
+
+DeclareDetouredFunction(EngineImpl, char, __cdecl, ValidateTagCache, void *a1)
+{
+	// Automatically pass actual validation
+	return true;
+}
+
+DeclareDetouredFunction(EngineImpl, char, __cdecl, VerifyAccountAndLoadAnticheat)
+{
+	// Ignore authentication
 	return false;
 }
