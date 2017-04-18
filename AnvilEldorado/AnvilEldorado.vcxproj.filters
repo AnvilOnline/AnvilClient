@@ -39,7 +39,6 @@
     <ClCompile Include="Source\UserInterface.cpp" />
     <ClCompile Include="Source\Blam\Network\Session.cpp" />
     <ClCompile Include="Source\Blam\Tags\Tag.cpp" />
-    <ClCompile Include="Source\Audio.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Blam\Text\StringID.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
@@ -52,6 +51,9 @@
     <ClCompile Include="Source\Game\Input\InputImpl.cpp" />
     <ClCompile Include="Source\Game\UI\Hooks.cpp" />
     <ClCompile Include="Source\Game\UI\UIImpl.cpp" />
+    <ClCompile Include="Source\Game\Networking\NetworkingImpl.cpp" />
+    <ClCompile Include="Source\Game\Audio\AudioImpl.cpp" />
+    <ClCompile Include="Source\Game\Audio\Hooks.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -116,7 +118,6 @@
     <ClInclude Include="Source\UserInterface.hpp" />
     <ClInclude Include="Source\Forge.hpp" />
     <ClInclude Include="Source\Input.hpp" />
-    <ClInclude Include="Source\Audio.hpp" />
     <ClInclude Include="Source\Blam\Objects\ObjectData.hpp" />
     <ClInclude Include="Source\Network.hpp" />
     <ClInclude Include="Source\Blam\Tags\UserInterface\ChudGlobalsDefinition.hpp" />
@@ -161,5 +162,8 @@
     <ClInclude Include="Source\Game\Input\InputImpl.hpp" />
     <ClInclude Include="Source\Game\UI\UIImpl.hpp" />
     <ClInclude Include="Source\Game\UI\Hooks.hpp" />
+    <ClInclude Include="Source\Game\Networking\NetworkingImpl.hpp" />
+    <ClInclude Include="Source\Game\Audio\AudioImpl.hpp" />
+    <ClInclude Include="Source\Game\Audio\Hooks.hpp" />
   </ItemGroup>
 </Project>

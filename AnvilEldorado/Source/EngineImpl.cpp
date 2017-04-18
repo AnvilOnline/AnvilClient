@@ -6,7 +6,9 @@
 #include <Psapi.h>
 #include <MinHook.h>
 
+#include <Game\Audio\AudioImpl.hpp>
 #include <Game\Input\InputImpl.hpp>
+#include <Game\Networking\NetworkingImpl.hpp>
 #include <Game\Players\PlayerImpl.hpp>
 #include <Game\UI\UIImpl.hpp>
 
@@ -46,19 +48,27 @@ bool EngineImpl::Init()
 	if (!m_Game->Init())
 		WriteLog("Could not initialize GameImpl.");*/
 
-	//// Initialize audio subsystem
-	/*m_Audio = std::make_shared<Audio::AudioImpl>();
+	// Initialize audio subsystem
+	m_Audio = std::make_shared<Game::Audio::AudioImpl>();
 	if (!m_Audio->Init())
-		WriteLog("Could not initialize AudioImpl.");*/
+		WriteLog("Could not initialize AudioImpl.");
 
-	m_Player = std::make_shared<Game::Players::PlayerImpl>();
-	if (!m_Player->Init())
-		WriteLog("Could not initialize PlayerImpl.");
-
+	// Initialize the input subsystem
 	m_Input = std::make_shared<Game::Input::InputImpl>();
 	if (!m_Input->Init())
 		WriteLog("Could not initialize InputImpl.");
 
+	// Initialize the networking subsystem
+	m_Networking = std::make_shared<Game::Networking::NetworkingImpl>();
+	if (!m_Networking->Init())
+		WriteLog("Could not initalize NetworkingImpl.");
+
+	// Initialize the player subsystem
+	m_Player = std::make_shared<Game::Players::PlayerImpl>();
+	if (!m_Player->Init())
+		WriteLog("Could not initialize PlayerImpl.");
+
+	// Initialize the ui subsystem
 	m_UI = std::make_shared<Game::UI::UIImpl>();
 	if (!m_UI->Init())
 		WriteLog("Could not initialize UIImpl.");

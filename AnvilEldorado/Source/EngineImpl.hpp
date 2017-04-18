@@ -24,7 +24,7 @@ namespace AnvilEldorado
 		std::shared_ptr<AnvilCommon::Initializable> m_Game;
 		std::shared_ptr<AnvilCommon::Initializable> m_Graphics;
 		std::shared_ptr<AnvilCommon::Initializable> m_Input;
-		std::shared_ptr<AnvilCommon::Initializable> m_Network;
+		std::shared_ptr<AnvilCommon::Initializable> m_Networking;
 		std::shared_ptr<AnvilCommon::Initializable> m_Player;
 		std::shared_ptr<AnvilCommon::Initializable> m_UI;
 

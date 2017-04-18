@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Audio.hpp" />
     <ClInclude Include="Source\Blam\Data\DataArray.hpp" />
     <ClInclude Include="Source\Blam\Data\DataPoolBase.hpp" />
     <ClInclude Include="Source\Blam\Data\LruvCacheBase.hpp" />
@@ -106,9 +105,12 @@
     <ClInclude Include="Source\EngineImpl.hpp" />
     <ClInclude Include="Source\Forge.hpp" />
     <ClInclude Include="Source\GameImpl.hpp" />
+    <ClInclude Include="Source\Game\Audio\AudioImpl.hpp" />
+    <ClInclude Include="Source\Game\Audio\Hooks.hpp" />
     <ClInclude Include="Source\Game\Cache\StringIdCache.hpp" />
     <ClInclude Include="Source\Game\Input\InputImpl.hpp" />
     <ClInclude Include="Source\Game\Networking\Hooks.hpp" />
+    <ClInclude Include="Source\Game\Networking\NetworkingImpl.hpp" />
     <ClInclude Include="Source\Game\Networking\XnAddr.hpp" />
     <ClInclude Include="Source\Game\Networking\XnKey.hpp" />
     <ClInclude Include="Source\Game\Networking\XnKid.hpp" />
@@ -127,7 +129,6 @@
     <ClInclude Include="Source\UserInterface.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Audio.cpp" />
     <ClCompile Include="Source\Blam\Data\DataPoolBase.cpp" />
     <ClCompile Include="Source\Blam\Data\DatumBase.cpp" />
     <ClCompile Include="Source\Blam\Data\LruvCacheBase.cpp" />
@@ -164,9 +165,12 @@
     <ClCompile Include="Source\EngineImpl.cpp" />
     <ClCompile Include="Source\Forge.cpp" />
     <ClCompile Include="Source\GameImpl.cpp" />
+    <ClCompile Include="Source\Game\Audio\AudioImpl.cpp" />
+    <ClCompile Include="Source\Game\Audio\Hooks.cpp" />
     <ClCompile Include="Source\Game\Cache\StringIdCache.cpp" />
     <ClCompile Include="Source\Game\Input\InputImpl.cpp" />
     <ClCompile Include="Source\Game\Networking\Hooks.cpp" />
+    <ClCompile Include="Source\Game\Networking\NetworkingImpl.cpp" />
     <ClCompile Include="Source\Game\Players\PlayerImpl.cpp" />
     <ClCompile Include="Source\Game\Players\PlayerPropertiesExtender.cpp" />
     <ClCompile Include="Source\Game\UI\Hooks.cpp" />
