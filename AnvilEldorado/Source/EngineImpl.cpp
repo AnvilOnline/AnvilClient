@@ -137,16 +137,19 @@ void EngineImpl::CreateHooks()
 	s_Address = ExecutableBase() + 0x4372E0;
 	HookFunctionOffset(s_Address, ProcessAccountInfo);
 
-	// Account verification hook
+	// Account Verification Hook
 	s_Address = ExecutableBase() + 0x437360;
 	HookFunctionOffset(s_Address, VerifyAccountAndLoadAnticheat);
 
+	// Force Russian Localizationn Hook
+	s_Address = ExecutableBase() + 0x2E5C0;
+	HookFunctionOffset(s_Address, ForceRussianLocale);
+
+	// Allow tag changes
 	AnvilCommon::Utils::Patch::NopFill(0x102874, 2); //TODO: sub_52CCC0 == *v10 true
 
 	//TODO: Is this needed?
 	//AnvilCommon::Utils::Patch::NopFill(0x1030AA, 2); //TODO: sub_508F80 return true
-
-	AnvilCommon::Utils::Patch(0x2333FD, 0).Apply();
 }
 
 DeclareDetouredFunction(EngineImpl, HWND, __stdcall, CreateWindowExA, DWORD p_ExStyle, LPCSTR p_ClassName, LPCSTR p_WindowName, DWORD p_Style, int p_X, int p_Y, int p_Width, int p_Height, HWND p_Parent, HMENU p_Menu, HINSTANCE p_Instance, LPVOID p_Param)
@@ -175,5 +178,11 @@ DeclareDetouredFunction(EngineImpl, char*, __cdecl, ProcessAccountInfo)
 DeclareDetouredFunction(EngineImpl, char, __cdecl, VerifyAccountAndLoadAnticheat)
 {
 	// Ignore authentication
+	return false;
+}
+
+DeclareDetouredFunction(EngineImpl, char, __cdecl, ForceRussianLocale)
+{
+	// Enabling reading Language.LangShort from game.cfg
 	return false;
 }

@@ -53,6 +53,11 @@ namespace AnvilEldorado
 		/// </summary>
 		DeclareFunction(char, __cdecl, VerifyAccountAndLoadAnticheat);
 
+		/// <summary>
+		/// Force Russian Localization Hook
+		/// </summary>
+		DeclareFunction(char, __cdecl, ForceRussianLocale);
+
 	public:
 		EngineImpl();
 		~EngineImpl();
