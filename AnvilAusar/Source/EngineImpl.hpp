@@ -19,5 +19,6 @@ namespace AnvilAusar
 
 		virtual uint8_t* ExecutableBase();
 		virtual size_t ExecutableSize();
+		virtual std::shared_ptr<AnvilCommon::IdCache> GetStringCache();
 	};
 }

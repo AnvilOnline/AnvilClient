@@ -76,7 +76,7 @@ bool StringIdCache::ParseStringIds(const std::string p_Path)
 	return true;
 }
 
-std::string StringIdCache::GetString(uint16_t p_Id)
+std::string StringIdCache::GetString(int16_t p_Id)
 {
 	// Bounds checking
 	if (p_Id > Count())
