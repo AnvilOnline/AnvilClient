@@ -4,8 +4,6 @@
 
 #include <BuildInfo.hpp>
 
-#include <string>
-
 #include <Game\UI\UIImpl.hpp>
 
 using namespace AnvilEldorado::Game::UI;
@@ -27,7 +25,7 @@ DeclareDetouredFunction(Hooks, bool, __cdecl, LocalizeString, int p_TagIndex, Bl
 {
 	const static size_t MaxStringLength = 0x400;
 
-	if (p_StringId == "start_new_campaign")
+	if (p_StringId == 0x0001010A /* start_new_campaign */)
 	{
 #if _DEBUG
 		swprintf_s(p_Output, MaxStringLength, L"Anvil: Online - Dev Build - %d", ANVIL_BUILD);
