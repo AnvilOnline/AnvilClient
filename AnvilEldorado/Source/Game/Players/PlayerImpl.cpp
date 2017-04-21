@@ -1,5 +1,7 @@
 #include "PlayerImpl.hpp"
 
+#include <Game\Players\PlayerArmorExtender.hpp>
+
 #include <Globals.hpp>
 
 using namespace AnvilEldorado::Game::Players;
@@ -10,6 +12,7 @@ const size_t AnvilEldorado::Game::Players::PlayerPropertiesPacketFooterSize = 0x
 
 bool PlayerImpl::Init()
 {
+	playerPropertiesExtender->Add(std::make_shared<PlayerArmorExtension>());
 	// TODO: Put any init logic here
 	return true;
 }
@@ -33,8 +36,7 @@ size_t PlayerImpl::GetPlayerPropertiesPacketSize()
 
 	if (size == 0)
 	{
-		// TODO: Fix
-		size_t extensionSize = 0; // PlayerPropertiesExtender::Instance()->GetTotalSize();
+		size_t extensionSize = playerPropertiesExtender->GetTotalSize();
 		size = PlayerPropertiesPacketHeaderSize + PlayerPropertiesSize + extensionSize + PlayerPropertiesPacketFooterSize;
 	}
 

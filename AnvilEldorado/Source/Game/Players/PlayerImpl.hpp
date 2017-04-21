@@ -4,12 +4,16 @@
 #include <Blam\Data\DataArray.hpp>
 #include <Blam\Data\DatumIndex.hpp>
 #include <Blam\Game\Players\PlayerDatum.hpp>
+#include <Game\Players\PlayerPropertiesExtender.hpp>
 
 namespace AnvilEldorado::Game::Players
 {
 	class PlayerImpl :
 		public AnvilCommon::Initializable
 	{
+
+	private:
+		PlayerPropertiesExtender* playerPropertiesExtender = new PlayerPropertiesExtender();;
 	public:
 		virtual bool Init();
 

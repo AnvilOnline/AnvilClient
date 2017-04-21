@@ -54,6 +54,7 @@
     <ClCompile Include="Source\Game\Networking\NetworkingImpl.cpp" />
     <ClCompile Include="Source\Game\Audio\AudioImpl.cpp" />
     <ClCompile Include="Source\Game\Audio\Hooks.cpp" />
+    <ClCompile Include="Source\Game\Players\PlayerArmorExtension.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -165,5 +166,6 @@
     <ClInclude Include="Source\Game\Networking\NetworkingImpl.hpp" />
     <ClInclude Include="Source\Game\Audio\AudioImpl.hpp" />
     <ClInclude Include="Source\Game\Audio\Hooks.hpp" />
+    <ClInclude Include="Source\Game\Players\PlayerArmorExtender.hpp" />
   </ItemGroup>
 </Project>
