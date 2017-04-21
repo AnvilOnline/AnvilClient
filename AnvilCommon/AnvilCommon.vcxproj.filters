@@ -11,6 +11,7 @@
     <ClInclude Include="Source\Interfaces\Initializable.hpp" />
     <ClInclude Include="Source\Interfaces\Client.hpp" />
     <ClInclude Include="Source\Interfaces\Engine.hpp" />
+    <ClInclude Include="Source\Interfaces\IdCache.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utils\Util.cpp" />
