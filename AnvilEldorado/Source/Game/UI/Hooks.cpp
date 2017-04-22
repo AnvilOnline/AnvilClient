@@ -27,7 +27,7 @@ DeclareDetouredFunction(Hooks, bool, __cdecl, LocalizeString, int p_TagIndex, Bl
 {
 	const static size_t MaxStringLength = 0x400;
 
-	if (p_StringId == "start_new_campaign")
+	if (p_StringId == 0x1010A)
 	{
 #if _DEBUG
 		swprintf_s(p_Output, MaxStringLength, L"Anvil: Online - Dev Build - %d", ANVIL_BUILD);
