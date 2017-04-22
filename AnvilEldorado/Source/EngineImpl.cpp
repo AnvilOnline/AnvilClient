@@ -6,12 +6,18 @@
 #include <Psapi.h>
 #include <MinHook.h>
 
+#include <Blam\Tags\TagInstance.hpp>
+#include <Blam\Tags\Game\CacheFileGlobalTags.hpp>
+#include <Blam\Tags\Game\Globals.hpp>
+
 #include <Game\Audio\AudioImpl.hpp>
 #include <Game\Cache\StringIdCache.hpp>
 #include <Game\Input\InputImpl.hpp>
 #include <Game\Networking\NetworkingImpl.hpp>
 #include <Game\Players\PlayerImpl.hpp>
 #include <Game\UI\UIImpl.hpp>
+
+#include <Interfaces\Client.hpp>
 
 #include <Utils\Patch.hpp>
 
@@ -134,16 +140,23 @@ void EngineImpl::CreateHooks()
 	s_Address = ExecutableBase() + 0x4372E0;
 	HookFunctionOffset(s_Address, ProcessAccountInfo);
 
-	// Account verification hook
+	// Account Verification Hook
 	s_Address = ExecutableBase() + 0x437360;
 	HookFunctionOffset(s_Address, VerifyAccountAndLoadAnticheat);
 
+	// Force Russian Localization Hook
+	s_Address = ExecutableBase() + 0x2E5C0;
+	HookFunctionOffset(s_Address, ForceRussianLocale);
+
+	// On Tags Loaded Hook
+	s_Address = ExecutableBase() + 0x1017E0;
+	HookFunctionOffset(s_Address, OnTagsLoaded);
+
+	// Allow tag changes
 	AnvilCommon::Utils::Patch::NopFill(0x102874, 2); //TODO: sub_52CCC0 == *v10 true
 
 	//TODO: Is this needed?
 	//AnvilCommon::Utils::Patch::NopFill(0x1030AA, 2); //TODO: sub_508F80 return true
-
-	AnvilCommon::Utils::Patch(0x2333FD, 0).Apply();
 }
 
 DeclareDetouredFunction(EngineImpl, HWND, __stdcall, CreateWindowExA, DWORD p_ExStyle, LPCSTR p_ClassName, LPCSTR p_WindowName, DWORD p_Style, int p_X, int p_Y, int p_Width, int p_Height, HWND p_Parent, HMENU p_Menu, HINSTANCE p_Instance, LPVOID p_Param)
@@ -173,4 +186,57 @@ DeclareDetouredFunction(EngineImpl, char, __cdecl, VerifyAccountAndLoadAnticheat
 {
 	// Ignore authentication
 	return false;
+}
+
+DeclareDetouredFunction(EngineImpl, char, __cdecl, ForceRussianLocale)
+{
+	// Enabling reading Language.LangShort from game.cfg
+	return false;
+}
+
+
+DeclareDetouredFunction(EngineImpl, signed int, __cdecl, OnTagsLoaded, int p_TagGroup)
+{
+	using Blam::Tags::TagInstance;
+	using Blam::Tags::Game::CacheFileGlobalTags;
+	using Blam::Tags::Game::Globals;
+	using Blam::Tags::Game::MultiplayerGlobals;
+
+	if(p_TagGroup == 0x6D617467)
+	{
+		WriteLog("Tags loaded successfully.");
+
+		auto *s_CacheFileGlobalTags = TagInstance(0).GetDefinition<CacheFileGlobalTags>();
+		Globals *s_Globals = nullptr;
+
+		for (auto &s_GlobalTag : s_CacheFileGlobalTags->GlobalTags)
+		{
+			if (s_GlobalTag.GroupTag == 'matg')
+			{
+				s_Globals = TagInstance(s_GlobalTag.TagIndex).GetDefinition<Globals>();
+				break;
+			}
+		}
+
+		if (s_Globals == nullptr)
+		{
+			WriteLog("ERROR: Failed to locate globals tag (matg) in cache file global tags (cfgt)!");
+			return false;
+		}
+
+		auto *s_MultiplayerGlobals = TagInstance(s_Globals->MultiplayerGlobals.TagIndex).GetDefinition<MultiplayerGlobals>();
+
+		if (s_MultiplayerGlobals == nullptr)
+		{
+			WriteLog("ERROR: Failed to locate multiplayer globals tag (mulg) in globals tag (matg)!");
+			return false;
+		}
+
+		auto s_Player = GetClientInterface()->GetEngine()->GetSubsystem<Game::Players::PlayerImpl>();
+
+		s_Player->LoadArmor(s_MultiplayerGlobals);
+	}
+
+	// Call the original function
+	return o_OnTagsLoaded(p_TagGroup);
 }
