@@ -1,4 +1,5 @@
 #include "PlayerArmorExtender.hpp"
+#include "PlayerImpl.hpp";
 
 #include <EngineImpl.hpp>
 #include <Interfaces/Client.hpp>
@@ -7,8 +8,7 @@ using namespace AnvilEldorado::Game::Players;
 
 void PlayerArmorExtension::BuildData(int32_t p_PlayerIndex, Blam::Game::Players::PlayerCustomization *p_Out)
 {
-	// TODO: Fix
-	//Player::Instance()->BuildCustomization(p_Out);
+	GetClientInterface()->GetEngine()->GetSubsystem<PlayerImpl>()->BuildCustomization(p_Out);
 }
 
 void PlayerArmorExtension::ApplyData(int32_t p_PlayerIndex, Blam::Game::Players::PlayerProperties *p_Properties, const Blam::Game::Players::PlayerCustomization &p_Data)

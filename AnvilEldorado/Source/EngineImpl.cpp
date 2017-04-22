@@ -138,7 +138,7 @@ void EngineImpl::CreateHooks()
 	s_Address = ExecutableBase() + 0x437360;
 	HookFunctionOffset(s_Address, VerifyAccountAndLoadAnticheat);
 
-	// Force Russian Localizationn Hook
+	// Force Russian Localization Hook
 	s_Address = ExecutableBase() + 0x2E5C0;
 	HookFunctionOffset(s_Address, ForceRussianLocale);
 
