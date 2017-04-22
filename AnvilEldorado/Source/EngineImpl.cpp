@@ -42,45 +42,34 @@ EngineImpl::~EngineImpl()
 
 bool EngineImpl::Init()
 {
-	// TODO: Test
-	// Create our IdCache
-#if _DEBUG
-	m_Cache = std::make_shared<AnvilEldorado::Game::Cache::StringIdCache>();
-#endif
 	// Disable Windows DPI Scaling
 	SetProcessDPIAware();
 
 	// Create and initialize all hooks
 	CreateHooks();
 
-	// Initialize game subsystem
-	/*m_Game = std::make_shared<Game::GameImpl>();
-	if (!m_Game->Init())
-		WriteLog("Could not initialize GameImpl.");*/
+	// Initialize strings subsystem
+	if (!GetSubsystem<Game::Cache::StringIdCache>()->Init())
+		WriteLog("Could not initialize StringIdCache.");
 
 	// Initialize audio subsystem
-	m_Audio = std::make_shared<Game::Audio::AudioImpl>();
-	if (!m_Audio->Init())
+	if (!GetSubsystem<Game::Audio::AudioImpl>()->Init())
 		WriteLog("Could not initialize AudioImpl.");
 
 	// Initialize the input subsystem
-	m_Input = std::make_shared<Game::Input::InputImpl>();
-	if (!m_Input->Init())
+	if (!GetSubsystem<Game::Input::InputImpl>()->Init())
 		WriteLog("Could not initialize InputImpl.");
 
 	// Initialize the networking subsystem
-	m_Networking = std::make_shared<Game::Networking::NetworkingImpl>();
-	if (!m_Networking->Init())
+	if (!GetSubsystem<Game::Networking::NetworkingImpl>()->Init())
 		WriteLog("Could not initalize NetworkingImpl.");
 
 	// Initialize the player subsystem
-	m_Player = std::make_shared<Game::Players::PlayerImpl>();
-	if (!m_Player->Init())
+	if (!GetSubsystem<Game::Players::PlayerImpl>()->Init())
 		WriteLog("Could not initialize PlayerImpl.");
 
 	// Initialize the ui subsystem
-	m_UI = std::make_shared<Game::UI::UIImpl>();
-	if (!m_UI->Init())
+	if (!GetSubsystem<Game::UI::UIImpl>()->Init())
 		WriteLog("Could not initialize UIImpl.");
 
 	// Enable all hooked functions
@@ -106,11 +95,6 @@ uint8_t* EngineImpl::ExecutableBase()
 	m_ModuleBase = s_ModuleInfo.lpBaseOfDll;
 
 	return static_cast<uint8_t*>(m_ModuleBase);
-}
-
-std::shared_ptr<AnvilCommon::IdCache> EngineImpl::GetStringCache()
-{
-	return m_Cache;
 }
 
 size_t EngineImpl::ExecutableSize()

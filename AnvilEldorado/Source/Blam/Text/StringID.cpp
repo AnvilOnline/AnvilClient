@@ -5,6 +5,8 @@ namespace Blam::Text
 {
 	const StringID StringID::Null = 0;
 
+	StringID::StringID() : StringID(Null) {}
+
 	StringID::StringID(const int32_t p_Length, const int32_t p_Set, const int32_t p_Index)
 		: Value((uint32_t)(((p_Length & 0xFF) << 24) | ((p_Set & 0xFF) << 16) | (p_Index & 0xFFFF)))
 	{
@@ -33,6 +35,26 @@ namespace Blam::Text
 	int32_t StringID::GetIndex() const
 	{
 		return (int32_t)(Value & 0xFFFF);
+	}
+
+	bool StringID::operator<(const StringID &p_Other) const
+	{
+		return Value < p_Other.Value;
+	}
+
+	bool StringID::operator>(const StringID &p_Other) const
+	{
+		return Value > p_Other.Value;
+	}
+
+	bool StringID::operator<=(const StringID &p_Other) const
+	{
+		return Value <= p_Other.Value;
+	}
+
+	bool StringID::operator>=(const StringID &p_Other) const
+	{
+		return Value >= p_Other.Value;
 	}
 
 	bool StringID::operator==(const StringID &p_Other) const
