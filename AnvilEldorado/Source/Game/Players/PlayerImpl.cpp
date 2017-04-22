@@ -18,23 +18,6 @@ const size_t AnvilEldorado::Game::Players::PlayerPropertiesPacketFooterSize = 0x
 
 bool PlayerImpl::Init()
 {
-	//TODO: Add LoadArmor to TagsLoaded hook
-	m_ArmorPrimaryColor = 0xFFFFFF;
-	m_ArmorSecondaryColor = 0xFFFFFF;
-	m_ArmorVisorColor = 0xFFFFFF;
-	m_ArmorLightsColor = 0xFFFFFF;
-	m_ArmorHoloColor = 0xFFFFFF;
-
-	m_ArmorHelmet = "air_assault";
-	m_ArmorChest = "air_assault";
-	m_ArmorShoulders = "air_assault";
-	m_ArmorArms = "air_assault";
-	m_ArmorLegs = "air_assault";
-	m_ArmorPelvis = "air_assault";
-	m_ArmorAccessory = "";
-
-	m_UpdateArmor = true;
-
 	m_PlayerPropertiesExtender->Add(std::make_shared<PlayerArmorExtension>());
 
 	m_Hooks = std::make_shared<Players::Hooks>();
@@ -120,6 +103,15 @@ bool PlayerImpl::LoadArmor(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGl
 		}
 	}
 
+	for (auto &s_Variant : p_MultiplayerGlobals->Universal->GameVariantWeapons)
+	{
+		auto s_Name = GetClientInterface()->GetEngine()->GetSubsystem<AnvilEldorado::Game::Cache::StringIdCache>()->GetString(s_Variant.Name.Value);
+		uint16_t s_Index = s_Variant.Weapon.TagIndex;
+
+		if (s_Index != 0xFFFF)
+			m_PodiumWeaponIndices.emplace(s_Name, s_Index);
+	}
+
 	m_ArmorPrimaryColor = 0xFFFFFF;
 	m_ArmorSecondaryColor = 0xFFFFFF;
 	m_ArmorVisorColor = 0xFFFFFF;
@@ -169,6 +161,44 @@ const auto Biped_ApplyArmor = reinterpret_cast<void(*)(Blam::Game::Players::Play
 const auto Biped_ApplyArmorColor = reinterpret_cast<void(*)(uint32_t, int32_t, float *)>(0xB328F0);
 const auto Biped_UpdateArmorColors = reinterpret_cast<void(*)(uint32_t)>(0x5A2FA0);
 
+/*void Biped_PoseWithWeapon(uint32_t p_Unit, uint32_t p_Weapon)
+{
+	const auto sub_B450F0 = reinterpret_cast<char(*)(uint16_t, int)>(0xB450F0);
+	const auto sub_B31590 = reinterpret_cast<DWORD*(*)(void*, int, int, int)>(0xB31590);
+	const auto sub_B30440 = reinterpret_cast<signed int(*)(double, __m128, void*)>(0xB30440);
+	const auto sub_B393D0 = reinterpret_cast<char(*)(double, __m128, int, int, int)>(0xB393D0);
+	const auto sub_B2CD10 = reinterpret_cast<int(*)(double, __m128, int)>(0xB2CD10);
+
+	if (!sub_B450F0(p_Unit, p_Weapon))
+	{
+		char v9;
+		sub_B31590(&v9, p_Weapon, -1, 0);
+		signed int v7 = sub_B30440(a1, a2, &v9);//crash
+		if (v7 != -1 && !sub_B393D0(a1, a2, p_Unit, v7, 8))
+			sub_B2CD10(a1, a2, v7);
+	}
+}*/
+
+//TODO: Remove inlined assembly (WIP version above)
+__declspec(naked) void Biped_PoseWithWeapon(uint32_t p_Unit, uint32_t p_Weapon)
+{
+	// This is a pretty big hack, basically I don't know where the function pulls the weapon index from
+	// so this lets us skip over the beginning of the function and set the weapon tag to whatever we want
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		sub esp, 0x18C
+		push esi
+		push edi
+		sub esp, 0x8
+		mov esi, p_Unit
+		mov edi, p_Weapon
+		push 0x7B77DA
+		ret
+	}
+}
+
 void PlayerImpl::CustomizeBiped(const Blam::Data::DatumIndex &p_BipedIndex)
 {
 	// Generate customization data
@@ -200,8 +230,7 @@ void PlayerImpl::CustomizeBiped(const Blam::Data::DatumIndex &p_BipedIndex)
 	if (m_PodiumWeaponIndices.find(s_WeaponName) == m_PodiumWeaponIndices.end())
 		s_WeaponName = (m_PodiumWeapon = "assault_rifle");
 
-	//TODO: Fix
-	//Biped_PoseWithWeapon_Hook(p_BipedIndex.Value, m_PodiumWeaponIndices.find(s_WeaponName)->second);
+	Biped_PoseWithWeapon(p_BipedIndex.Value, m_PodiumWeaponIndices.find(s_WeaponName)->second);
 }
 
 std::wstring PlayerImpl::GetName() const

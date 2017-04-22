@@ -63,6 +63,7 @@ namespace AnvilEldorado::Game::Players
 		size_t GetPlayerPropertiesPacketSize();
 
 		bool LoadArmor(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGlobals);
+
 		Blam::Data::DatumIndex GetPodiumBiped() const;
 
 		void BuildCustomization(Blam::Game::Players::PlayerCustomization * p_Customization) const;

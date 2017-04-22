@@ -18,7 +18,6 @@ bool Hooks::Init()
 
 DeclareDetouredFunction(Hooks, void, __cdecl, SetupPlayerArmor, double a1, __m128 a2)
 {
-	//TODO: Replace static instance
 	auto s_Player = GetClientInterface()->GetEngine()->GetSubsystem<PlayerImpl>();
 
 	// This function runs every tick, so only update if necessary
