@@ -115,7 +115,7 @@
     <ClInclude Include="Source\Game\Networking\XnKey.hpp" />
     <ClInclude Include="Source\Game\Networking\XnKid.hpp" />
     <ClInclude Include="Source\Game\Players\Hooks.hpp" />
-    <ClInclude Include="Source\Game\Players\PlayerArmorExtender.hpp" />
+    <ClInclude Include="Source\Game\Players\PlayerArmorExtension.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerImpl.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerPropertiesExtender.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerPropertiesExtension.hpp" />

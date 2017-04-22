@@ -31,29 +31,29 @@ namespace AnvilEldorado::Game::Players
 		uint32_t m_ArmorLightsColor;
 		uint32_t m_ArmorHoloColor;
 
-		std::map<std::string, uint8_t> m_ArmorHelmetIndices;
-		std::string m_ArmorHelmet;
+		std::map<Blam::Text::StringID, uint8_t> m_ArmorHelmetIndices;
+		Blam::Text::StringID m_ArmorHelmet;
 
-		std::map<std::string, uint8_t> m_ArmorChestIndices;
-		std::string m_ArmorChest;
+		std::map<Blam::Text::StringID, uint8_t> m_ArmorChestIndices;
+		Blam::Text::StringID m_ArmorChest;
 
-		std::map<std::string, uint8_t> m_ArmorShouldersIndices;
-		std::string m_ArmorShoulders;
+		std::map<Blam::Text::StringID, uint8_t> m_ArmorShouldersIndices;
+		Blam::Text::StringID m_ArmorShoulders;
 
-		std::map<std::string, uint8_t> m_ArmorArmsIndices;
-		std::string m_ArmorArms;
+		std::map<Blam::Text::StringID, uint8_t> m_ArmorArmsIndices;
+		Blam::Text::StringID m_ArmorArms;
 
-		std::map<std::string, uint8_t> m_ArmorLegsIndices;
-		std::string m_ArmorLegs;
+		std::map<Blam::Text::StringID, uint8_t> m_ArmorLegsIndices;
+		Blam::Text::StringID m_ArmorLegs;
 
-		std::map<std::string, uint8_t> m_ArmorPelvisIndices;
-		std::string m_ArmorPelvis;
+		std::map<Blam::Text::StringID, uint8_t> m_ArmorPelvisIndices;
+		Blam::Text::StringID m_ArmorPelvis;
 
-		std::map<std::string, uint8_t> m_ArmorAccessoryIndices;
-		std::string m_ArmorAccessory;
+		std::map<Blam::Text::StringID, uint8_t> m_ArmorAccessoryIndices;
+		Blam::Text::StringID m_ArmorAccessory;
 
-		std::map<std::string, uint16_t> m_PodiumWeaponIndices;
-		std::string m_PodiumWeapon;
+		std::map<Blam::Text::StringID, uint16_t> m_PodiumWeaponIndices;
+		Blam::Text::StringID m_PodiumWeapon;
 
 	public:
 		virtual bool Init();
@@ -95,29 +95,29 @@ namespace AnvilEldorado::Game::Players
 		void SetArmorHoloColor(const uint32_t p_Color);
 		void SetArmorHoloColor(const uint8_t p_Red, const uint8_t p_Green, const uint8_t p_Blue);
 
-		std::string GetArmorHelmet() const;
-		void SetArmorHelmet(const std::string &p_ArmorHelmet);
+		Blam::Text::StringID GetArmorHelmet() const;
+		void SetArmorHelmet(const Blam::Text::StringID &p_ArmorHelmet);
 
-		std::string GetArmorChest() const;
-		void SetArmorChest(const std::string &p_ArmorChest);
+		Blam::Text::StringID GetArmorChest() const;
+		void SetArmorChest(const Blam::Text::StringID &p_ArmorChest);
 
-		std::string GetArmorShoulders() const;
-		void SetArmorShoulders(const std::string &p_ArmorShoulders);
+		Blam::Text::StringID GetArmorShoulders() const;
+		void SetArmorShoulders(const Blam::Text::StringID &p_ArmorShoulders);
 
-		std::string GetArmorArms() const;
-		void SetArmorArms(const std::string &p_ArmorArms);
+		Blam::Text::StringID GetArmorArms() const;
+		void SetArmorArms(const Blam::Text::StringID &p_ArmorArms);
 
-		std::string GetArmorLegs() const;
-		void SetArmorLegs(const std::string &p_ArmorLegs);
+		Blam::Text::StringID GetArmorLegs() const;
+		void SetArmorLegs(const Blam::Text::StringID &p_ArmorLegs);
 
-		std::string GetArmorPelvis() const;
-		void SetArmorPelvis(const std::string &p_ArmorPelvis);
+		Blam::Text::StringID GetArmorPelvis() const;
+		void SetArmorPelvis(const Blam::Text::StringID &p_ArmorPelvis);
 
-		std::string GetArmorAccessory() const;
-		void SetArmorAccessory(const std::string &p_ArmorAccessory);
+		Blam::Text::StringID GetArmorAccessory() const;
+		void SetArmorAccessory(const Blam::Text::StringID &p_ArmorAccessory);
 
-		std::string GetPodiumWeapon() const;
-		void SetPodiumWeapon(const std::string &p_PodiumWeapon);
+		Blam::Text::StringID GetPodiumWeapon() const;
+		void SetPodiumWeapon(const Blam::Text::StringID &p_PodiumWeapon);
 	};
 
 	// Packet size constants
