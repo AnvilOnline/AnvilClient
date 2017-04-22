@@ -1,12 +1,12 @@
 #pragma once
-#include <Interfaces\IdCache.hpp>
+#include <Interfaces\Initializable.hpp>
 #include <unordered_map>
 #include <string>
 
 namespace AnvilEldorado::Game::Cache
 {
 	class StringIdCache :
-		public AnvilCommon::IdCache
+		public AnvilCommon::Initializable
 	{
 	protected:
 		std::unordered_map<int16_t, std::string> m_Strings;

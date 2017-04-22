@@ -2,7 +2,6 @@
 #define _WIN32_MEAN_AND_LEAN
 
 #include <Interfaces\Engine.hpp>
-#include <Interfaces\IdCache.hpp>
 #include <Hooking\Hooking.hpp>
 
 #include <memory>
@@ -15,21 +14,10 @@ namespace AnvilEldorado
 		public AnvilCommon::Engine
 	{
 	private:
-		std::shared_ptr<AnvilCommon::IdCache> m_Cache;
 		void* m_ModuleBase;
 		size_t m_ModuleSize;
 
 	protected:
-		std::shared_ptr<AnvilCommon::Initializable> m_Audio;
-		std::shared_ptr<AnvilCommon::Initializable> m_Camera;
-		std::shared_ptr<AnvilCommon::Initializable> m_Forge;
-		std::shared_ptr<AnvilCommon::Initializable> m_Game;
-		std::shared_ptr<AnvilCommon::Initializable> m_Graphics;
-		std::shared_ptr<AnvilCommon::Initializable> m_Input;
-		std::shared_ptr<AnvilCommon::Initializable> m_Networking;
-		std::shared_ptr<AnvilCommon::Initializable> m_Player;
-		std::shared_ptr<AnvilCommon::Initializable> m_UI;
-
 		/// <summary>
 		/// Create Window Hook
 		/// </summary>
@@ -62,7 +50,6 @@ namespace AnvilEldorado
 		virtual bool Init();
 		virtual uint8_t* ExecutableBase();
 		virtual size_t ExecutableSize();
-		virtual std::shared_ptr<AnvilCommon::IdCache> GetStringCache();
 
 	private:
 		void CreateHooks();

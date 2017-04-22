@@ -24,7 +24,6 @@
     <ClInclude Include="Source\Globals.hpp" />
     <ClInclude Include="Source\Interfaces\Client.hpp" />
     <ClInclude Include="Source\Interfaces\Engine.hpp" />
-    <ClInclude Include="Source\Interfaces\IdCache.hpp" />
     <ClInclude Include="Source\Interfaces\Initializable.hpp" />
     <ClInclude Include="Source\Utils\Hook.hpp" />
     <ClInclude Include="Source\Utils\Logger.hpp" />
