@@ -42,11 +42,6 @@ EngineImpl::~EngineImpl()
 
 bool EngineImpl::Init()
 {
-	// TODO: Test
-	// Create our IdCache
-#if _DEBUG
-	m_Cache = std::make_shared<AnvilEldorado::Game::Cache::StringIdCache>();
-#endif
 	// Disable Windows DPI Scaling
 	SetProcessDPIAware();
 
@@ -59,27 +54,27 @@ bool EngineImpl::Init()
 		WriteLog("Could not initialize GameImpl.");*/
 
 	// Initialize audio subsystem
-	m_Audio = std::make_shared<Game::Audio::AudioImpl>();
+	m_Audio = GetSubsystem<Game::Audio::AudioImpl>();
 	if (!m_Audio->Init())
 		WriteLog("Could not initialize AudioImpl.");
 
 	// Initialize the input subsystem
-	m_Input = std::make_shared<Game::Input::InputImpl>();
+	m_Input = GetSubsystem<Game::Input::InputImpl>();
 	if (!m_Input->Init())
 		WriteLog("Could not initialize InputImpl.");
 
 	// Initialize the networking subsystem
-	m_Networking = std::make_shared<Game::Networking::NetworkingImpl>();
+	m_Networking = GetSubsystem<Game::Networking::NetworkingImpl>();
 	if (!m_Networking->Init())
 		WriteLog("Could not initalize NetworkingImpl.");
 
 	// Initialize the player subsystem
-	m_Player = std::make_shared<Game::Players::PlayerImpl>();
+	m_Player = GetSubsystem<Game::Players::PlayerImpl>();
 	if (!m_Player->Init())
 		WriteLog("Could not initialize PlayerImpl.");
 
 	// Initialize the ui subsystem
-	m_UI = std::make_shared<Game::UI::UIImpl>();
+	m_UI = GetSubsystem<Game::UI::UIImpl>();
 	if (!m_UI->Init())
 		WriteLog("Could not initialize UIImpl.");
 
@@ -106,11 +101,6 @@ uint8_t* EngineImpl::ExecutableBase()
 	m_ModuleBase = s_ModuleInfo.lpBaseOfDll;
 
 	return static_cast<uint8_t*>(m_ModuleBase);
-}
-
-std::shared_ptr<AnvilCommon::IdCache> EngineImpl::GetStringCache()
-{
-	return m_Cache;
 }
 
 size_t EngineImpl::ExecutableSize()
