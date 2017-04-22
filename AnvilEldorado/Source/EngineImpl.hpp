@@ -18,16 +18,6 @@ namespace AnvilEldorado
 		size_t m_ModuleSize;
 
 	protected:
-		std::shared_ptr<AnvilCommon::Initializable> m_Audio;
-		std::shared_ptr<AnvilCommon::Initializable> m_Camera;
-		std::shared_ptr<AnvilCommon::Initializable> m_Forge;
-		std::shared_ptr<AnvilCommon::Initializable> m_Game;
-		std::shared_ptr<AnvilCommon::Initializable> m_Graphics;
-		std::shared_ptr<AnvilCommon::Initializable> m_Input;
-		std::shared_ptr<AnvilCommon::Initializable> m_Networking;
-		std::shared_ptr<AnvilCommon::Initializable> m_Player;
-		std::shared_ptr<AnvilCommon::Initializable> m_UI;
-
 		/// <summary>
 		/// Create Window Hook
 		/// </summary>

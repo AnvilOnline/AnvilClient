@@ -48,34 +48,24 @@ bool EngineImpl::Init()
 	// Create and initialize all hooks
 	CreateHooks();
 
-	// Initialize game subsystem
-	/*m_Game = std::make_shared<Game::GameImpl>();
-	if (!m_Game->Init())
-		WriteLog("Could not initialize GameImpl.");*/
-
 	// Initialize audio subsystem
-	m_Audio = GetSubsystem<Game::Audio::AudioImpl>();
-	if (!m_Audio->Init())
+	if (!GetSubsystem<Game::Audio::AudioImpl>()->Init())
 		WriteLog("Could not initialize AudioImpl.");
 
 	// Initialize the input subsystem
-	m_Input = GetSubsystem<Game::Input::InputImpl>();
-	if (!m_Input->Init())
+	if (!GetSubsystem<Game::Input::InputImpl>()->Init())
 		WriteLog("Could not initialize InputImpl.");
 
 	// Initialize the networking subsystem
-	m_Networking = GetSubsystem<Game::Networking::NetworkingImpl>();
-	if (!m_Networking->Init())
+	if (!GetSubsystem<Game::Networking::NetworkingImpl>()->Init())
 		WriteLog("Could not initalize NetworkingImpl.");
 
 	// Initialize the player subsystem
-	m_Player = GetSubsystem<Game::Players::PlayerImpl>();
-	if (!m_Player->Init())
+	if (!GetSubsystem<Game::Players::PlayerImpl>()->Init())
 		WriteLog("Could not initialize PlayerImpl.");
 
 	// Initialize the ui subsystem
-	m_UI = GetSubsystem<Game::UI::UIImpl>();
-	if (!m_UI->Init())
+	if (!GetSubsystem<Game::UI::UIImpl>()->Init())
 		WriteLog("Could not initialize UIImpl.");
 
 	// Enable all hooked functions
