@@ -13,6 +13,7 @@ namespace Blam::Text
 
 		uint32_t Value;
 
+		StringID();
 		StringID(const uint32_t p_Value);
 		StringID(const int32_t p_Set, const int32_t p_Index);
 		StringID(const int32_t p_Length, const int32_t p_Set, const int32_t p_Index);
@@ -20,6 +21,12 @@ namespace Blam::Text
 		int32_t GetLength() const;
 		int32_t GetSet() const;
 		int32_t GetIndex() const;
+
+		bool operator<(const StringID &p_Other) const;
+		bool operator>(const StringID &p_Other) const;
+
+		bool operator<=(const StringID &p_Other) const;
+		bool operator>=(const StringID &p_Other) const;
 
 		bool operator==(const StringID &p_Other) const;
 		bool operator!=(const StringID &p_Other) const;

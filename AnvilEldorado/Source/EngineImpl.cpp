@@ -48,6 +48,10 @@ bool EngineImpl::Init()
 	// Create and initialize all hooks
 	CreateHooks();
 
+	// Initialize strings subsystem
+	if (!GetSubsystem<Game::Cache::StringIdCache>()->Init())
+		WriteLog("Could not initialize StringIdCache.");
+
 	// Initialize audio subsystem
 	if (!GetSubsystem<Game::Audio::AudioImpl>()->Init())
 		WriteLog("Could not initialize AudioImpl.");
