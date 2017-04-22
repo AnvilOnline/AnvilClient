@@ -1,8 +1,9 @@
 #pragma once
 #define _WIN32_MEAN_AND_LEAN
 
-#include <Interfaces/Engine.hpp>
-#include <Hooking/Hooking.hpp>
+#include <Interfaces\Engine.hpp>
+#include <Interfaces\IdCache.hpp>
+#include <Hooking\Hooking.hpp>
 
 #include <memory>
 
@@ -14,6 +15,7 @@ namespace AnvilEldorado
 		public AnvilCommon::Engine
 	{
 	private:
+		std::shared_ptr<AnvilCommon::IdCache> m_Cache;
 		void* m_ModuleBase;
 		size_t m_ModuleSize;
 
@@ -65,6 +67,7 @@ namespace AnvilEldorado
 		virtual bool Init();
 		virtual uint8_t* ExecutableBase();
 		virtual size_t ExecutableSize();
+		virtual std::shared_ptr<AnvilCommon::IdCache> GetStringCache();
 
 	private:
 		void CreateHooks();

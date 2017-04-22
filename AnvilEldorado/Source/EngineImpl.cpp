@@ -7,12 +7,15 @@
 #include <MinHook.h>
 
 #include <Game\Audio\AudioImpl.hpp>
+#include <Game\Cache\StringIdCache.hpp>
 #include <Game\Input\InputImpl.hpp>
 #include <Game\Networking\NetworkingImpl.hpp>
 #include <Game\Players\PlayerImpl.hpp>
 #include <Game\UI\UIImpl.hpp>
 
 #include <Utils\Patch.hpp>
+
+#include <memory>
 
 using namespace AnvilEldorado;
 
@@ -39,6 +42,11 @@ EngineImpl::~EngineImpl()
 
 bool EngineImpl::Init()
 {
+	// TODO: Test
+	// Create our IdCache
+#if _DEBUG
+	m_Cache = std::make_shared<AnvilEldorado::Game::Cache::StringIdCache>();
+#endif
 	// Disable Windows DPI Scaling
 	SetProcessDPIAware();
 
@@ -98,6 +106,11 @@ uint8_t* EngineImpl::ExecutableBase()
 	m_ModuleBase = s_ModuleInfo.lpBaseOfDll;
 
 	return static_cast<uint8_t*>(m_ModuleBase);
+}
+
+std::shared_ptr<AnvilCommon::IdCache> EngineImpl::GetStringCache()
+{
+	return m_Cache;
 }
 
 size_t EngineImpl::ExecutableSize()

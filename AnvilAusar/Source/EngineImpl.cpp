@@ -44,3 +44,8 @@ size_t EngineImpl::ExecutableSize()
 {
 	return 0;
 }
+
+std::shared_ptr<AnvilCommon::IdCache> EngineImpl::GetStringCache()
+{
+	return nullptr;
+}
