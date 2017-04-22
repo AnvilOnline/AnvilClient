@@ -2,7 +2,7 @@
 #include "Hooks.hpp"
 
 #include <Game\Cache\StringIdCache.hpp>
-#include <Game\Players\PlayerArmorExtender.hpp>
+#include <Game\Players\PlayerArmorExtension.hpp>
 
 #include <Interfaces\Client.hpp>
 #include <EngineImpl.hpp>
@@ -52,7 +52,7 @@ size_t PlayerImpl::GetPlayerPropertiesPacketSize()
 	return size;
 }
 
-uint8_t GetArmorIndex(const std::string &p_Name, const std::map<std::string, uint8_t> &p_Indices)
+uint8_t GetArmorIndex(Blam::Text::StringID p_Name, const std::map<Blam::Text::StringID, uint8_t> &p_Indices)
 {
 	auto it = p_Indices.find(p_Name);
 
@@ -60,7 +60,7 @@ uint8_t GetArmorIndex(const std::string &p_Name, const std::map<std::string, uin
 }
 
 
-bool AddArmorPermutations(const Blam::Tags::Game::MultiplayerGlobals::Universal::ArmorCustomization &p_Element, std::map<std::string, uint8_t> &p_Map)
+bool AddArmorPermutations(const Blam::Tags::Game::MultiplayerGlobals::Universal::ArmorCustomization &p_Element, std::map<Blam::Text::StringID, uint8_t> &p_Map)
 {
 
 	for (auto i = 0; i < p_Element.Permutations.Count; i++)
@@ -70,7 +70,7 @@ bool AddArmorPermutations(const Blam::Tags::Game::MultiplayerGlobals::Universal:
 		if (!s_Permutation.FirstPersonArmorModel && !s_Permutation.ThirdPersonArmorObject)
 			continue;
 
-		p_Map.emplace(std::string(GetClientInterface()->GetEngine()->GetSubsystem<AnvilEldorado::Game::Cache::StringIdCache>()->GetString(s_Permutation.Name.Value)), i);
+		p_Map.emplace(s_Permutation.Name.Value, i);
 	}
 
 	return true;
@@ -80,36 +80,33 @@ bool PlayerImpl::LoadArmor(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGl
 {
 	for (auto &s_Customization : p_MultiplayerGlobals->Universal->SpartanArmorCustomization)
 	{
-		auto s_PieceRegion = GetClientInterface()->GetEngine()->GetSubsystem<AnvilEldorado::Game::Cache::StringIdCache>()->GetString(s_Customization.PieceRegion.Value);
+		auto s_PieceRegion = s_Customization.PieceRegion.Value;
 
-		if (s_PieceRegion == "helmet")
+		if (s_PieceRegion == 0x1CE7) // helmet
 			AddArmorPermutations(s_Customization, m_ArmorHelmetIndices);
-		else if (s_PieceRegion == "chest")
+		else if (s_PieceRegion == 0x9E) // chest
 			AddArmorPermutations(s_Customization, m_ArmorChestIndices);
-		else if (s_PieceRegion == "shoulders")
+		else if (s_PieceRegion == 0x35D8) // shoulders
 			AddArmorPermutations(s_Customization, m_ArmorShouldersIndices);
-		else if (s_PieceRegion == "arms")
+		else if (s_PieceRegion == 0x606) // arms
 			AddArmorPermutations(s_Customization, m_ArmorArmsIndices);
-		else if (s_PieceRegion == "legs")
+		else if (s_PieceRegion == 0x605) // legs
 			AddArmorPermutations(s_Customization, m_ArmorLegsIndices);
-		else if (s_PieceRegion == "acc")
+		else if (s_PieceRegion == 0x35D9) // acc
 			AddArmorPermutations(s_Customization, m_ArmorAccessoryIndices);
-		else if (s_PieceRegion == "pelvis")
+		else if (s_PieceRegion == 0x268) // pelvis
 			AddArmorPermutations(s_Customization, m_ArmorPelvisIndices);
 		else
 		{
-			WriteLog("ERROR: Invalid armor piece region: %s", s_PieceRegion.c_str());
+			WriteLog("ERROR: Invalid armor piece region: 0x%X", s_PieceRegion);
 			return false;
 		}
 	}
 
 	for (auto &s_Variant : p_MultiplayerGlobals->Universal->GameVariantWeapons)
 	{
-		auto s_Name = GetClientInterface()->GetEngine()->GetSubsystem<AnvilEldorado::Game::Cache::StringIdCache>()->GetString(s_Variant.Name.Value);
-		uint16_t s_Index = s_Variant.Weapon.TagIndex;
-
-		if (s_Index != 0xFFFF)
-			m_PodiumWeaponIndices.emplace(s_Name, s_Index);
+		if (s_Variant.Weapon.TagIndex != 0xFFFF)
+			m_PodiumWeaponIndices.emplace(s_Variant.Name.Value, s_Variant.Weapon.TagIndex);
 	}
 
 	m_ArmorPrimaryColor = 0xFFFFFF;
@@ -118,13 +115,13 @@ bool PlayerImpl::LoadArmor(Blam::Tags::Game::MultiplayerGlobals *p_MultiplayerGl
 	m_ArmorLightsColor = 0xFFFFFF;
 	m_ArmorHoloColor = 0xFFFFFF;
 
-	m_ArmorHelmet = "air_assault";
-	m_ArmorChest = "air_assault";
-	m_ArmorShoulders = "air_assault";
-	m_ArmorArms = "air_assault";
-	m_ArmorLegs = "air_assault";
-	m_ArmorPelvis = "air_assault";
-	m_ArmorAccessory = "";
+	m_ArmorHelmet = 0x358F; // air_assault
+	m_ArmorChest = 0x358F; // air_assault
+	m_ArmorShoulders = 0x358F; // air_assault
+	m_ArmorArms = 0x358F; // air_assault
+	m_ArmorLegs = 0x358F; // air_assault
+	m_ArmorPelvis = 0x358F; // air_assault
+	m_ArmorAccessory = 0x0;
 
 	m_UpdateArmor = true;
 
@@ -228,7 +225,7 @@ void PlayerImpl::CustomizeBiped(const Blam::Data::DatumIndex &p_BipedIndex)
 	auto s_WeaponName = m_PodiumWeapon;
 
 	if (m_PodiumWeaponIndices.find(s_WeaponName) == m_PodiumWeaponIndices.end())
-		s_WeaponName = (m_PodiumWeapon = "assault_rifle");
+		s_WeaponName = (m_PodiumWeapon = 0x41A); // assault_rifle
 
 	Biped_PoseWithWeapon(p_BipedIndex.Value, m_PodiumWeaponIndices.find(s_WeaponName)->second);
 }
@@ -330,82 +327,82 @@ void PlayerImpl::SetArmorHoloColor(const uint8_t p_Red, const uint8_t p_Green, c
 	SetArmorHoloColor((p_Blue << 16) | (p_Green << 8) | (p_Red << 0));
 }
 
-std::string PlayerImpl::GetArmorHelmet() const
+Blam::Text::StringID PlayerImpl::GetArmorHelmet() const
 {
 	return m_ArmorHelmet;
 }
 
-void PlayerImpl::SetArmorHelmet(const std::string &p_ArmorHelmet)
+void PlayerImpl::SetArmorHelmet(const Blam::Text::StringID &p_ArmorHelmet)
 {
 	m_ArmorHelmet = p_ArmorHelmet;
 }
 
-std::string PlayerImpl::GetArmorChest() const
+Blam::Text::StringID PlayerImpl::GetArmorChest() const
 {
 	return m_ArmorChest;
 }
 
-void PlayerImpl::SetArmorChest(const std::string &p_ArmorChest)
+void PlayerImpl::SetArmorChest(const Blam::Text::StringID &p_ArmorChest)
 {
 	m_ArmorChest = p_ArmorChest;
 }
 
-std::string PlayerImpl::GetArmorShoulders() const
+Blam::Text::StringID PlayerImpl::GetArmorShoulders() const
 {
 	return m_ArmorShoulders;
 }
 
-void PlayerImpl::SetArmorShoulders(const std::string &p_ArmorShoulders)
+void PlayerImpl::SetArmorShoulders(const Blam::Text::StringID &p_ArmorShoulders)
 {
 	m_ArmorShoulders = p_ArmorShoulders;
 }
 
-std::string PlayerImpl::GetArmorArms() const
+Blam::Text::StringID PlayerImpl::GetArmorArms() const
 {
 	return m_ArmorArms;
 }
 
-void PlayerImpl::SetArmorArms(const std::string &p_ArmorArms)
+void PlayerImpl::SetArmorArms(const Blam::Text::StringID &p_ArmorArms)
 {
 	m_ArmorArms = p_ArmorArms;
 }
 
-std::string PlayerImpl::GetArmorLegs() const
+Blam::Text::StringID PlayerImpl::GetArmorLegs() const
 {
 	return m_ArmorLegs;
 }
 
-void PlayerImpl::SetArmorLegs(const std::string &p_ArmorLegs)
+void PlayerImpl::SetArmorLegs(const Blam::Text::StringID &p_ArmorLegs)
 {
 	m_ArmorLegs = p_ArmorLegs;
 }
 
-std::string PlayerImpl::GetArmorPelvis() const
+Blam::Text::StringID PlayerImpl::GetArmorPelvis() const
 {
 	return m_ArmorPelvis;
 }
 
-void PlayerImpl::SetArmorPelvis(const std::string &p_ArmorPelvis)
+void PlayerImpl::SetArmorPelvis(const Blam::Text::StringID &p_ArmorPelvis)
 {
 	m_ArmorPelvis = p_ArmorPelvis;
 }
 
-std::string PlayerImpl::GetArmorAccessory() const
+Blam::Text::StringID PlayerImpl::GetArmorAccessory() const
 {
 	return m_ArmorAccessory;
 }
 
-void PlayerImpl::SetArmorAccessory(const std::string &p_ArmorAccessory)
+void PlayerImpl::SetArmorAccessory(const Blam::Text::StringID &p_ArmorAccessory)
 {
 	m_ArmorAccessory = p_ArmorAccessory;
 }
 
-std::string PlayerImpl::GetPodiumWeapon() const
+Blam::Text::StringID PlayerImpl::GetPodiumWeapon() const
 {
 	return m_PodiumWeapon;
 }
 
-void PlayerImpl::SetPodiumWeapon(const std::string &p_PodiumWeapon)
+void PlayerImpl::SetPodiumWeapon(const Blam::Text::StringID &p_PodiumWeapon)
 {
 	m_PodiumWeapon = p_PodiumWeapon;
 }

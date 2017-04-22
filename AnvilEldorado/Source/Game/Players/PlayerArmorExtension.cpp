@@ -1,4 +1,4 @@
-#include "PlayerArmorExtender.hpp"
+#include "PlayerArmorExtension.hpp"
 #include "PlayerImpl.hpp";
 
 #include <EngineImpl.hpp>
