@@ -114,6 +114,7 @@
     <ClInclude Include="Source\Game\Networking\XnAddr.hpp" />
     <ClInclude Include="Source\Game\Networking\XnKey.hpp" />
     <ClInclude Include="Source\Game\Networking\XnKid.hpp" />
+    <ClInclude Include="Source\Game\Players\Hooks.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerArmorExtender.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerImpl.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerPropertiesExtender.hpp" />
@@ -172,6 +173,7 @@
     <ClCompile Include="Source\Game\Input\InputImpl.cpp" />
     <ClCompile Include="Source\Game\Networking\Hooks.cpp" />
     <ClCompile Include="Source\Game\Networking\NetworkingImpl.cpp" />
+    <ClCompile Include="Source\Game\Players\Hooks.cpp" />
     <ClCompile Include="Source\Game\Players\PlayerArmorExtension.cpp" />
     <ClCompile Include="Source\Game\Players\PlayerImpl.cpp" />
     <ClCompile Include="Source\Game\Players\PlayerPropertiesExtender.cpp" />

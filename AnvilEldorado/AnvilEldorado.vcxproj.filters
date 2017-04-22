@@ -55,6 +55,7 @@
     <ClCompile Include="Source\Game\Audio\AudioImpl.cpp" />
     <ClCompile Include="Source\Game\Audio\Hooks.cpp" />
     <ClCompile Include="Source\Game\Players\PlayerArmorExtension.cpp" />
+    <ClCompile Include="Source\Game\Players\Hooks.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine.hpp" />
@@ -167,5 +168,6 @@
     <ClInclude Include="Source\Game\Audio\AudioImpl.hpp" />
     <ClInclude Include="Source\Game\Audio\Hooks.hpp" />
     <ClInclude Include="Source\Game\Players\PlayerArmorExtender.hpp" />
+    <ClInclude Include="Source\Game\Players\Hooks.hpp" />
   </ItemGroup>
 </Project>
